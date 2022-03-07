@@ -1,0 +1,27 @@
+{
+    "name": "jstnthms/file-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony FileBundle",
+    "keywords": ["Files"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Justin Hoffman",
+            "email": "jstnhffmn@gmail.com"
+        }
+    ],
+    "require": {
+        "jstnthms/security-bundle": "dev-master",
+        "php": "^7.2",
+        "symfony/framework-bundle": "~5.0"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url":  "git@bitbucket.org:jstnthms/security-bundle.git"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "JstnThms\\FileBundle\\": "src/" }
+    }
+}
