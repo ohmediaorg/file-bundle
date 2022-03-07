@@ -1,8 +1,8 @@
 <?php
 
-namespace JstnThms\FileBundle\Form\Type;
+namespace OHMedia\FileBundle\Form\Type;
 
-use JstnThms\FileBundle\Entity\Image;
+use OHMedia\FileBundle\Entity\Image;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;

@@ -1,12 +1,12 @@
 <?php
 
-namespace JstnThms\FileBundle\Entity;
+namespace OHMedia\FileBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JstnThms\FileBundle\Repository\ImageRepository;
-use JstnThms\SecurityBundle\Entity\Entity;
+use OHMedia\FileBundle\Repository\ImageRepository;
+use OHMedia\SecurityBundle\Entity\Entity;
 
 /**
  * @ORM\Entity(repositoryClass=ImageRepository::class)

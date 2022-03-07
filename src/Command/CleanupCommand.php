@@ -1,8 +1,8 @@
 <?php
 
-namespace JstnThms\FileBundle\Command;
+namespace OHMedia\FileBundle\Command;
 
-use JstnThms\FileBundle\Entity\File;
+use OHMedia\FileBundle\Entity\File;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -12,7 +12,7 @@ class CleanupCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('jstnthms:file:cleanup')
+            ->setName('ohmedia:file:cleanup')
             ->setDescription('Remove temporary files that are a day old')
         ;
     }

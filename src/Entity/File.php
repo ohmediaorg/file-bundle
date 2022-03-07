@@ -1,10 +1,10 @@
 <?php
 
-namespace JstnThms\FileBundle\Entity;
+namespace OHMedia\FileBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JstnThms\FileBundle\Repository\FileRepository;
-use JstnThms\SecurityBundle\Entity\Entity;
+use OHMedia\FileBundle\Repository\FileRepository;
+use OHMedia\SecurityBundle\Entity\Entity;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 

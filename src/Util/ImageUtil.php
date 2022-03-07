@@ -1,6 +1,6 @@
 <?php
 
-namespace JstnThms\FileBundle\Util;
+namespace OHMedia\FileBundle\Util;
 
 class ImageUtil
 {

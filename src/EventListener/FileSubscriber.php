@@ -1,13 +1,13 @@
 <?php
 
-namespace JstnThms\FileBundle\EventListener;
+namespace OHMedia\FileBundle\EventListener;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
-use JstnThms\FileBundle\Entity\File;
-use JstnThms\FileBundle\Entity\ImageResize;
-use JstnThms\FileBundle\Service\FileManager;
+use OHMedia\FileBundle\Entity\File;
+use OHMedia\FileBundle\Entity\ImageResize;
+use OHMedia\FileBundle\Service\FileManager;
 
 class FileSubscriber implements EventSubscriber
 {

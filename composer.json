@@ -1,5 +1,5 @@
 {
-    "name": "jstnthms/file-bundle",
+    "name": "justin-oh/file-bundle",
     "type": "symfony-bundle",
     "description": "Symfony FileBundle",
     "keywords": ["Files"],
@@ -7,21 +7,21 @@
     "authors": [
         {
             "name": "Justin Hoffman",
-            "email": "jstnhffmn@gmail.com"
+            "email": "justin@ohmedia.ca"
         }
     ],
     "require": {
-        "jstnthms/security-bundle": "dev-master",
+        "ohmedia/security-bundle": "dev-main",
         "php": "^7.2",
         "symfony/framework-bundle": "~5.0"
     },
     "repositories": [
         {
             "type": "vcs",
-            "url":  "git@bitbucket.org:jstnthms/security-bundle.git"
+            "url":  "git@bitbucket.org:ohmedia/security-bundle.git"
         }
     ],
     "autoload": {
-        "psr-4": { "JstnThms\\FileBundle\\": "src/" }
+        "psr-4": { "OHMedia\\FileBundle\\": "src/" }
     }
 }

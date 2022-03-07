@@ -1,10 +1,10 @@
 <?php
 
-namespace JstnThms\FileBundle\Repository;
+namespace OHMedia\FileBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use JstnThms\FileBundle\Entity\Image;
+use OHMedia\FileBundle\Entity\Image;
 
 /**
  * @method Image|null find($id, $lockMode = null, $lockVersion = null)

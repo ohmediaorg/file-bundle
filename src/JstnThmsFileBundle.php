@@ -1,9 +1,9 @@
 <?php
 
-namespace JstnThms\FileBundle;
+namespace OHMedia\FileBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class JstnThmsFileBundle extends Bundle
+class OHMediaFileBundle extends Bundle
 {
 }

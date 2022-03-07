@@ -1,11 +1,11 @@
 <?php
 
-namespace JstnThms\FileBundle\Repository;
+namespace OHMedia\FileBundle\Repository;
 
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use JstnThms\FileBundle\Entity\File;
+use OHMedia\FileBundle\Entity\File;
 
 /**
  * @method File|null find($id, $lockMode = null, $lockVersion = null)

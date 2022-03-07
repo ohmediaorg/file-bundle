@@ -1,12 +1,12 @@
 <?php
 
-namespace JstnThms\FileBundle\Twig;
+namespace OHMedia\FileBundle\Twig;
 
 use Doctrine\ORM\EntityManager;
-use JstnThms\FileBundle\Entity\File;
-use JstnThms\FileBundle\Entity\Image;
-use JstnThms\FileBundle\Entity\ImageResize;
-use JstnThms\FileBundle\Service\FileManager;
+use OHMedia\FileBundle\Entity\File;
+use OHMedia\FileBundle\Entity\Image;
+use OHMedia\FileBundle\Entity\ImageResize;
+use OHMedia\FileBundle\Service\FileManager;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -25,8 +25,8 @@ class FileExtension extends AbstractExtension
     public function getFunctions()
     {
         return [
-            new TwigFunction('jstnthms_file', [$this, 'getFile']),
-            new TwigFunction('jstnthms_image', [$this, 'getImage'])
+            new TwigFunction('ohmedia_file', [$this, 'getFile']),
+            new TwigFunction('ohmedia_image', [$this, 'getImage'])
         ];
     }
     

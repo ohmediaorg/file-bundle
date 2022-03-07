@@ -1,10 +1,10 @@
 <?php
 
-namespace JstnThms\FileBundle\Service;
+namespace OHMedia\FileBundle\Service;
 
-use JstnThms\FileBundle\Entity\File as FileEntity;
-use JstnThms\FileBundle\Entity\ImageResize;
-use JstnThms\FileBundle\Util\ImageUtil;
+use OHMedia\FileBundle\Entity\File as FileEntity;
+use OHMedia\FileBundle\Entity\ImageResize;
+use OHMedia\FileBundle\Util\ImageUtil;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;

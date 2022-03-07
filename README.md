@@ -6,14 +6,14 @@ This bundle offers functionality to leverage email sending via a CRON job.
 Installation
 ------------
 
-First, make sure the JstnThmsSecurityBundle is installed.
+First, make sure the OHMediaSecurityBundle is installed.
 
 Enable the bundle in `config/bundles.php`:
 
 ```php
 return [
     // ...
-    JstnThms\FileBundle\FileBundle() => ['all' => true],
+    OHMedia\FileBundle\FileBundle() => ['all' => true],
 ];
 ```
 
@@ -27,7 +27,7 @@ $ php bin/console doctrine:migrations:migrate
 Create the daily CRON job:
 
 ```bash
-0 0 * * * /path/to/php /path/to/symfony/bin/console jstnthms:file:cleanup
+0 0 * * * /path/to/php /path/to/symfony/bin/console ohmedia:file:cleanup
 ```
 
 This removes any files that have `temporary === true`.
@@ -71,8 +71,8 @@ $ sudo chown -R www-data:www-data public/files
 Entities
 --------
 
-There is a `JstnThms\FileBundle\Entity\File`
-and `JstnThms\FileBundle\Entity\Image` entity,
+There is a `OHMedia\FileBundle\Entity\File`
+and `OHMedia\FileBundle\Entity\Image` entity,
 with corresponding form types.
 
 Use the maker command to add these to your entity,
@@ -84,11 +84,11 @@ Templating
 Outputting a file or image path in a template:
 
 ```twig
-{# JstnThms\FileBundle\Entity\File file #}
-<a href="{{ jstnthms_file(file) }}">My File</a>
+{# OHMedia\FileBundle\Entity\File file #}
+<a href="{{ ohmedia_file(file) }}">My File</a>
 
-{# JstnThms\FileBundle\Entity\Image image #}
-<img src="{{ jstnthms_image(image) }}" title="My Image" />
+{# OHMedia\FileBundle\Entity\Image image #}
+<img src="{{ ohmedia_image(image) }}" title="My Image" />
 ```
 
 You can also generate resized images on the fly by passing in width/height:
@@ -97,8 +97,8 @@ You can also generate resized images on the fly by passing in width/height:
 {% set width = 100 %}
 {% set height = 100 %}
 
-{# JstnThms\FileBundle\Entity\Image image #}
-<img src="{{ jstnthms_image(image, width, height) }}" title="My Thumbnail" />
+{# OHMedia\FileBundle\Entity\Image image #}
+<img src="{{ ohmedia_image(image, width, height) }}" title="My Thumbnail" />
 ```
 
 If one of width or height is `null` (default value),

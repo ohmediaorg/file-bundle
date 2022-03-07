@@ -1,44 +1,44 @@
 services:
-    JstnThms\FileBundle\Service\FileManager:
+    OHMedia\FileBundle\Service\FileManager:
         arguments: ["%kernel.project_dir%", "%jstn_thms_file.upload_dir%"]
         
-    jstnthms_file.file_manager:
-        alias: JstnThms\FileBundle\Service\FileManager
+    ohmedia_file.file_manager:
+        alias: OHMedia\FileBundle\Service\FileManager
             
-    JstnThms\FileBundle\Twig\FileExtension:
-        arguments: ["@doctrine.orm.entity_manager", "@jstnthms_file.file_manager"]
+    OHMedia\FileBundle\Twig\FileExtension:
+        arguments: ["@doctrine.orm.entity_manager", "@ohmedia_file.file_manager"]
         tags:
             - { name: twig.extension }
             
-    jstnthms_file.file_extension:
-        alias: JstnThms\FileBundle\Twig\FileExtension
+    ohmedia_file.file_extension:
+        alias: OHMedia\FileBundle\Twig\FileExtension
     
-    JstnThms\FileBundle\EventListener\FileSubscriber:
-        arguments: ["@jstnthms_file.file_manager"]
+    OHMedia\FileBundle\EventListener\FileSubscriber:
+        arguments: ["@ohmedia_file.file_manager"]
         tags:
             - { name: 'doctrine.event_subscriber' }
             
-    JstnThms\FileBundle\Form\Type\FileEntityType:
-        arguments: ["@jstnthms_file.file_manager"]
+    OHMedia\FileBundle\Form\Type\FileEntityType:
+        arguments: ["@ohmedia_file.file_manager"]
         tags:
             - { name: form.type }
     
-    JstnThms\FileBundle\Repository\FileRepository:
+    OHMedia\FileBundle\Repository\FileRepository:
         autowire: true
         tags:
             - { name: doctrine.repository_service }
     
-    JstnThms\FileBundle\Repository\FileFolderRepository:
+    OHMedia\FileBundle\Repository\FileFolderRepository:
         autowire: true
         tags:
             - { name: doctrine.repository_service }
     
-    JstnThms\FileBundle\Repository\ImageRepository:
+    OHMedia\FileBundle\Repository\ImageRepository:
         autowire: true
         tags:
             - { name: doctrine.repository_service }
     
-    JstnThms\FileBundle\Repository\ImageResizeRepository:
+    OHMedia\FileBundle\Repository\ImageResizeRepository:
         autowire: true
         tags:
             - { name: doctrine.repository_service }

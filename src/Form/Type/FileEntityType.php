@@ -1,9 +1,9 @@
 <?php
 
-namespace JstnThms\FileBundle\Form\Type;
+namespace OHMedia\FileBundle\Form\Type;
 
-use JstnThms\FileBundle\Entity\File;
-use JstnThms\FileBundle\Service\FileManager;
+use OHMedia\FileBundle\Entity\File;
+use OHMedia\FileBundle\Service\FileManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;

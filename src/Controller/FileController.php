@@ -1,9 +1,9 @@
 <?php
 
-namespace JstnThms\FileBundle\Controller;
+namespace OHMedia\FileBundle\Controller;
 
-use JstnThms\FileBundle\Entity\File;
-use JstnThms\FileBundle\Service\FileManager;
+use OHMedia\FileBundle\Entity\File;
+use OHMedia\FileBundle\Service\FileManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;

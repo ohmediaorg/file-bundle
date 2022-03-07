@@ -1,10 +1,10 @@
 <?php
 
-namespace JstnThms\FileBundle\Entity;
+namespace OHMedia\FileBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JstnThms\FileBundle\Repository\ImageResizeRepository;
-use JstnThms\SecurityBundle\Entity\Entity;
+use OHMedia\FileBundle\Repository\ImageResizeRepository;
+use OHMedia\SecurityBundle\Entity\Entity;
 
 /**
  * @ORM\Entity(repositoryClass=ImageResizeRepository::class)
