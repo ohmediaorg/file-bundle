@@ -8,30 +8,20 @@ use Doctrine\ORM\Mapping as ORM;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\SecurityBundle\Entity\Entity;
 
-/**
- * @ORM\Entity(repositoryClass=FileFolderRepository::class)
- * @ORM\Table(name="file_folders")
- */
+#[ORM\Entity(repositoryClass: FileFolderRepository::class)]
+#[ORM\Table(name: 'file_folders')]
 class FileFolder extends Entity
 {
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     private $name;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=FileFolder::class, inversedBy="folders")
-     */
+    #[ORM\ManyToOne(targetEntity: FileFolder::class, inversedBy: 'folders')]
     private $folder;
 
-    /**
-     * @ORM\OneToMany(targetEntity=FileFolder::class, mappedBy="folder")
-     */
+    #[ORM\OneToMany(targetEntity: FileFolder::class, mappedBy: 'folder')]
     private $folders;
 
-    /**
-     * @ORM\OneToMany(targetEntity=File::class, mappedBy="folder")
-     */
+    #[ORM\OneToMany(targetEntity: File::class, mappedBy: 'folder')]
     private $files;
 
     public function __construct()

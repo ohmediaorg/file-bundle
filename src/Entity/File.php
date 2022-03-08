@@ -8,42 +8,28 @@ use OHMedia\SecurityBundle\Entity\Entity;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-/**
- * @ORM\Entity(repositoryClass=FileRepository::class)
- * @ORM\Table(name="files")
- */
+#[ORM\Entity(repositoryClass: FileRepository::class)]
+#[ORM\Table(name: 'files')]
 class File extends Entity
 {
     const PATH_INITIAL = 'initial';
-    
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+
+    #[ORM\Column(type: 'string', length: 255)]
     private $name;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     private $path;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private $temporary;
-  
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $mime_type;
 
-    /**
-     * @ORM\Column(type="smallint", nullable=true)
-     */
+    #[ORM\Column(type: 'smallint', nullable: true)]
     private $width;
 
-    /**
-     * @ORM\Column(type="smallint", nullable=true)
-     */
+    #[ORM\Column(type: 'smallint', nullable: true)]
     private $height;
 
     public function getName(): ?string
@@ -117,18 +103,18 @@ class File extends Entity
 
         return $this;
     }
-    
+
     private $file;
     private $oldPath;
-    
+
     public function setFile(HttpFile $file = null): self
     {
         $this->file = $file;
-        
+
         if ($file instanceof UploadedFile) {
             $this->name = $file->getClientOriginalName();
         }
-        
+
         // check if we have an old image path
         if (isset($this->path) && (self::PATH_INITIAL !== $this->path)) {
             // store the old name to delete after the update
@@ -139,29 +125,29 @@ class File extends Entity
             // set it to something not null
             $this->path = self::PATH_INITIAL;
         }
-        
+
         return $this;
     }
-    
+
     public function getFile(): ?HttpFile
     {
         return $this->file;
     }
-    
+
     public function clearFile()
     {
         $this->file = null;
-        
+
         return $this;
     }
-    
+
     public function setOldPath(?string $oldPath): self
     {
         $this->oldPath = $oldPath;
-        
+
         return $this;
     }
-    
+
     public function getOldPath(): ?string
     {
         return $this->oldPath;

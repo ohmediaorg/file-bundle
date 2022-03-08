@@ -8,21 +8,15 @@ use Doctrine\ORM\Mapping as ORM;
 use OHMedia\FileBundle\Repository\ImageRepository;
 use OHMedia\SecurityBundle\Entity\Entity;
 
-/**
- * @ORM\Entity(repositoryClass=ImageRepository::class)
- * @ORM\Table(name="images")
- */
+#[ORM\Entity(repositoryClass: ImageRepository::class)]
+#[ORM\Table(name: 'images')]
 class Image extends Entity
 {
-    /**
-     * @ORM\OneToOne(targetEntity=File::class, cascade={"persist", "remove"})
-     * @ORM\JoinColumn()
-     */
+    #[ORM\OneToOne(targetEntity: File::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn()]
     private $file;
 
-    /**
-     * @ORM\OneToMany(targetEntity=ImageResize::class, mappedBy="image", orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: ImageResize::class, mappedBy: 'image', orphanRemoval: true)]
     private $resizes;
 
     public function __construct()
@@ -87,7 +81,7 @@ class Image extends Entity
 
         return $this;
     }
-    
+
     public function getResize(string $name)
     {
         foreach ($this->resizes as $resize) {
@@ -95,7 +89,7 @@ class Image extends Entity
                 return $resize;
             }
         }
-        
+
         return null;
     }
 }
