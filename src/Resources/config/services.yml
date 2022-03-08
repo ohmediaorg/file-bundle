@@ -28,6 +28,9 @@ services:
         tags:
             - { name: doctrine.repository_service }
 
+    ohmedia_file.repository:
+        alias: OHMedia\FileBundle\Repository\FileRepository
+
     OHMedia\FileBundle\Repository\FileFolderRepository:
         autowire: true
         tags:
@@ -42,3 +45,7 @@ services:
         autowire: true
         tags:
             - { name: doctrine.repository_service }
+
+    OHMedia\FileBundle\Cleanup\FileCleaner:
+        arguments: ["@ohmedia_file.repository"]
+        tags: ["ohmedia_cleanup.cleaner"]
