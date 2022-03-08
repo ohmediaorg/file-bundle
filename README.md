@@ -1,12 +1,12 @@
 Overview
 ========
 
-This bundle offers functionality to leverage email sending via a CRON job.
+This bundle offers functionality for managing files.
 
 Installation
 ------------
 
-First, make sure the OHMediaSecurityBundle is installed.
+First, make sure the OHMediaCleanupBundle and OHMediaSecurityBundle are installed.
 
 Enable the bundle in `config/bundles.php`:
 
@@ -23,14 +23,6 @@ Make and run the migration:
 $ php bin/console make:migration
 $ php bin/console doctrine:migrations:migrate
 ```
-
-Create the daily CRON job:
-
-```bash
-0 0 * * * /path/to/php /path/to/symfony/bin/console ohmedia:file:cleanup
-```
-
-This removes any files that have `temporary === true`.
 
 Create your upload directory:
 
@@ -52,14 +44,14 @@ Update your `.gitignore` to ignore everything in your files directory:
 
 ```
 # ...
-public/files/
+/public/files/
 ```
 
 Make sure the directory gets created when you clone your repository:
 
 ```bash
-$ touch public/files/.empty
-$ git add -f public/files/.empty
+$ touch public/files/.gitkeep
+$ git add -f public/files/.gitkeep
 ```
 
 On your remote server, you may need to adjust the permissions of this folder:
