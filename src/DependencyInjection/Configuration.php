@@ -17,8 +17,8 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder('jstn_thms_file');
-        
+        $treeBuilder = new TreeBuilder('oh_media_file');
+
         $treeBuilder->getRootNode()
             ->children()
                 ->scalarNode('upload_dir')
@@ -26,7 +26,7 @@ class Configuration implements ConfigurationInterface
                 ->end()
             ->end()
         ;
-        
+
         return $treeBuilder;
     }
 }

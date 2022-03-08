@@ -42,7 +42,7 @@ $ mkdir public/files
 and configure the path:
 
 ```yaml
-jstn_thms_file:
+oh_media_file:
     upload_dir: /files
 ```
 

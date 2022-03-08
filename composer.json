@@ -11,14 +11,19 @@
         }
     ],
     "require": {
-        "ohmedia/security-bundle": "dev-main",
+        "justin-oh/cleanup-bundle": "dev-main",
+        "justin-oh/security-bundle": "dev-main",
         "php": "^7.2",
-        "symfony/framework-bundle": "~5.0"
+        "symfony/framework-bundle": "5.4.*"
     },
     "repositories": [
         {
             "type": "vcs",
-            "url":  "git@bitbucket.org:ohmedia/security-bundle.git"
+            "url":  "git@bitbucket.org:justin-oh/cleanup-bundle.git"
+        },
+        {
+            "type": "vcs",
+            "url":  "git@bitbucket.org:justin-oh/security-bundle.git"
         }
     ],
     "autoload": {
