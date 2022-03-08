@@ -77,10 +77,10 @@ Outputting a file or image path in a template:
 
 ```twig
 {# OHMedia\FileBundle\Entity\File file #}
-<a href="{{ ohmedia_file(file) }}">My File</a>
+<a href="{{ oh_media_file(file) }}">My File</a>
 
 {# OHMedia\FileBundle\Entity\Image image #}
-<img src="{{ ohmedia_image(image) }}" title="My Image" />
+<img src="{{ oh_media_image(image) }}" title="My Image" />
 ```
 
 You can also generate resized images on the fly by passing in width/height:
@@ -90,7 +90,7 @@ You can also generate resized images on the fly by passing in width/height:
 {% set height = 100 %}
 
 {# OHMedia\FileBundle\Entity\Image image #}
-<img src="{{ ohmedia_image(image, width, height) }}" title="My Thumbnail" />
+<img src="{{ oh_media_image(image, width, height) }}" title="My Thumbnail" />
 ```
 
 If one of width or height is `null` (default value),

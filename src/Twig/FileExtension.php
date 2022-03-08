@@ -25,8 +25,8 @@ class FileExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('ohmedia_file', [$this, 'getFile']),
-            new TwigFunction('ohmedia_image', [$this, 'getImage'])
+            new TwigFunction('oh_media_file', [$this, 'getFile']),
+            new TwigFunction('oh_media_image', [$this, 'getImage'])
         ];
     }
 
