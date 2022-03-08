@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\File\File as HttpFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity(repositoryClass: FileRepository::class)]
-#[ORM\Table(name: 'files')]
 class File extends Entity
 {
     const PATH_INITIAL = 'initial';

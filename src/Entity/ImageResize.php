@@ -7,7 +7,6 @@ use OHMedia\FileBundle\Repository\ImageResizeRepository;
 use OHMedia\SecurityBundle\Entity\Entity;
 
 #[ORM\Entity(repositoryClass: ImageResizeRepository::class)]
-#[ORM\Table(name: 'image_resizes')]
 class ImageResize extends Entity
 {
     #[ORM\Column(type: 'string', length: 50)]

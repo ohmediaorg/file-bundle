@@ -9,7 +9,6 @@ use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\SecurityBundle\Entity\Entity;
 
 #[ORM\Entity(repositoryClass: FileFolderRepository::class)]
-#[ORM\Table(name: 'file_folders')]
 class FileFolder extends Entity
 {
     #[ORM\Column(type: 'string', length: 255)]

@@ -9,7 +9,6 @@ use OHMedia\FileBundle\Repository\ImageRepository;
 use OHMedia\SecurityBundle\Entity\Entity;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
-#[ORM\Table(name: 'images')]
 class Image extends Entity
 {
     #[ORM\OneToOne(targetEntity: File::class, cascade: ['persist', 'remove'])]
