@@ -12,13 +12,13 @@ use OHMedia\FileBundle\Service\FileManager;
 class FileSubscriber implements EventSubscriber
 {
     private $manager;
-    
+
     public function __construct(FileManager $manager)
     {
         $this->manager = $manager;
     }
-    
-    public function getSubscribedEvents()
+
+    public function getSubscribedEvents(): array
     {
         return [
             Events::prePersist,
@@ -28,29 +28,29 @@ class FileSubscriber implements EventSubscriber
             Events::postRemove,
         ];
     }
-    
+
     public function prePersist(LifecycleEventArgs $args)
     {
         $object = $args->getObject();
-        
+
         if ($object instanceof File) {
             $this->preSaveFile($object);
         }
     }
-    
+
     public function preUpdate(LifecycleEventArgs $args)
     {
         $object = $args->getObject();
-        
+
         if ($object instanceof File) {
             $this->preSaveFile($object);
         }
     }
-    
+
     public function postPersist(LifecycleEventArgs $args)
     {
         $object = $args->getObject();
-        
+
         if ($object instanceof File) {
             $this->postSaveFile($object);
         }
@@ -58,11 +58,11 @@ class FileSubscriber implements EventSubscriber
             $this->postSaveImageResize($object);
         }
     }
-    
+
     public function postUpdate(LifecycleEventArgs $args)
     {
         $object = $args->getObject();
-        
+
         if ($object instanceof File) {
             $this->postSaveFile($object);
         }
@@ -70,11 +70,11 @@ class FileSubscriber implements EventSubscriber
             $this->postSaveImageResize($object);
         }
     }
-    
+
     public function postRemove(LifecycleEventArgs $args)
     {
         $object = $args->getObject();
-        
+
         if ($object instanceof File) {
             $this->postRemoveFile($object);
         }
