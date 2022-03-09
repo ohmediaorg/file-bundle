@@ -11,6 +11,9 @@ use OHMedia\SecurityBundle\Entity\Entity;
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
 class Image extends Entity
 {
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $alt;
+
     #[ORM\OneToOne(targetEntity: File::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn()]
     private $file;
@@ -23,9 +26,16 @@ class Image extends Entity
         $this->resizes = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getAlt(): ?string
     {
-        return $this->id;
+        return $this->alt;
+    }
+
+    public function setAlt(?string $alt): self
+    {
+        $this->alt = $alt;
+
+        return $this;
     }
 
     public function getFile(): ?File
