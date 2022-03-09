@@ -26,7 +26,10 @@ class FileExtension extends AbstractExtension
     {
         return [
             new TwigFunction('oh_media_file', [$this, 'getFile']),
-            new TwigFunction('oh_media_image', [$this, 'getImage'])
+            new TwigFunction('oh_media_image', [$this, 'getImage']),
+            new TwigFunction('oh_media_image_tag', [$this, 'getImageTag'], [
+                'is_safe' => ['html']
+            ])
         ];
     }
 
@@ -37,22 +40,61 @@ class FileExtension extends AbstractExtension
 
     public function getImage(Image $image, int $width = null, int $height = null)
     {
-        $file = $image->getFile();
+        $resize = $this->getImageResize($image, $width, $height);
 
+        $file = $resize
+            ? $resize->getFile()
+            : $image->getFile();
+
+        return $this->getFile($file);
+    }
+
+    public function getImageTag(Image $image, array $attributes = [])
+    {
+        $width = !empty($attributes['width']) ? $attributes['width'] : null;
+        $height = !empty($attributes['height']) ? $attributes['height'] : null;
+
+        $resize = $this->getImageResize($image, $width, $height);
+
+        $file = $resize
+            ? $resize->getFile()
+            : $image->getFile();
+
+        $attributes['src'] = $this->getFile($file);
+
+        $attributes['alt'] = $image->getAlt();
+
+        $attributesString = [];
+        foreach ($attributes as $attribute => $value) {
+            $attributesString[] = sprintf(
+                '%s="%s"',
+                $attribute,
+                htmlspecialchars($value)
+            );
+        }
+
+        $attributesString = implode(' ', $attributesString);
+
+        return "<img $attributesString />";
+    }
+
+    private function getImageResize(
+        Image $image,
+        int $width = null,
+        int $height = null
+    ): ?ImageResize
+    {
         if (null === $width && null === $height) {
-            return $this->getFile($file);
+            return null;
         }
 
-        $path = $this->manager->getAbsolutePath($file);
+        $origWidth = $image->getWidth();
+        $origHeight = $image->getHeight();
 
-        $imageSize = @getimagesize($path);
-
-        if (!$imageSize) {
-            return $this->getFile($file);
+        if (!$origWidth || !$origHeight) {
+            // something is not right, don't try to resize
+            return null;
         }
-
-        $origWidth = $imageSize[0];
-        $origHeight = $imageSize[1];
 
         if (null === $width) {
             // figure out the width
@@ -68,7 +110,7 @@ class FileExtension extends AbstractExtension
         $resize = $image->getResize($name);
 
         if (!$resize) {
-            $copy = $this->manager->copy($file);
+            $copy = $this->manager->copy($image->getFile());
 
             $resize = new ImageResize();
             $resize
@@ -82,6 +124,6 @@ class FileExtension extends AbstractExtension
             $this->em->flush();
         }
 
-        return $this->getFile($resize->getFile());
+        return $resize;
     }
 }
