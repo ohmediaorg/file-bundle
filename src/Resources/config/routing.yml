@@ -1,3 +1,0 @@
-file_upload:
-    path: /file/upload
-    defaults: { _controller: OHMediaFileBundle:File:upload }

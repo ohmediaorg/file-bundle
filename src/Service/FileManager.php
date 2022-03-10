@@ -5,6 +5,7 @@ namespace OHMedia\FileBundle\Service;
 use DateTime;
 use OHMedia\FileBundle\Entity\File as FileEntity;
 use OHMedia\FileBundle\Entity\ImageResize;
+use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Util\ImageUtil;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
@@ -17,14 +18,21 @@ class FileManager
     const FILE_DIR = 'oh_media_files';
 
     private $absoluteUploadDir;
-    private $filesystem;
+    private $fileRepo;
+    private $fileSystem;
     private $slugger;
 
-    public function __construct(string $projectDir)
+    public function __construct(FileRepository $fileRepo, string $projectDir)
     {
-        $this->absoluteUploadDir = $projectDir . static::FILE_DIR;
-        $this->filesystem = new FileSystem();
+        $this->absoluteUploadDir = $projectDir . '/' . static::FILE_DIR;
+        $this->fileRepo = $fileRepo;
+        $this->fileSystem = new FileSystem();
         $this->slugger = new AsciiSlugger();
+    }
+
+    public function get(int $id)
+    {
+        return $this->fileRepo->find($id);
     }
 
     public function copy(FileEntity $file): FileEntity
@@ -92,9 +100,17 @@ class FileManager
 
     public function getWebPath(FileEntity $file): ?string
     {
-        return null !== $file->getPath()
-            ? static::FILE_DIR . '/' . $file->getPath()
-            : null;
+        $path = [$file->getName()];
+
+        $folder = $file->getFolder();
+
+        while ($folder) {
+            $path[] = $folder->getName();
+
+            $folder = $folter->getFolder();
+        }
+
+        return '/f/' . implode('/', $path);
     }
 
     public function preSaveFile(FileEntity $file)
@@ -127,7 +143,7 @@ class FileManager
 
         $fullPath = $this->absoluteUploadDir . '/' . $path;
 
-        $this->filesystem->mkdir($fullPath);
+        $this->fileSystem->mkdir($fullPath);
 
         $i = 1;
         $temp = $basename;
@@ -183,7 +199,7 @@ class FileManager
         // check if we have an old file
         if ($file->getOldPath()) {
             // delete the old file
-            $this->filesystem->remove($this->absoluteUploadDir . '/' . $file->getOldPath());
+            $this->fileSystem->remove($this->absoluteUploadDir . '/' . $file->getOldPath());
             // clear the temp file path
             $file->setOldPath(null);
         }
@@ -195,7 +211,7 @@ class FileManager
     {
         $filepath = $this->getAbsolutePath($file);
 
-        $this->filesystem->remove($filepath);
+        $this->fileSystem->remove($filepath);
     }
 
     public function postSaveImageResize(ImageResize $resize)

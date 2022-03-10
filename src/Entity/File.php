@@ -33,6 +33,9 @@ class File extends Entity
     #[ORM\Column(type: 'smallint', nullable: true)]
     private $height;
 
+    #[ORM\ManyToOne(targetEntity: FileFolder::class, inversedBy: 'files')]
+    private $folder;
+
     public function getName(): ?string
     {
         return $this->name;
@@ -113,6 +116,18 @@ class File extends Entity
     public function setHeight(?int $height): self
     {
         $this->height = $height;
+
+        return $this;
+    }
+
+    public function getFolder(): ?self
+    {
+        return $this->folder;
+    }
+
+    public function setFolder(?self $folder): self
+    {
+        $this->folder = $folder;
 
         return $this;
     }

@@ -1,6 +1,6 @@
 services:
     OHMedia\FileBundle\Service\FileManager:
-        arguments: ["%kernel.project_dir%"]
+        arguments: ["@oh_media_file.repository", "%kernel.project_dir%"]
 
     oh_media_file.file_manager:
         alias: OHMedia\FileBundle\Service\FileManager
@@ -49,3 +49,8 @@ services:
     OHMedia\FileBundle\Cleanup\FileCleaner:
         arguments: ["@oh_media_file.repository"]
         tags: ["oh_media_cleanup.cleaner"]
+
+    OHMedia\FileBundle\Controller\FileController:
+        #resource: '../../Controller/'
+        arguments: ["@oh_media_file.file_manager"]
+        tags: ["controller.service_arguments"]
