@@ -115,3 +115,5 @@ fileInput.addEventListener('change', function() {
 });
 </script>
 ```
+
+You will get back an array of data for the files you uploaded.
