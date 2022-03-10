@@ -60,11 +60,13 @@ class FileController extends AbstractController
     public function uploadAction(Request $request): Response
     {
         if (!$this->getUser()) {
-            exit();
+            throw $this->createAccessDeniedException();
         }
 
+        $json = ['files' => []];
+
         if (!$httpfiles = $request->files->get('files')) {
-            exit;
+            return new JsonResponse($json);
         }
 
         $em = $this->getDoctrine()->getManager();
@@ -88,7 +90,6 @@ class FileController extends AbstractController
 
         $em->flush();
 
-        $json = ['files' => []];
         foreach ($files as $file) {
             $json['files'][] = [
                 'id' => $file->getId(),

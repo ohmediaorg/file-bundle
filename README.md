@@ -1,10 +1,8 @@
-Overview
-========
+# Overview
 
 This bundle offers functionality for managing files.
 
-Installation
-------------
+## Installation
 
 First, make sure the OHMediaCleanupBundle and OHMediaSecurityBundle are installed.
 
@@ -61,8 +59,7 @@ On your remote server, you may need to adjust the permissions of this folder:
 $ sudo chown -R www-data:www-data oh_media_files
 ```
 
-Entities
---------
+## Entities
 
 There is a `OHMedia\FileBundle\Entity\File`
 and `OHMedia\FileBundle\Entity\Image` entity,
@@ -71,8 +68,7 @@ with corresponding form types.
 Use the maker command to add these to your entity,
 then utilize the form types in your entity's form.
 
-Templating
-----------
+## Templating
 
 Outputting a file or image path in a template:
 
@@ -98,3 +94,22 @@ If one of width or height is `null` (default value),
 the other will be automatically calculated based on the original ratio.
 
 If both are `null`, you will get the original image.
+
+## Uploading
+
+Files can be uploaded using Javascript via the `oh_media_file_upload` route. The
+data should be in a parameter called `files`.
+
+```twig
+<script>
+let uploadRoute = '{{ path('oh_media_file_upload') }}';
+let fileInput = document.getElementById('#my-file-input');
+
+fileInput.addEventListener('change', function() {
+  let formData = new FormData();
+  formData.append('files', this.files);
+  xhr.open('post', uploadRoute, true);
+  xhr.send(formData);
+});
+</script>
+```
