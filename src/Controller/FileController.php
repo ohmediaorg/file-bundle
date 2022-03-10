@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class FileController
+class FileController extends AbstractController
 {
     private $manager;
 
@@ -28,23 +28,24 @@ class FileController
         string $path = ''
     ): Response
     {
-        $file = $this->manager->get($id);
+        $file = $this->manager->getFile($id);
 
         if (!$file) {
-            // TODO: file doesn't exist
-            exit('no find');
+            throw $this->createNotFoundException('The file does not exist');
         }
 
         $physicalFile = $this->manager->getAbsolutePath($file);
 
         if (!file_exists($physicalFile)) {
-            // TODO: file doesn't exist
-            exit($physicalFile);
+            throw $this->createNotFoundException('The file does not exist');
         }
 
         if ($file->getPrivate()) {
-            // TODO: check access
-            exit('no access');
+            $this->denyAccessUnlessGranted(
+                'read',
+                $file,
+                'This file requires special permissions to be read'
+            );
         }
 
         $response = new BinaryFileResponse($physicalFile);
@@ -75,8 +76,10 @@ class FileController
             }
 
             $file = new File();
-            $file->setFile($httpfile)
-                ->setTemporary(true);
+            $file
+                ->setFile($httpfile)
+                ->setTemporary(true)
+            ;
 
             $em->persist($file);
 
