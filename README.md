@@ -101,19 +101,38 @@ Files can be uploaded using Javascript via the `oh_media_file_upload` route. The
 data should be in a parameter called `files`.
 
 ```twig
+<input id="file-upload" type="file" multiple />
+
 <script>
 let uploadRoute = '{{ path('oh_media_file_upload') }}';
-let fileInput = document.getElementById('#my-file-input');
+let fileInput = document.getElementById('#file-upload');
 
-fileInput.addEventListener('change', function() {
+fileInput.addEventListener('change', () => {
   let formData = new FormData();
-  formData.append('files', this.files);
+  formData.append('files', fileInput.files);
   
   let xhr = new XMLHttpRequest();
-  xhr.open('post', uploadRoute, true);
+  xhr.responseType = 'json';
+  
+  xhr.onload = () => {
+    let files = xhr.response.files;
+    
+    files.forEach((file) => {
+      // file.id, file.name, file.path
+    });
+  };
+  
+  xhr.open('POST', uploadRoute, true);
   xhr.send(formData);
 });
 </script>
 ```
 
-You will get back an array of data for the files you uploaded.
+_**Note:** Files uploaded this way will be marked as temporary. It's your
+responsibility to mark them as not temporary as needed. The idea being, if a
+process is exited early, the files created during this process won't just sit
+there forever._
+
+## Temporary Files
+
+Temporary files will be deleted if they are over 1 day old.
