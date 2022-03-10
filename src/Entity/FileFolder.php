@@ -14,6 +14,9 @@ class FileFolder extends Entity
     #[ORM\Column(type: 'string', length: 255)]
     private $name;
 
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $private;
+
     #[ORM\ManyToOne(targetEntity: FileFolder::class, inversedBy: 'folders')]
     private $folder;
 
@@ -37,6 +40,18 @@ class FileFolder extends Entity
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getPrivate(): ?bool
+    {
+        return $this->private;
+    }
+
+    public function setPrivate(?bool $private): self
+    {
+        $this->private = $private;
 
         return $this;
     }
