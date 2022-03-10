@@ -2,18 +2,22 @@
 
 namespace OHMedia\FileBundle\Service;
 
+use DateTime;
 use OHMedia\FileBundle\Entity\File as FileEntity;
 use OHMedia\FileBundle\Entity\ImageResize;
 use OHMedia\FileBundle\Util\ImageUtil;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class FileManager
 {
     private $absolutePublicDir;
     private $absoluteUploadDir;
     private $filesystem;
+    private $slugger;
     private $uploadDir;
 
     public function __construct(string $projectDir, string $uploadDir)
@@ -21,6 +25,7 @@ class FileManager
         $this->absolutePublicDir = $projectDir . '/public';
         $this->absoluteUploadDir = $this->absolutePublicDir . $uploadDir;
         $this->filesystem = new FileSystem();
+        $this->slugger = new AsciiSlugger();
         $this->uploadDir = $uploadDir;
     }
 
@@ -102,24 +107,25 @@ class FileManager
             return;
         }
 
-        $width = $height = null;
+        $this->setFileDimensions($file, $httpFile);
 
-        $imageSize = @getimagesize($httpFile->getRealPath());
+        if ($httpFile instanceof UploadedFile) {
+            $name = $this->slugger->slug($httpFile->getClientOriginalName());
 
-        if ($imageSize) {
-            $width = $imageSize[0];
-            $height = $imageSize[1];
+            $file->setName($name);
         }
 
-        $file
-            ->setWidth($width)
-            ->setHeight($height);
+        $ext = $httpFile->guessExtension();
 
-        $ext = '.' . $httpFile->guessExtension();
+        if ($ext) {
+            $ext = '.' . $ext;
+        }
 
-        $basename = $httpFile->getBasename($ext);
+        $now = new DateTime();
 
-        $path = (new DateTime())->format('Y/m/d');
+        $basename = $now->format('His');
+
+        $path = $now->format('Y/m/d');
 
         $fullPath = $this->absoluteUploadDir . '/' . $path;
 
@@ -140,6 +146,23 @@ class FileManager
         $mimeType = $this->getMimeType($file);
 
         $file->setMimeType($mimeType);
+    }
+
+    private function setFileDimensions(FileEntity $file, HttpFile $httpFile)
+    {
+        $width = $height = null;
+
+        $imageSize = @getimagesize($httpFile->getRealPath());
+
+        if ($imageSize) {
+            $width = $imageSize[0];
+            $height = $imageSize[1];
+        }
+
+        $file
+            ->setWidth($width)
+            ->setHeight($height)
+        ;
     }
 
     public function postSaveFile(FileEntity $file)

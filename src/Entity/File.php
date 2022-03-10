@@ -6,7 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\SecurityBundle\Entity\Entity;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity(repositoryClass: FileRepository::class)]
 class File extends Entity
@@ -109,10 +108,6 @@ class File extends Entity
     public function setFile(HttpFile $file = null): self
     {
         $this->file = $file;
-
-        if ($file instanceof UploadedFile) {
-            $this->name = $file->getClientOriginalName();
-        }
 
         // check if we have an old image path
         if (isset($this->path) && (self::PATH_INITIAL !== $this->path)) {
