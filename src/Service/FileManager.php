@@ -4,13 +4,16 @@ namespace OHMedia\FileBundle\Service;
 
 use DateTime;
 use OHMedia\FileBundle\Entity\File as FileEntity;
+use OHMedia\FileBundle\Entity\Image;
 use OHMedia\FileBundle\Entity\ImageResize;
 use OHMedia\FileBundle\Repository\FileRepository;
+use OHMedia\FileBundle\Repository\ImageRepository;
 use OHMedia\FileBundle\Util\ImageUtil;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class FileManager
@@ -19,20 +22,34 @@ class FileManager
 
     private $absoluteUploadDir;
     private $fileRepo;
+    private $imageRepo;
     private $fileSystem;
+    private $router;
     private $slugger;
 
-    public function __construct(FileRepository $fileRepo, string $projectDir)
+    public function __construct(
+        FileRepository $fileRepo,
+        ImageRepository $imageRepo,
+        UrlGeneratorInterface $router,
+        string $projectDir
+    )
     {
         $this->absoluteUploadDir = $projectDir . '/' . static::FILE_DIR;
         $this->fileRepo = $fileRepo;
         $this->fileSystem = new FileSystem();
+        $this->imageRepo = $imageRepo;
+        $this->router = $router;
         $this->slugger = new AsciiSlugger();
     }
 
-    public function get(int $id)
+    public function getFile(int $id): ?FileEntity
     {
         return $this->fileRepo->find($id);
+    }
+
+    public function getImage(int $id): ?Image
+    {
+        return $this->imageRepo->find($id);
     }
 
     public function copy(FileEntity $file): FileEntity
@@ -110,7 +127,10 @@ class FileManager
             $folder = $folter->getFolder();
         }
 
-        return '/f/' . implode('/', $path);
+        return $this->router->generate('oh_media_file_read', [
+            'id' => $file->getId(),
+            'path' => implode('/', $path)
+        ]);
     }
 
     public function preSaveFile(FileEntity $file)
