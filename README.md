@@ -47,6 +47,14 @@ $ touch oh_media_files/.gitkeep
 $ git add -f oh_media_files/.gitkeep
 ```
 
+Import the routes in `config/routes.yaml`:
+
+```yaml
+oh_media_file:
+    resource: '@OHMediaFileBundle/Controller/'
+    type: annotation
+```
+
 On your remote server, you may need to adjust the permissions of this folder:
 
 ```bash
