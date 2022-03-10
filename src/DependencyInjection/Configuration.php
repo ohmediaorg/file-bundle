@@ -19,14 +19,6 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder('oh_media_file');
 
-        $treeBuilder->getRootNode()
-            ->children()
-                ->scalarNode('upload_dir')
-                    ->defaultValue('')
-                ->end()
-            ->end()
-        ;
-
         return $treeBuilder;
     }
 }

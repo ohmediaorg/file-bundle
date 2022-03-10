@@ -14,19 +14,17 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class FileManager
 {
-    private $absolutePublicDir;
+    const FILE_DIR = 'oh_media_files';
+
     private $absoluteUploadDir;
     private $filesystem;
     private $slugger;
-    private $uploadDir;
 
-    public function __construct(string $projectDir, string $uploadDir)
+    public function __construct(string $projectDir)
     {
-        $this->absolutePublicDir = $projectDir . '/public';
-        $this->absoluteUploadDir = $this->absolutePublicDir . $uploadDir;
+        $this->absoluteUploadDir = $projectDir . static::FILE_DIR;
         $this->filesystem = new FileSystem();
         $this->slugger = new AsciiSlugger();
-        $this->uploadDir = $uploadDir;
     }
 
     public function copy(FileEntity $file): FileEntity
@@ -95,7 +93,7 @@ class FileManager
     public function getWebPath(FileEntity $file): ?string
     {
         return null !== $file->getPath()
-            ? $this->uploadDir . '/' . $file->getPath()
+            ? static::FILE_DIR . '/' . $file->getPath()
             : null;
     }
 

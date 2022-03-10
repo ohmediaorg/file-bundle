@@ -24,40 +24,33 @@ $ php bin/console make:migration
 $ php bin/console doctrine:migrations:migrate
 ```
 
-Create your upload directory:
+Create the non-public upload directory in the root of your project:
 
 ```bash
-# start in the project root directory
-$ mkdir public/files
+$ mkdir oh_media_files
 ```
 
-and configure the path:
+_**Note:** this directory is not public on purpose so file access can go through
+permission checks._
 
-```yaml
-oh_media_file:
-    upload_dir: /files
-```
-
-Note that `upload_dir` is expected to be relative to the `public` directory.
-
-Update your `.gitignore` to ignore everything in your files directory:
+Update `.gitignore` to ignore everything in the non-public upload directory:
 
 ```
 # ...
-/public/files/
+/oh_media_files
 ```
 
 Make sure the directory gets created when you clone your repository:
 
 ```bash
-$ touch public/files/.gitkeep
-$ git add -f public/files/.gitkeep
+$ touch oh_media_files/.gitkeep
+$ git add -f oh_media_files/.gitkeep
 ```
 
 On your remote server, you may need to adjust the permissions of this folder:
 
 ```bash
-$ sudo chown -R www-data:www-data public/files
+$ sudo chown -R www-data:www-data oh_media_files
 ```
 
 Entities
