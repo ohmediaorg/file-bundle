@@ -108,6 +108,8 @@ let fileInput = document.getElementById('#my-file-input');
 fileInput.addEventListener('change', function() {
   let formData = new FormData();
   formData.append('files', this.files);
+  
+  let xhr = new XMLHttpRequest();
   xhr.open('post', uploadRoute, true);
   xhr.send(formData);
 });
