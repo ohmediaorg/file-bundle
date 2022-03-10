@@ -21,6 +21,9 @@ class File extends Entity
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $temporary;
 
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $private;
+
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $mime_type;
 
@@ -62,6 +65,18 @@ class File extends Entity
     public function setTemporary(?bool $temporary): self
     {
         $this->temporary = $temporary;
+
+        return $this;
+    }
+
+    public function getPrivate(): ?bool
+    {
+        return $this->private;
+    }
+
+    public function setPrivate(?bool $private): self
+    {
+        $this->private = $private;
 
         return $this;
     }
