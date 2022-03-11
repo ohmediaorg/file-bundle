@@ -98,28 +98,28 @@ class ImageResource
         }
 
         if (null === $resizeW) {
-            $resizeW = ($imW / $imH) * $resizeH;
+            $resizeW = ($this->width / $this->height) * $resizeH;
         }
         else if (null === $resizeH) {
-            $resizeH = ($imH / $imW) * $resizeW;
+            $resizeH = ($this->height / $this->width) * $resizeW;
         }
 
-        $im_ratio = $imW / $imH;
+        $im_ratio = $this->width / $this->height;
         $resize_ratio = $resizeW / $resizeH;
 
         $srcX = $srcY = $srcW = $srcH = 0;
 
         if ($im_ratio >= $resize_ratio) {
             $srcY = 0;
-            $srcH = $imH;
+            $srcH = $this->height;
             $srcW = floor($srcH * $resize_ratio);
-            $srcX = floor(($imW - $srcW) / 2);
+            $srcX = floor(($this->width - $srcW) / 2);
         }
         else {
             $srcX = 0;
-            $srcW = $imW;
+            $srcW = $this->width;
             $srcH = floor($srcW / $resize_ratio);
-            $srcY = floor(($imH - $srcH) / 2);
+            $srcY = floor(($this->height - $srcH) / 2);
         }
 
         $old = $this->im;
