@@ -56,9 +56,18 @@ class FileExtension extends AbstractExtension
 
         $resize = $this->getImageResize($image, $width, $height);
 
-        $file = $resize
-            ? $resize->getFile()
-            : $image->getFile();
+        if ($resize) {
+            $file = $resize->getFile();
+
+            $attributes['width'] = $resize->getWidth();
+            $attributes['height'] = $resize->getHeight();
+        }
+        else {
+            $file = $image->getFile();
+
+            $attributes['width'] = $file->getWidth();
+            $attributes['height'] = $file->getHeight();
+        }
 
         $attributes['src'] = $this->getFile($file);
 
