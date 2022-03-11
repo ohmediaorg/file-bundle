@@ -6,7 +6,7 @@ use GDImage;
 
 class ImageResource
 {
-    private $this->im;
+    private $im;
     private $width;
     private $height;
     private $filepath;
@@ -15,30 +15,30 @@ class ImageResource
     {
         $this->im = $im;
 
-        $this->width = imagesx($this->gdImage);
-        $this->height = imagesy($this->gdImage);
+        $this->width = imagesx($this->im);
+        $this->height = imagesy($this->im);
 
         $this->filepath = $filepath;
     }
 
-    public function create(string $filepath): ?self
+    public static function create(string $filepath): ?self
     {
         $ext = static::getExtension($filepath);
 
-        $gdImage = null;
+        $im = null;
 
         if ('jpg' === $ext || 'jpeg' === $ext) {
-            $gdImage = imagecreatefromjpeg($filepath);
+            $im = imagecreatefromjpeg($filepath);
         }
         else if ('png' === $ext) {
-            $gdImage = imagecreatefrompng($filepath);
+            $im = imagecreatefrompng($filepath);
         }
         else if ('gif' === $ext) {
-            $gdImage = imagecreatefromgif($filepath);
+            $im = imagecreatefromgif($filepath);
         }
 
-        if ($gdImage instanceof GDImage) {
-            return new self($gdImage, $filepath);
+        if ($im instanceof GDImage) {
+            return new static($im, $filepath);
         }
 
         return null;
@@ -133,13 +133,13 @@ class ImageResource
         return $this;
     }
 
-    public function save(?string $filepath): bool
+    public function save(string $filepath = null): bool
     {
         if (null === $filepath) {
             $filepath = $this->filepath;
         }
 
-        $ext = self::getExtension($filepath);
+        $ext = static::getExtension($filepath);
 
         imagesavealpha($this->im, true);
 

@@ -8,7 +8,7 @@ use OHMedia\FileBundle\Entity\Image;
 use OHMedia\FileBundle\Entity\ImageResize;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Repository\ImageRepository;
-use OHMedia\FileBundle\Util\ImageUtil;
+use OHMedia\FileBundle\Util\ImageResource;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -240,43 +240,34 @@ class FileManager
 
         $sourceFilepath = $this->getAbsolutePath($sourceFile);
 
-        $ext = ImageUtil::getExtension($sourceFilepath);
+        $imageResource = ImageResource::create($sourceFilepath);
 
-        $im = ImageUtil::getImageResource($sourceFilepath, $ext);
-
-        if (!$im) {
+        if (!$imageResource) {
             return;
         }
-
-        $imW = imagesx($im);
-        $imH = imagesy($im);
 
         $width = $resize->getWidth();
         $height = $resize->getHeight();
 
-        $resizedIm = ImageUtil::resizeAndCropImage($im, $imW, $imH, $width, $height);
+        $imageResource->resize($width, $height);
 
         $file = $resize->getFile();
 
         $filepath = $this->getAbsolutePath($file);
 
-        ImageUtil::saveImage($resizedIm, $filepath, $ext);
+        $imageResource->save($filepath);
     }
 
     private function doImageProcessing(FileEntity $file)
     {
         $filepath = $this->getAbsolutePath($file);
 
-        $ext = ImageUtil::getExtension($filepath);
+        $imageResource = ImageResource::create($filepath);
 
-        $im = ImageUtil::getImageResource($filepath, $ext);
-
-        if (null === $im) {
+        if (!$imageResource) {
             return;
         }
 
-        $im = ImageUtil::doFlipRotate($im, $filepath);
-
-        ImageUtil::saveImage($im, $filepath, $ext);
+        $imageResource->fixOrientation()->save();
     }
 }
