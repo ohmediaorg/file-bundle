@@ -100,7 +100,7 @@ class ImageResource
             );
         }
         else if (null === $resizeH) {
-            $resizeH = ImageUtil::getTargetWidth(
+            $resizeH = ImageUtil::getTargetHeight(
                 $this->width,
                 $this->height,
                 $resizeW

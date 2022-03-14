@@ -287,7 +287,7 @@ class FileManager
             );
         }
         else if (null === $height) {
-            $height = ImageUtil::getTargetWidth(
+            $height = ImageUtil::getTargetHeight(
                 $origWidth,
                 $origHeight,
                 $width
