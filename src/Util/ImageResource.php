@@ -23,7 +23,7 @@ class ImageResource
 
     public static function create(string $filepath): ?self
     {
-        $ext = static::getExtension($filepath);
+        $ext = ImageUtil::getExtension($filepath);
 
         $im = null;
 
@@ -42,11 +42,6 @@ class ImageResource
         }
 
         return null;
-    }
-
-    public static function getExtension($filepath): string
-    {
-        return strtolower(pathinfo($filepath, PATHINFO_EXTENSION));
     }
 
     public function fixOrientation(): self
@@ -98,10 +93,18 @@ class ImageResource
         }
 
         if (null === $resizeW) {
-            $resizeW = ($this->width / $this->height) * $resizeH;
+            $resizeW = ImageUtil::getTargetWidth(
+                $this->width,
+                $this->height,
+                $resizeH
+            );
         }
         else if (null === $resizeH) {
-            $resizeH = ($this->height / $this->width) * $resizeW;
+            $resizeH = ImageUtil::getTargetWidth(
+                $this->width,
+                $this->height,
+                $resizeW
+            );
         }
 
         $imRatio = $this->width / $this->height;
@@ -139,7 +142,7 @@ class ImageResource
             $filepath = $this->filepath;
         }
 
-        $ext = static::getExtension($filepath);
+        $ext = ImageUtil::getExtension($filepath);
 
         imagesavealpha($this->im, true);
 
