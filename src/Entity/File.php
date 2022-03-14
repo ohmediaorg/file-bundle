@@ -24,6 +24,9 @@ class File extends Entity
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $private;
 
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $hidden;
+
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $mime_type;
 
@@ -80,6 +83,18 @@ class File extends Entity
     public function setPrivate(?bool $private): self
     {
         $this->private = $private;
+
+        return $this;
+    }
+
+    public function getHidden(): ?bool
+    {
+        return $this->hidden;
+    }
+
+    public function setHidden(?bool $hidden): self
+    {
+        $this->hidden = $hidden;
 
         return $this;
     }
