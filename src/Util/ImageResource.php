@@ -104,21 +104,21 @@ class ImageResource
             $resizeH = ($this->height / $this->width) * $resizeW;
         }
 
-        $im_ratio = $this->width / $this->height;
-        $resize_ratio = $resizeW / $resizeH;
+        $imRatio = $this->width / $this->height;
+        $resizeRatio = $resizeW / $resizeH;
 
         $srcX = $srcY = $srcW = $srcH = 0;
 
-        if ($im_ratio >= $resize_ratio) {
+        if ($imRatio >= $resizeRatio) {
             $srcY = 0;
             $srcH = $this->height;
-            $srcW = floor($srcH * $resize_ratio);
+            $srcW = floor($srcH * $resizeRatio);
             $srcX = floor(($this->width - $srcW) / 2);
         }
         else {
             $srcX = 0;
             $srcW = $this->width;
-            $srcH = floor($srcW / $resize_ratio);
+            $srcH = floor($srcW / $resizeRatio);
             $srcY = floor(($this->height - $srcH) / 2);
         }
 
