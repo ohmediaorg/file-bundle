@@ -312,7 +312,10 @@ class FileManager
                 $copyName .= '-' .$name;
             }
 
-            $copy->setName($copyName);
+            $copy
+                ->setName($copyName)
+                ->setHidden(true)
+            ;
 
             $resize = new ImageResize();
             $resize
