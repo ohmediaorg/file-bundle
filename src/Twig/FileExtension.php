@@ -2,7 +2,6 @@
 
 namespace OHMedia\FileBundle\Twig;
 
-use Doctrine\ORM\EntityManager;
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\Image;
 use OHMedia\FileBundle\Entity\ImageResize;
@@ -13,12 +12,10 @@ use Twig\TwigFunction;
 
 class FileExtension extends AbstractExtension
 {
-    private $em;
     private $manager;
 
-    public function __construct(EntityManager $em, FileManager $manager)
+    public function __construct(FileManager $manager)
     {
-        $this->em = $em;
         $this->manager = $manager;
     }
 
@@ -40,7 +37,7 @@ class FileExtension extends AbstractExtension
 
     public function getImage(Image $image, int $width = null, int $height = null)
     {
-        $resize = $this->getImageResize($image, $width, $height);
+        $resize = $this->manager->getImageResize($image, $width, $height);
 
         $file = $resize
             ? $resize->getFile()
@@ -54,7 +51,7 @@ class FileExtension extends AbstractExtension
         $width = !empty($attributes['width']) ? $attributes['width'] : null;
         $height = !empty($attributes['height']) ? $attributes['height'] : null;
 
-        $resize = $this->getImageResize($image, $width, $height);
+        $resize = $this->manager->getImageResize($image, $width, $height);
 
         if ($resize) {
             $file = $resize->getFile();
@@ -85,67 +82,5 @@ class FileExtension extends AbstractExtension
         $attributesString = implode(' ', $attributesString);
 
         return "<img $attributesString />";
-    }
-
-    private function getImageResize(
-        Image $image,
-        int $width = null,
-        int $height = null
-    ): ?ImageResize
-    {
-        if (null === $width && null === $height) {
-            return null;
-        }
-
-        $origWidth = $image->getWidth();
-        $origHeight = $image->getHeight();
-
-        if (!$origWidth || !$origHeight) {
-            // something is not right, don't try to resize
-            return null;
-        }
-
-        if (null === $width) {
-            // figure out the width
-            $width = $height * ($origWidth / $origHeight);
-        }
-        else if (null === $height) {
-            // figure out the height
-            $height = $width * ($origHeight / $origWidth);
-        }
-
-        $name = sprintf('%sx%s', $width, $height);
-
-        $resize = $image->getResize($name);
-
-        if (!$resize) {
-            $copy = $this->manager->copy($image->getFile());
-
-            $copyName = $copy->getName();
-
-            if (false !== strpos($copyName, '.')) {
-                $parts = explode('.', $copyName);
-                $parts[count($parts) - 2] .= '-' . $name;
-                $copyName = implode('.', $parts);
-            }
-            else {
-                $copyName .= '-' .$name;
-            }
-
-            $copy->setName($copyName);
-
-            $resize = new ImageResize();
-            $resize
-                ->setFile($copy)
-                ->setName($name)
-                ->setWidth($width)
-                ->setHeight($height)
-                ->setImage($image);
-
-            $this->em->persist($resize);
-            $this->em->flush();
-        }
-
-        return $resize;
     }
 }

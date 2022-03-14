@@ -3,12 +3,14 @@
 namespace OHMedia\FileBundle\Service;
 
 use DateTime;
+use Doctrine\ORM\EntityManager;
 use OHMedia\FileBundle\Entity\File as FileEntity;
 use OHMedia\FileBundle\Entity\Image;
 use OHMedia\FileBundle\Entity\ImageResize;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Repository\ImageRepository;
 use OHMedia\FileBundle\Util\ImageResource;
+use OHMedia\FileBundle\Util\ImageUtil;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -21,6 +23,7 @@ class FileManager
     const FILE_DIR = 'oh_media_files';
 
     private $absoluteUploadDir;
+    private $em;
     private $fileRepo;
     private $imageRepo;
     private $fileSystem;
@@ -28,16 +31,16 @@ class FileManager
     private $slugger;
 
     public function __construct(
-        FileRepository $fileRepo,
-        ImageRepository $imageRepo,
+        EntityManager $em,
         UrlGeneratorInterface $router,
         string $projectDir
     )
     {
         $this->absoluteUploadDir = $projectDir . '/' . static::FILE_DIR;
-        $this->fileRepo = $fileRepo;
+        $this->em = $em;
+        $this->fileRepo = $em->getRepository(FileEntity::class);
         $this->fileSystem = new FileSystem();
-        $this->imageRepo = $imageRepo;
+        $this->imageRepo = $em->getRepository(Image::class);
         $this->router = $router;
         $this->slugger = new AsciiSlugger();
     }
@@ -256,6 +259,74 @@ class FileManager
         $filepath = $this->getAbsolutePath($file);
 
         $imageResource->save($filepath);
+    }
+
+    public function getImageResize(
+        Image $image,
+        ?int $width = null,
+        ?int $height = null
+    ): ?ImageResize
+    {
+        if (null === $width && null === $height) {
+            return null;
+        }
+
+        $origWidth = $image->getWidth();
+        $origHeight = $image->getHeight();
+
+        if (!$origWidth || !$origHeight) {
+            // something is not right, don't try to resize
+            return null;
+        }
+
+        if (null === $width) {
+            $width = ImageUtil::getTargetWidth(
+                $origWidth,
+                $origHeight,
+                $height
+            );
+        }
+        else if (null === $height) {
+            $height = ImageUtil::getTargetWidth(
+                $origWidth,
+                $origHeight,
+                $width
+            );
+        }
+
+        $name = sprintf('%sx%s', $width, $height);
+
+        $resize = $image->getResize($name);
+
+        if (!$resize) {
+            $copy = $this->copy($image->getFile());
+
+            $copyName = $copy->getName();
+
+            if (false !== strpos($copyName, '.')) {
+                $parts = explode('.', $copyName);
+                $parts[count($parts) - 2] .= '-' . $name;
+                $copyName = implode('.', $parts);
+            }
+            else {
+                $copyName .= '-' .$name;
+            }
+
+            $copy->setName($copyName);
+
+            $resize = new ImageResize();
+            $resize
+                ->setFile($copy)
+                ->setName($name)
+                ->setWidth($width)
+                ->setHeight($height)
+                ->setImage($image);
+
+            $this->em->persist($resize);
+            $this->em->flush();
+        }
+
+        return $resize;
     }
 
     private function doImageProcessing(FileEntity $file)
