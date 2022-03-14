@@ -121,6 +121,19 @@ class FileExtension extends AbstractExtension
         if (!$resize) {
             $copy = $this->manager->copy($image->getFile());
 
+            $copyName = $copy->getName();
+
+            if (false !== strpos($copyName, '.')) {
+                $parts = explode('.', $copyName);
+                $parts[count($parts) - 2] .= '-' . $name;
+                $copyName = implode('.', $parts);
+            }
+            else {
+                $copyName .= '-' .$name;
+            }
+
+            $copy->setName($copyName);
+
             $resize = new ImageResize();
             $resize
                 ->setFile($copy)
