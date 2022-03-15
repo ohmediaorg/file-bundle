@@ -135,7 +135,7 @@ class File extends Entity
         return $this;
     }
 
-    public function getFolder(): ?self
+    public function getFolder(): ?FileFolder
     {
         return $this->folder;
     }

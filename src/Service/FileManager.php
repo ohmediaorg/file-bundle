@@ -127,12 +127,12 @@ class FileManager
         while ($folder) {
             $path[] = $folder->getName();
 
-            $folder = $folter->getFolder();
+            $folder = $folder->getFolder();
         }
 
         return $this->router->generate('oh_media_file_read', [
             'id' => $file->getId(),
-            'path' => implode('/', $path)
+            'path' => implode('/', array_reverse($path))
         ]);
     }
 

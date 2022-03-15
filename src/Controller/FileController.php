@@ -21,7 +21,12 @@ class FileController extends AbstractController
         $this->manager = $manager;
     }
 
-    #[Route('/f/{id}/{path}', name: 'oh_media_file_read', methods: ['GET'])]
+    #[Route(
+      '/f/{id}/{path}',
+      name: 'oh_media_file_read',
+      requirements: ['path' => '.+'],
+      methods: ['GET']
+    )]
     public function readAction(
         Request $request,
         int $id,
