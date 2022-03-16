@@ -6,8 +6,10 @@ use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\Image;
 use OHMedia\FileBundle\Entity\ImageResize;
 use OHMedia\FileBundle\Service\FileManager;
+use OHMedia\FileBundle\Util\FileUtil;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 class FileExtension extends AbstractExtension
@@ -19,6 +21,13 @@ class FileExtension extends AbstractExtension
         $this->manager = $manager;
     }
 
+    public function getFilters()
+    {
+        return [
+            new TwigFilter('filesize', [$this, 'formatFilesize']),
+        ];
+    }
+
     public function getFunctions(): array
     {
         return [
@@ -28,6 +37,11 @@ class FileExtension extends AbstractExtension
                 'is_safe' => ['html']
             ])
         ];
+    }
+
+    public function formatFilesize(int $bytes, int $precision = 1): string
+    {
+        return FileUtil::formatBytes($bytes, $precision);
     }
 
     public function getFile(File $file)
