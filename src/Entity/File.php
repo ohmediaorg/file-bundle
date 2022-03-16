@@ -15,6 +15,9 @@ class File extends Entity
     #[ORM\Column(type: 'string', length: 255)]
     private $name;
 
+    #[ORM\Column(type: 'string', length: 20)]
+    private $ext;
+
     #[ORM\Column(type: 'string', length: 255)]
     private $path;
 
@@ -49,6 +52,27 @@ class File extends Entity
         $this->name = $name;
 
         return $this;
+    }
+
+    public function getExt(): ?string
+    {
+        return $this->ext;
+    }
+
+    public function setExt(string $ext): self
+    {
+        $this->ext = $ext;
+
+        return $this;
+    }
+
+    public function getFilename(): string
+    {
+        if ($this->ext) {
+            return $this->name . '.' . $this->ext;
+        }
+
+        return $this->name;
     }
 
     public function getPath(): ?string

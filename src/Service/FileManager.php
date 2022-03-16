@@ -70,7 +70,10 @@ class FileManager
             $contents = file_get_contents($path);
 
             $copy = $this->createFromContents($contents);
-            $copy->setName($file->getName());
+            $copy
+                ->setName($file->getName())
+                ->setExt($file->getExt())
+            ;
 
             return $copy;
         }
@@ -120,7 +123,7 @@ class FileManager
 
     public function getWebPath(FileEntity $file): ?string
     {
-        $path = [$file->getName()];
+        $path = [$file->getFilename()];
 
         $folder = $file->getFolder();
 
@@ -147,9 +150,18 @@ class FileManager
         $this->setFileDimensions($file, $httpFile);
 
         if ($httpFile instanceof UploadedFile) {
-            $name = $this->slugger->slug($httpFile->getClientOriginalName());
+            $name = $httpFile->getClientOriginalName();
+            $ext = $httpFile->getClientOriginalExtension();
 
-            $file->setName($name);
+            $name = preg_replace('/\.' . preg_quote($ext) . '$/', '', $name);
+
+            $name = $this->slugger->slug($name);
+            $ext = $this->slugger->slug($ext);
+
+            $file
+                ->setName($name)
+                ->setExt($ext)
+            ;
         }
 
         $ext = $httpFile->guessExtension();
@@ -301,19 +313,8 @@ class FileManager
         if (!$resize) {
             $copy = $this->copy($image->getFile());
 
-            $copyName = $copy->getName();
-
-            if (false !== strpos($copyName, '.')) {
-                $parts = explode('.', $copyName);
-                $parts[count($parts) - 2] .= '-' . $name;
-                $copyName = implode('.', $parts);
-            }
-            else {
-                $copyName .= '-' .$name;
-            }
-
             $copy
-                ->setName($copyName)
+                ->setName($copy->getName() . '-' .$name)
                 ->setHidden(true)
             ;
 
