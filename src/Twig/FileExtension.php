@@ -23,7 +23,8 @@ class FileExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('file_size', [$this, 'getFilesize']),
+            new TwigFunction('file_size', [$this, 'getFileSize']),
+            new TwigFunction('file_size_binary', [$this, 'getFileSizeBinary']),
             new TwigFunction('file_path', [$this, 'getFilePath']),
             new TwigFunction('image_path', [$this, 'getImagePath']),
             new TwigFunction('image_tag', [$this, 'getImageTag'], [
@@ -32,9 +33,14 @@ class FileExtension extends AbstractExtension
         ];
     }
 
-    public function getFilesize(File $file, int $precision = 1): string
+    public function getFileSize(File $file, int $precision = 1): string
     {
-        return FileUtil::formatBytes($file->getSize(), $precision);
+        return FileUtil::formatBytesDecimal($file->getSize(), $precision);
+    }
+
+    public function getFileSizeBinary(File $file, int $precision = 1): string
+    {
+        return FileUtil::formatBytesBinary($file->getSize(), $precision);
     }
 
     public function getFilePath(File $file)

@@ -23,20 +23,32 @@ class FileUtil
             : 0;
     }
 
-    public static function formatBytes(int $bytes, int $precision): string
+    public static function formatBytesBinary(int $bytes, int $precision)
     {
-        if (!$bytes) {
-            return '0 B';
+        return self::formatBytes($bytes, $precision, true);
+    }
+
+    public static function formatBytesDecimal(int $bytes, int $precision)
+    {
+        return self::formatBytes($bytes, $precision, false);
+    }
+
+    private static function formatBytes(int $bytes, int $precision, bool $binary): string
+    {
+        if ($binary) {
+            $units = array('B', 'KiB', 'MiB', 'GiB');
+            $base = 1024;
+        }
+        else {
+            $units = array('B', 'kB', 'MB', 'GB');
+            $base = 1000;
         }
 
-        $units = array('B', 'KB', 'MB', 'GB', 'TB');
-
-        $mult = 1024;
         $unit = 0;
         $maxUnit = count($units);
 
-        while ($bytes > $mult && $unit < $maxUnit) {
-            $bytes /= $mult;
+        while ($bytes > $base && $unit < $maxUnit) {
+            $bytes /= $base;
             $unit++;
         }
 
