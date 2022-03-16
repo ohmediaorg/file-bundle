@@ -190,11 +190,15 @@ class FileManager
 
         $path .= '/' . $temp . $ext;
 
-        $file->setPath($path);
-
         $mimeType = $this->getMimeType($file);
 
-        $file->setMimeType($mimeType);
+        $size = $httpFile->getSize();
+
+        $file
+            ->setPath($path)
+            ->setMimeType($mimeType)
+            ->setSize($size ?: null)
+        ;
     }
 
     private function setFileDimensions(FileEntity $file, HttpFile $httpFile)

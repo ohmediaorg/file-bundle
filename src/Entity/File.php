@@ -33,6 +33,9 @@ class File extends Entity
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $mime_type;
 
+    #[ORM\Column(type: 'bigint', nullable: true)]
+    private $size;
+
     #[ORM\Column(type: 'smallint', nullable: true)]
     private $width;
 
@@ -133,6 +136,40 @@ class File extends Entity
         $this->mime_type = $mimeType;
 
         return $this;
+    }
+
+    public function getSize(): ?int
+    {
+        return $this->size;
+    }
+
+    public function setSize(?int $size): self
+    {
+        $this->size = $size;
+
+        return $this;
+    }
+
+    public function getSizeFormatted(int $precision = 2): string
+    {
+        if (!$this->size) {
+            return '0 B';
+        }
+
+        $size = (int) $this->size;
+
+        $units = array('B', 'KB', 'MB', 'GB', 'TB');
+
+        $mult = 1024;
+        $unit = 0;
+        $maxUnit = count($units);
+
+        while ($size > $mult && $unit < $maxUnit) {
+            $size /= $mult;
+            $unit++;
+        }
+
+        return round($size, $precision) . ' ' . $units[$unit];
     }
 
     public function getWidth(): ?int
