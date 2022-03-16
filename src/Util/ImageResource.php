@@ -23,7 +23,7 @@ class ImageResource
 
     public static function create(string $filepath): ?self
     {
-        $ext = ImageUtil::getExtension($filepath);
+        $ext = FileUtil::getExtension($filepath);
 
         $im = null;
 
@@ -93,14 +93,14 @@ class ImageResource
         }
 
         if (null === $resizeW) {
-            $resizeW = ImageUtil::getTargetWidth(
+            $resizeW = FileUtil::getTargetWidth(
                 $this->width,
                 $this->height,
                 $resizeH
             );
         }
         else if (null === $resizeH) {
-            $resizeH = ImageUtil::getTargetHeight(
+            $resizeH = FileUtil::getTargetHeight(
                 $this->width,
                 $this->height,
                 $resizeW
@@ -142,7 +142,7 @@ class ImageResource
             $filepath = $this->filepath;
         }
 
-        $ext = ImageUtil::getExtension($filepath);
+        $ext = FileUtil::getExtension($filepath);
 
         imagesavealpha($this->im, true);
 

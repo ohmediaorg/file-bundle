@@ -10,7 +10,7 @@ use OHMedia\FileBundle\Entity\ImageResize;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Repository\ImageRepository;
 use OHMedia\FileBundle\Util\ImageResource;
-use OHMedia\FileBundle\Util\ImageUtil;
+use OHMedia\FileBundle\Util\FileUtil;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -296,14 +296,14 @@ class FileManager
         }
 
         if (null === $width) {
-            $width = ImageUtil::getTargetWidth(
+            $width = FileUtil::getTargetWidth(
                 $origWidth,
                 $origHeight,
                 $height
             );
         }
         else if (null === $height) {
-            $height = ImageUtil::getTargetHeight(
+            $height = FileUtil::getTargetHeight(
                 $origWidth,
                 $origHeight,
                 $width

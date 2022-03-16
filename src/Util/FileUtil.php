@@ -2,7 +2,7 @@
 
 namespace OHMedia\FileBundle\Util;
 
-class ImageUtil
+class FileUtil
 {
     public static function getExtension($filepath): string
     {
@@ -21,5 +21,25 @@ class ImageUtil
         return 0 !== $origW
             ? ($origH / $origW) * $targetW
             : 0;
+    }
+
+    public static function formatBytes(?int $bytes, $precision): string
+    {
+        if (!$bytes) {
+            return '0 B';
+        }
+
+        $units = array('B', 'KB', 'MB', 'GB', 'TB');
+
+        $mult = 1024;
+        $unit = 0;
+        $maxUnit = count($units);
+
+        while ($bytes > $mult && $unit < $maxUnit) {
+            $bytes /= $mult;
+            $unit++;
+        }
+
+        return round($bytes, $precision) . ' ' . $units[$unit];
     }
 }
