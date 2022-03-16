@@ -9,7 +9,6 @@ use OHMedia\FileBundle\Service\FileManager;
 use OHMedia\FileBundle\Util\FileUtil;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Twig\Extension\AbstractExtension;
-use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 class FileExtension extends AbstractExtension
@@ -21,35 +20,29 @@ class FileExtension extends AbstractExtension
         $this->manager = $manager;
     }
 
-    public function getFilters()
-    {
-        return [
-            new TwigFilter('filesize', [$this, 'formatFilesize']),
-        ];
-    }
-
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('oh_media_file', [$this, 'getFile']),
-            new TwigFunction('oh_media_image', [$this, 'getImage']),
-            new TwigFunction('oh_media_image_tag', [$this, 'getImageTag'], [
+            new TwigFunction('file_size', [$this, 'getFilesize']),
+            new TwigFunction('file_path', [$this, 'getFilePath']),
+            new TwigFunction('image_path', [$this, 'getImagePath']),
+            new TwigFunction('image_tag', [$this, 'getImageTag'], [
                 'is_safe' => ['html']
             ])
         ];
     }
 
-    public function formatFilesize(int $bytes, int $precision = 1): string
+    public function getFilesize(File $file, int $precision = 1): string
     {
-        return FileUtil::formatBytes($bytes, $precision);
+        return FileUtil::formatBytes($file->getSize(), $precision);
     }
 
-    public function getFile(File $file)
+    public function getFilePath(File $file)
     {
         return $this->manager->getWebPath($file);
     }
 
-    public function getImage(Image $image, int $width = null, int $height = null)
+    public function getImagePath(Image $image, int $width = null, int $height = null)
     {
         $resize = $this->manager->getImageResize($image, $width, $height);
 
@@ -76,8 +69,8 @@ class FileExtension extends AbstractExtension
         else {
             $file = $image->getFile();
 
-            $attributes['width'] = $file->getWidth();
-            $attributes['height'] = $file->getHeight();
+            $attributes['width'] = $image->getWidth();
+            $attributes['height'] = $image->getHeight();
         }
 
         $attributes['src'] = $this->getFile($file);

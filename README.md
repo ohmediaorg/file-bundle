@@ -74,10 +74,10 @@ Outputting a file or image path in a template:
 
 ```twig
 {# OHMedia\FileBundle\Entity\File file #}
-<a href="{{ oh_media_file(file) }}">My File</a>
+<a href="{{ file_path(file) }}">My File</a>
 
 {# OHMedia\FileBundle\Entity\Image image #}
-<img src="{{ oh_media_image(image) }}" title="My Image" />
+<img src="{{ image_path(image) }}" title="My Image" />
 ```
 
 You can also generate resized images on the fly by passing in width/height:
@@ -87,13 +87,23 @@ You can also generate resized images on the fly by passing in width/height:
 {% set height = 100 %}
 
 {# OHMedia\FileBundle\Entity\Image image #}
-<img src="{{ oh_media_image(image, width, height) }}" title="My Thumbnail" />
+<img src="{{ image_path(image, width, height) }}" title="My Thumbnail" />
 ```
 
 If one of width or height is `null` (default value),
 the other will be automatically calculated based on the original ratio.
 
 If both are `null`, you will get the original image.
+
+There's also a function to generate an entire `<img />` tag:
+
+```twig
+{{ image_tag(image, {width: 600, height: 400}) }}
+```
+
+The second parameter is for HTML attributes. The `width` and/or `height`
+attributes will be used to generated a resized image like the above. The `alt`
+and `src` attribute will be overridden and don't need to be provided.
 
 ## Uploading
 
