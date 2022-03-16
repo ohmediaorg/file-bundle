@@ -50,7 +50,7 @@ class FileExtension extends AbstractExtension
             ? $resize->getFile()
             : $image->getFile();
 
-        return $this->getFile($file);
+        return $this->getFilePath($file);
     }
 
     public function getImageTag(Image $image, array $attributes = [])
@@ -73,7 +73,7 @@ class FileExtension extends AbstractExtension
             $attributes['height'] = $image->getHeight();
         }
 
-        $attributes['src'] = $this->getFile($file);
+        $attributes['src'] = $this->getFilePath($file);
 
         $attributes['alt'] = $image->getAlt();
 
