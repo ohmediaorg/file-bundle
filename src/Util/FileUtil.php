@@ -23,7 +23,7 @@ class FileUtil
             : 0;
     }
 
-    public static function formatBytes(?int $bytes, $precision): string
+    public static function formatBytes(int $bytes, int $precision): string
     {
         if (!$bytes) {
             return '0 B';
