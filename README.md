@@ -121,19 +121,21 @@ fileInput.addEventListener('change', () => {
   let formData = new FormData();
   formData.append('files', fileInput.files);
   
-  let xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  
-  xhr.onload = () => {
-    let files = xhr.response.files;
+  fetch(uploadRoute, {
+    method: 'POST',
+    body: formData,
+  })
+  .then(response => response.json())
+  .then(result => {
+    let files = result.files;
     
     files.forEach((file) => {
       // file.id, file.name, file.path
     });
-  };
-  
-  xhr.open('POST', uploadRoute, true);
-  xhr.send(formData);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
 });
 </script>
 ```
