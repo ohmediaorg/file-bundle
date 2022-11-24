@@ -93,7 +93,7 @@ class FileController extends AbstractController
         foreach ($files as $file) {
             $json['files'][] = [
                 'id' => $file->getId(),
-                'name' => $file->getName(),
+                'name' => $file->getFilename(),
                 'path' => $this->manager->getWebPath($file)
             ];
         }
