@@ -22,23 +22,15 @@ class FileSubscriber implements EventSubscriber
     {
         return [
             Events::prePersist,
-            Events::preUpdate,
             Events::postPersist,
+            Events::preUpdate,
             Events::postUpdate,
+            Events::preRemove,
             Events::postRemove,
         ];
     }
 
     public function prePersist(LifecycleEventArgs $args)
-    {
-        $object = $args->getObject();
-
-        if ($object instanceof File) {
-            $this->preSaveFile($object);
-        }
-    }
-
-    public function preUpdate(LifecycleEventArgs $args)
     {
         $object = $args->getObject();
 
@@ -59,6 +51,15 @@ class FileSubscriber implements EventSubscriber
         }
     }
 
+    public function preUpdate(LifecycleEventArgs $args)
+    {
+        $object = $args->getObject();
+
+        if ($object instanceof File) {
+            $this->preSaveFile($object);
+        }
+    }
+
     public function postUpdate(LifecycleEventArgs $args)
     {
         $object = $args->getObject();
@@ -71,12 +72,24 @@ class FileSubscriber implements EventSubscriber
         }
     }
 
+    protected $fileToRemove;
+
+    public function preRemove(LifecycleEventArgs $args)
+    {
+        $object = $args->getObject();
+
+        if ($object instanceof File) {
+            // force load the proxy
+            $object->__load();
+        }
+    }
+
     public function postRemove(LifecycleEventArgs $args)
     {
         $object = $args->getObject();
 
         if ($object instanceof File) {
-            $this->postRemoveFile($object);
+            $this->manager->postRemoveFile($object);
         }
     }
 
@@ -93,10 +106,5 @@ class FileSubscriber implements EventSubscriber
     private function postSaveImageResize(ImageResize $resize)
     {
         $this->manager->postSaveImageResize($resize);
-    }
-
-    private function postRemoveFile(File $file)
-    {
-        $this->manager->postRemoveFile($file);
     }
 }
