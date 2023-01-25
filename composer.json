@@ -1,5 +1,5 @@
 {
-    "name": "justin-oh/file-bundle",
+    "name": "ohmediaorg/file-bundle",
     "type": "symfony-bundle",
     "description": "Symfony FileBundle",
     "keywords": ["Files"],
@@ -11,19 +11,19 @@
         }
     ],
     "require": {
-        "justin-oh/cleanup-bundle": "dev-main",
-        "justin-oh/security-bundle": "dev-main",
+        "ohmediaorg/cleanup-bundle": "dev-main",
+        "ohmediaorg/security-bundle": "dev-main",
         "php": "^7.2",
         "symfony/framework-bundle": "5.4.*"
     },
     "repositories": [
         {
             "type": "vcs",
-            "url":  "git@bitbucket.org:justin-oh/cleanup-bundle.git"
+            "url":  "git@bitbucket.org:ohmediaorg/cleanup-bundle.git"
         },
         {
             "type": "vcs",
-            "url":  "git@bitbucket.org:justin-oh/security-bundle.git"
+            "url":  "git@bitbucket.org:ohmediaorg/security-bundle.git"
         }
     ],
     "autoload": {
