@@ -139,6 +139,8 @@ class FileManager
         ]);
     }
 
+    private $newFiles = [];
+
     public function preSaveFile(FileEntity $file)
     {
         $httpFile = $file->getFile();
@@ -182,11 +184,13 @@ class FileManager
 
         $i = 1;
         $temp = $basename;
-        while(glob("$fullPath/$temp.*")) {
+        while(glob("$fullPath/$temp.*") || isset($this->newFiles["$fullPath/$temp"])) {
             $temp = $basename . '-' . $i;
 
             $i++;
         }
+
+        $this->newFiles["$fullPath/$temp"] = 1;
 
         $path .= '/' . $temp . $ext;
 
