@@ -103,39 +103,41 @@ class ImageResource
     {
         $exif = @exif_read_data($this->filepath);
 
-        if(!empty($exif['Orientation'])) {
-            $orient = $exif['Orientation'];
+        if(empty($exif['Orientation'])) {
+            return $this;
+        }
 
-            if (2 === $orient) {
-                // horizontal flip
-                imageflip($this->im, 1);
-            }
-            else if (3 === $orient) {
-                // 180 rotate left
-                $this->im = imagerotate($this->im, 180, 0);
-            }
-            else if (4 === $orient) {
-                // vertical flip
-                imageflip($this->im, 2);
-            }
-            else if (5 === $orient) {
-                // vertical flip + 90 rotate right
-                imageflip($this->im, 2);
-                $this->im = imagerotate($this->im, -90, 0);
-            }
-            else if (6 === $orient) {
-                // 90 rotate right
-                $this->im = imagerotate($this->im, -90, 0);
-            }
-            else if (7 === $orient) {
-                // horizontal flip + 90 rotate right
-                imageflip($this->im, 1);
-                $this->im = imagerotate($this->im, -90, 0);
-            }
-            else if (8 === $orient) {
-                // 90 rotate left
-                $this->im = imagerotate($this->im, 90, 0);
-            }
+        $orient = $exif['Orientation'];
+
+        if (2 === $orient) {
+            // horizontal flip
+            imageflip($this->im, 1);
+        }
+        else if (3 === $orient) {
+            // 180 rotate left
+            $this->im = imagerotate($this->im, 180, 0);
+        }
+        else if (4 === $orient) {
+            // vertical flip
+            imageflip($this->im, 2);
+        }
+        else if (5 === $orient) {
+            // vertical flip + 90 rotate right
+            imageflip($this->im, 2);
+            $this->im = imagerotate($this->im, -90, 0);
+        }
+        else if (6 === $orient) {
+            // 90 rotate right
+            $this->im = imagerotate($this->im, -90, 0);
+        }
+        else if (7 === $orient) {
+            // horizontal flip + 90 rotate right
+            imageflip($this->im, 1);
+            $this->im = imagerotate($this->im, -90, 0);
+        }
+        else if (8 === $orient) {
+            // 90 rotate left
+            $this->im = imagerotate($this->im, 90, 0);
         }
 
         return $this;
