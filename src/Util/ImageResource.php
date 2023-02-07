@@ -47,7 +47,7 @@ class ImageResource
 
     public static function create(string $filepath): ?self
     {
-        if (class_exists('Imagick')) {
+        if (class_exists('\Imagick')) {
             return static::createImagick($filepath);
         }
         else {
@@ -105,8 +105,8 @@ class ImageResource
     {
         $exif = @exif_read_data($this->filepath);
 
-        if(empty($exif['Orientation'])) {
-            return $this;
+        if (empty($exif['Orientation'])) {
+            return;
         }
 
         $orient = $exif['Orientation'];
@@ -148,7 +148,7 @@ class ImageResource
         $orient = $this->im->getImageOrientation();
 
         if (empty($orient)) {
-            return $this;
+            return;
         }
 
         $transparent = new \ImagickPixel('transparent');
@@ -174,11 +174,11 @@ class ImageResource
             $this->im->rotateImage($transparent, 90);
             $this->im->flipImage();
         }
-        else if (Imagick::ORIENTATION_LEFTBOTTOM === $orient) {
+        else if (\Imagick::ORIENTATION_LEFTBOTTOM === $orient) {
             $this->im->rotateImage($transparent, -90);
         }
 
-        $this->im->setImageOrientation(Imagick::ORIENTATION_TOPLEFT);
+        $this->im->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
     }
 
     public function resize(?int $resizeW, ?int $resizeH): self
