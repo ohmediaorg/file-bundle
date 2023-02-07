@@ -6,22 +6,67 @@ use GDImage;
 
 class ImageResource
 {
+    const TYPE_IMAGICK = 'imagick';
+    const TYPE_GD = 'gd';
+
     private $im;
     private $width;
     private $height;
     private $filepath;
 
-    private function __construct(GDImage $im, string $filepath)
+    private function __construct($im, string $filepath)
     {
         $this->im = $im;
 
-        $this->width = imagesx($this->im);
-        $this->height = imagesy($this->im);
+        $this->setDimensions();
 
         $this->filepath = $filepath;
     }
 
+    private function setDimensions()
+    {
+        if ($this->im instanceof GDImage) {
+            $this->setDimensionsGd();
+        }
+        else {
+            $this->setDimensionsImagick();
+        }
+    }
+
+    private function setDimensionsGd()
+    {
+        $this->width = imagesx($this->im);
+        $this->height = imagesy($this->im);
+    }
+
+    private function setDimensionsImagick()
+    {
+        $this->width = $this->im->getImageWidth();
+        $this->height = $this->im->getImageHeight();
+    }
+
     public static function create(string $filepath): ?self
+    {
+        if (class_exists('Imagick')) {
+            return static::createImagick($filepath);
+        }
+        else {
+            return static::createGd($filepath);
+        }
+    }
+
+    private static function createImagick(string $filepath): ?self
+    {
+        try {
+            $im = new \Imagick($filepath);
+
+            return new static($im, $filepath);
+        } catch(\ImagickException $error) {
+            return null;
+        }
+    }
+
+    private static function createGd(string $filepath): self
     {
         $ext = FileUtil::getExtension($filepath);
 
@@ -45,6 +90,16 @@ class ImageResource
     }
 
     public function fixOrientation(): self
+    {
+        if ($this->im instanceof GDImage) {
+            $this->fixOrientationGd();
+        }
+        else {
+            $this->fixOrientationImagick();
+        }
+    }
+
+    private function fixOrientationGd(): self
     {
         $exif = @exif_read_data($this->filepath);
 
