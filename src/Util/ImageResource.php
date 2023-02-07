@@ -262,6 +262,16 @@ class ImageResource
             $filepath = $this->filepath;
         }
 
+        if ($this->im instanceof GDImage) {
+            return $this->saveGd($filepath);
+        }
+        else {
+            return $this->saveImagick($filepath);
+        }
+    }
+
+    private function saveGd(string $filepath): bool
+    {
         $ext = FileUtil::getExtension($filepath);
 
         imagesavealpha($this->im, true);
@@ -277,5 +287,10 @@ class ImageResource
         }
 
         return false;
+    }
+
+    private function saveImagick(string $filepath): bool
+    {
+        return $this->im->writeImage($filepath);
     }
 }
