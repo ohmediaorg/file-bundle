@@ -143,6 +143,44 @@ class ImageResource
         return $this;
     }
 
+    private function fixOrientationImagick(): self
+    {
+        $orient = $this->im->getImageOrientation();
+
+        if (empty($orient)) {
+            return $this;
+        }
+
+        $transparent = new \ImagickPixel('transparent');
+
+        if (\Imagick::ORIENTATION_TOPRIGHT === $orient) {
+            $this->im->flipImage();
+            $this->im->rotateImage($transparent, 180);
+        }
+        else if (\Imagick::ORIENTATION_BOTTOMRIGHT === $orient) {
+            $this->im->rotateImage($transparent, 180);
+        }
+        else if (\Imagick::ORIENTATION_BOTTOMLEFT === $orient) {
+            $this->im->flipImage();
+        }
+        else if (\Imagick::ORIENTATION_LEFTTOP === $orient) {
+            $this->im->rotateImage($transparent, -90);
+            $this->im->flipImage();
+        }
+        else if (\Imagick::ORIENTATION_RIGHTTOP === $orient) {
+            $this->im->rotateImage($transparent, 90);
+        }
+        else if (\Imagick::ORIENTATION_RIGHTBOTTOM === $orient) {
+            $this->im->rotateImage($transparent, 90);
+            $this->im->flipImage();
+        }
+        else if (Imagick::ORIENTATION_LEFTBOTTOM === $orient) {
+            $this->im->rotateImage($transparent, -90);
+        }
+
+        $this->im->setImageOrientation(Imagick::ORIENTATION_TOPLEFT);
+    }
+
     public function resize(?int $resizeW, ?int $resizeH): self
     {
         if (null === $resizeW && null === $resizeH) {
