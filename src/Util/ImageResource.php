@@ -97,9 +97,11 @@ class ImageResource
         else {
             $this->fixOrientationImagick();
         }
+
+        return $this;
     }
 
-    private function fixOrientationGd(): self
+    private function fixOrientationGd(): void
     {
         $exif = @exif_read_data($this->filepath);
 
@@ -139,11 +141,9 @@ class ImageResource
             // 90 rotate left
             $this->im = imagerotate($this->im, 90, 0);
         }
-
-        return $this;
     }
 
-    private function fixOrientationImagick(): self
+    private function fixOrientationImagick(): void
     {
         $orient = $this->im->getImageOrientation();
 
@@ -220,6 +220,22 @@ class ImageResource
             $srcY = floor(($this->height - $srcH) / 2);
         }
 
+        if ($this->im instanceof GDImage) {
+            $this->resizeGd($resizeW, $resizeH, $srcX, $srcY, $srcW, $srcH);
+        }
+        else {
+            $this->resizeImagick($resizeW, $resizeH, $srcX, $srcY, $srcW, $srcH);
+        }
+
+        return $this;
+    }
+
+    private function resizeGd(
+        int $resizeW, int $resizeH,
+        int $srcX, int $srxY,
+        int $srcW, int $srxH
+    ): void
+    {
         $old = $this->im;
 
         $this->im = imagecreatetruecolor($resizeW, $resizeH);
@@ -228,7 +244,16 @@ class ImageResource
         imagealphablending($this->im, false);
         imagecopyresampled($this->im, $old, 0, 0, $srcX, $srcY, $resizeW, $resizeH, $srcW, $srcH);
 
-        return $this;
+    }
+
+    private function resizeImagick(
+        int $resizeW, int $resizeH,
+        int $srcX, int $srxY,
+        int $srcW, int $srxH
+    ): void
+    {
+        $this->im->cropImage($srcW, $srcH, $srcX, $srcY);
+        $this->im->resize($resizeW, $resizeH, \Imagick::FILTER_SINC, 1);
     }
 
     public function save(string $filepath = null): bool
