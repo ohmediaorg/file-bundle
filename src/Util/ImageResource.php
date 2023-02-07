@@ -232,8 +232,8 @@ class ImageResource
 
     private function resizeGd(
         int $resizeW, int $resizeH,
-        int $srcX, int $srxY,
-        int $srcW, int $srxH
+        int $srcX, int $srcY,
+        int $srcW, int $srcH
     ): void
     {
         $old = $this->im;
@@ -248,12 +248,12 @@ class ImageResource
 
     private function resizeImagick(
         int $resizeW, int $resizeH,
-        int $srcX, int $srxY,
-        int $srcW, int $srxH
+        int $srcX, int $srcY,
+        int $srcW, int $srcH
     ): void
     {
         $this->im->cropImage($srcW, $srcH, $srcX, $srcY);
-        $this->im->resize($resizeW, $resizeH, \Imagick::FILTER_SINC, 1);
+        $this->im->resizeImage($resizeW, $resizeH, \Imagick::FILTER_SINC, 1);
     }
 
     public function save(string $filepath = null): bool
