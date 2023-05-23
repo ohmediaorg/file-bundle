@@ -143,6 +143,12 @@ class FileManager
 
     public function preSaveFile(FileEntity $file)
     {
+        if (!$file->getId()) {
+            $token = $this->generateFileToken();
+
+            $file->setToken($token);
+        }
+
         $httpFile = $file->getFile();
 
         if (null === $httpFile) {
@@ -203,6 +209,39 @@ class FileManager
             ->setMimeType($mimeType)
             ->setSize($size ?: null)
         ;
+    }
+
+    private function generateFileToken(): string
+    {
+        $lowercase = range('a', 'z');
+        $uppercase = range('A', 'Z');
+        $numbers = range(0, 9);
+
+        $chars = $lowercase + $uppercase + $numbers;
+        $count = count($chars);
+
+        do {
+            $token = $this->generateToken(20);
+        } while($this->fileRepo->findByToken($token));
+
+        return $token;
+    }
+
+    private function generateToken(int $length): string
+    {
+        $lowercase = range('a', 'z');
+        $uppercase = range('A', 'Z');
+        $numbers = range(0, 9);
+
+        $chars = $lowercase + $uppercase + $numbers;
+        $max = count($chars) - 1;
+
+        $token = '';
+        for ($i = 0; $i < $length; $i++) {
+            $token .= $chars[rand(0, $max)];
+        }
+
+        return $token;
     }
 
     private function setFileDimensions(FileEntity $file, HttpFile $httpFile)
