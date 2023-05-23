@@ -52,3 +52,9 @@ services:
     OHMedia\FileBundle\Cleanup\FileCleaner:
         arguments: ["@oh_media_file.file_repository"]
         tags: ["oh_media_cleanup.cleaner"]
+
+    OHMedia\FileBundle\Controller\FileController:
+        tags: ["controller.service_arguments"]
+        calls:
+            - method: setContainer
+              arguments: ["@service_container"]
