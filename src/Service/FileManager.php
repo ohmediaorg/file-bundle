@@ -45,9 +45,9 @@ class FileManager
         $this->slugger = new AsciiSlugger();
     }
 
-    public function getFile(int $id): ?FileEntity
+    public function getFileByToken(string $token): ?FileEntity
     {
-        return $this->fileRepo->find($id);
+        return $this->fileRepo->findByToken($token);
     }
 
     public function getImage(int $id): ?Image
@@ -134,7 +134,7 @@ class FileManager
         }
 
         return $this->router->generate('oh_media_file_read', [
-            'id' => $file->getId(),
+            'token' => $file->getToken(),
             'path' => implode('/', array_reverse($path))
         ]);
     }

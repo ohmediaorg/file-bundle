@@ -21,14 +21,10 @@ class FileController extends AbstractController
         $this->manager = $manager;
     }
 
-    #[Route('/f/{id}/{path}', name: 'oh_media_file_read', requirements: ['path' => '.+'], methods: ['GET'])]
-    public function readAction(
-        Request $request,
-        int $id,
-        string $path = ''
-    ): Response
+    #[Route('/f/{token}/{path}', name: 'oh_media_file_read', requirements: ['path' => '.+'], methods: ['GET'])]
+    public function readAction(string $token, string $path = ''): Response
     {
-        $file = $this->manager->getFile($id);
+        $file = $this->manager->getFileByToken($token);
 
         if (!$file) {
             throw $this->createNotFoundException('The file does not exist');
