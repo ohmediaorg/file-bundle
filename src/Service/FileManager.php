@@ -193,17 +193,15 @@ class FileManager
 
     public function preSaveFile(FileEntity $file)
     {
-        if (!$file->getId()) {
-            $token = $this->generateFileToken();
-
-            $file->setToken($token);
-        }
-
         $httpFile = $file->getFile();
 
         if (null === $httpFile) {
             return;
         }
+
+        $token = $this->generateFileToken();
+
+        $file->setToken($token);
 
         $this->setFileDimensions($file, $httpFile);
 
