@@ -19,7 +19,7 @@ class ImageEntityType extends AbstractType
             ->add('file', FileEntityType::class, [
                 'label' => $options['image_label'],
                 'file_label' => $options['file_label'],
-                'required' => false,
+                'required' => $options['required'],
                 'data' => $image ? $image->getFile() : null,
                 'file_constraints' => [
                     new FileConstraint([
