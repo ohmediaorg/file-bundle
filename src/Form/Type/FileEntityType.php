@@ -12,6 +12,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File as FileConstraint;
 
 class FileEntityType extends AbstractType
 {
@@ -32,11 +33,26 @@ class FileEntityType extends AbstractType
 
         $fileExists = $file && $file->getPath();
 
+        $accept = [];
+
+        foreach ($options['file_constraints'] as $constraint) {
+            if (!($constraint instanceof FileConstraint)) {
+                continue;
+            }
+
+            $mimeTypes = (array) $constraint->mimeTypes;
+
+            $accept = array_merge($accept, $mimeTypes);
+        }
+
         $builder
             ->add('file', FileType::class, [
                 'label' => $options['file_label'],
                 'required' => $fileExists ? false : $options['required'],
                 'constraints' => $options['file_constraints'],
+                'attr' => [
+                    'accept' => implode(',', $accept),
+                ],
             ])
         ;
 
