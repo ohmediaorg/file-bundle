@@ -30,20 +30,31 @@ class FileEntityType extends AbstractType
     {
         $file = isset($options['data']) ? $options['data'] : null;
 
+        $fileExists = $file && $file->getPath();
+
         $builder
             ->add('file', FileType::class, [
                 'label' => $options['file_label'],
-                'required' => false,
+                'required' => $fileExists ? false : $options['required'],
                 'constraints' => $options['file_constraints'],
             ])
         ;
 
-        if ($file && $file->getPath()) {
+        if ($fileExists) {
             $keepLabel = sprintf(
                 'Keep the current file <a target="_blank" href="%s">%s</a>',
                 $this->manager->getWebPath($file),
                 $file->getFilename()
             );
+
+            $choices = [
+                $keepLabel => self::ACTION_KEEP,
+                'Upload a new file' => self::ACTION_REPLACE,
+            ];
+
+            if (!$options['required']) {
+                $choices['Delete after submit'] = self::ACTION_DELETE;
+            }
 
             $builder->add('action', ChoiceType::class, [
                 'mapped' => false,
@@ -51,11 +62,7 @@ class FileEntityType extends AbstractType
                 'data' => self::ACTION_KEEP,
                 'label' => false,
                 'label_html' => true,
-                'choices' => [
-                    $keepLabel => self::ACTION_KEEP,
-                    'Upload a new file' => self::ACTION_REPLACE,
-                    'Delete after submit' => self::ACTION_DELETE,
-                ],
+                'choices' => $choices,
             ]);
         }
     }
@@ -67,6 +74,8 @@ class FileEntityType extends AbstractType
         $view->vars['current_file'] = $file && $file->getPath() ? $file : null;
 
         $view->vars['action_replace'] = self::ACTION_REPLACE;
+
+        $view->vars['file_required'] = $options['required'];
     }
 
     public function configureOptions(OptionsResolver $resolver)

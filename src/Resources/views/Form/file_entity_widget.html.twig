@@ -22,6 +22,8 @@
 
             const fileWidget = document.getElementById(fileWidgetId);
 
+            const fileRequired = {{ file_required|json_encode|raw }};
+
             const form = fileWidget.closest('form');
 
             const radioName = {{ form.action.vars.full_name|json_encode|raw }};
@@ -32,6 +34,8 @@
                 const isReplace = radios.value === actionReplace;
 
                 fileWidget.style.display = isReplace ? '' : 'none';
+
+                fileWidget.required = isReplace ? fileRequired : false;
             }
 
             radios.forEach((radio) => {
