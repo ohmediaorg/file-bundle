@@ -183,7 +183,7 @@ class FileManager
             $folder = $folder->getFolder();
         }
 
-        return $this->router->generate('oh_media_file_read', [
+        return $this->router->generate('oh_media_file_view', [
             'token' => $file->getToken(),
             'path' => implode('/', array_reverse($path))
         ]);
