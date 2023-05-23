@@ -97,7 +97,7 @@ class FileManager
 
     public function getFileByToken(string $token): ?FileEntity
     {
-        return $this->fileRepo->findByToken($token);
+        return $this->fileRepo->findOneByToken($token);
     }
 
     public function getImage(int $id): ?Image
