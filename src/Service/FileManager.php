@@ -263,33 +263,22 @@ class FileManager
 
     private function generateFileToken(): string
     {
-        $lowercase = range('a', 'z');
-        $uppercase = range('A', 'Z');
-        $numbers = range(0, 9);
+        $lowercase = implode('', range('a', 'z'));
+        $uppercase = strtoupper($lowercase);
+        $numbers = implode('', range(0, 9));
 
-        $chars = $lowercase + $uppercase + $numbers;
-        $count = count($chars);
+        $chars = $lowercase . $uppercase . $numbers;
+        $lastIndex = strlen($chars) - 1;
+
+        $length = 20;
 
         do {
-            $token = $this->generateToken(20);
+          $token = '';
+
+          for ($i = 0; $i < $length; $i++) {
+              $token .= $chars[rand(0, $lastIndex)];
+          }
         } while($this->fileRepo->findByToken($token));
-
-        return $token;
-    }
-
-    private function generateToken(int $length): string
-    {
-        $lowercase = range('a', 'z');
-        $uppercase = range('A', 'Z');
-        $numbers = range(0, 9);
-
-        $chars = $lowercase + $uppercase + $numbers;
-        $max = count($chars) - 1;
-
-        $token = '';
-        for ($i = 0; $i < $length; $i++) {
-            $token .= $chars[rand(0, $max)];
-        }
 
         return $token;
     }
