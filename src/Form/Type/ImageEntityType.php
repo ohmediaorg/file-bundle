@@ -26,7 +26,7 @@ class ImageEntityType extends AbstractType
                         'mimeTypes' => ['image/jpeg', 'image/png', 'image/gif', 'image/svg', 'image/svg+xml'],
                         'mimeTypesMessage' => 'Only JPG/PNG/GIF/SVG is accepted for upload.'
                     ])
-                ]
+                ],
             ])
             ->add('alt', TextType::class, [
                 'label' => 'Screen Reader Text',
@@ -40,7 +40,7 @@ class ImageEntityType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Image::class,
             'image_label' => false,
-            'file_label' => false
+            'file_label' => false,
         ]);
     }
 }

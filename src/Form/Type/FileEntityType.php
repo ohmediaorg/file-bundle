@@ -34,7 +34,7 @@ class FileEntityType extends AbstractType
             ->add('file', FileType::class, [
                 'label' => $options['file_label'],
                 'required' => false,
-                'constraints' => $options['file_constraints']
+                'constraints' => $options['file_constraints'],
             ])
         ;
 
@@ -75,7 +75,7 @@ class FileEntityType extends AbstractType
             'row_attr' => ['class' => 'file-entity-type'],
             'data_class' => File::class,
             'file_constraints' => [],
-            'file_label' => false
+            'file_label' => false,
         ]);
     }
 }
