@@ -19,32 +19,21 @@ class ImageResizeRepository extends ServiceEntityRepository
         parent::__construct($registry, ImageResize::class);
     }
 
-    // /**
-    //  * @return ImageResize[] Returns an array of ImageResize objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function save(ImageResize $imageResize, bool $flush = false): void
     {
-        return $this->createQueryBuilder('i')
-            ->andWhere('i.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('i.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $this->getEntityManager()->persist($imageResize);
 
-    /*
-    public function findOneBySomeField($value): ?ImageResize
-    {
-        return $this->createQueryBuilder('i')
-            ->andWhere('i.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
     }
-    */
+
+    public function remove(ImageResize $imageResize, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($imageResize);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
 }
