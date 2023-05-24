@@ -9,6 +9,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -81,6 +83,11 @@ class FileEntityType extends AbstractType
                 'choices' => $choices,
             ]);
         }
+
+        $builder->addEventListener(
+            FormEvents::POST_SUBMIT,
+            [$this, 'onPostSubmit']
+        );
     }
 
     public function buildView(FormView $view, FormInterface $form, array $options): void
@@ -92,6 +99,22 @@ class FileEntityType extends AbstractType
         $view->vars['action_replace'] = self::ACTION_REPLACE;
 
         $view->vars['file_required'] = $options['required'];
+    }
+
+    public function onPostSubmit(FormEvent $event)
+    {
+        $file = $event->getData();
+        $form = $event->getForm();
+
+        if (!$form->has('action')) {
+            return;
+        }
+
+        $action = $form->get('action')->getData();
+
+        if (self::ACTION_DELETE === $action) {
+            $file->setFile(null);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver)
