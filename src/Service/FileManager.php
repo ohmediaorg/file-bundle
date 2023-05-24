@@ -262,10 +262,9 @@ class FileManager
     private function generateFileToken(): string
     {
         $lowercase = implode('', range('a', 'z'));
-        $uppercase = strtoupper($lowercase);
         $numbers = implode('', range(0, 9));
 
-        $chars = $lowercase . $uppercase . $numbers;
+        $chars = $lowercase . $numbers;
         $lastIndex = strlen($chars) - 1;
 
         $length = 20;
