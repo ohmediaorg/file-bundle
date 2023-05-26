@@ -19,32 +19,21 @@ class FileFolderRepository extends ServiceEntityRepository
         parent::__construct($registry, FileFolder::class);
     }
 
-    // /**
-    //  * @return FileFolder[] Returns an array of FileFolder objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function save(FileFolder $fileFolder, bool $flush = false): void
     {
-        return $this->createQueryBuilder('f')
-            ->andWhere('f.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('f.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $this->getEntityManager()->persist($fileFolder);
 
-    /*
-    public function findOneBySomeField($value): ?FileFolder
-    {
-        return $this->createQueryBuilder('f')
-            ->andWhere('f.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
     }
-    */
+
+    public function remove(FileFolder $fileFolder, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($fileFolder);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
 }

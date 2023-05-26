@@ -20,10 +20,28 @@ class FileRepository extends ServiceEntityRepository
         parent::__construct($registry, File::class);
     }
 
+    public function save(File $file, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($file);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function remove(File $file, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($file);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
     public function deleteTemporary()
     {
         $yesterday = new DateTime('-1 day');
-        
+
         return $this->createQueryBuilder('f')
             ->delete()
             ->where('f.temporary = 1')
