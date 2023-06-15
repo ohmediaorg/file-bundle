@@ -6,11 +6,18 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
-use OHMedia\SecurityBundle\Entity\Entity;
+use OHMedia\SecurityBundle\Entity\Traits\Blameable;
 
 #[ORM\Entity(repositoryClass: FileFolderRepository::class)]
-class FileFolder extends Entity
+class FileFolder
 {
+    use Blameable;
+
+    #[ORM\Id()]
+    #[ORM\GeneratedValue()]
+    #[ORM\Column(type: 'integer')]
+    private $id;
+
     #[ORM\Column(type: 'string', length: 255)]
     private $name;
 
@@ -30,6 +37,11 @@ class FileFolder extends Entity
     {
         $this->folders = new ArrayCollection();
         $this->files = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
     public function getName(): ?string

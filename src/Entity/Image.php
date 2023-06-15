@@ -6,11 +6,18 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\FileBundle\Repository\ImageRepository;
-use OHMedia\SecurityBundle\Entity\Entity;
+use OHMedia\SecurityBundle\Entity\Traits\Blameable;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
-class Image extends Entity
+class Image
 {
+    use Blameable;
+
+    #[ORM\Id()]
+    #[ORM\GeneratedValue()]
+    #[ORM\Column(type: 'integer')]
+    private $id;
+
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $alt;
 
@@ -24,6 +31,11 @@ class Image extends Entity
     public function __construct()
     {
         $this->resizes = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
     public function getAlt(): ?string

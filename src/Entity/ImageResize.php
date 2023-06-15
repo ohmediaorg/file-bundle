@@ -4,11 +4,18 @@ namespace OHMedia\FileBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\FileBundle\Repository\ImageResizeRepository;
-use OHMedia\SecurityBundle\Entity\Entity;
+use OHMedia\SecurityBundle\Entity\Traits\Blameable;
 
 #[ORM\Entity(repositoryClass: ImageResizeRepository::class)]
-class ImageResize extends Entity
+class ImageResize
 {
+    use Blameable;
+
+    #[ORM\Id()]
+    #[ORM\GeneratedValue()]
+    #[ORM\Column(type: 'integer')]
+    private $id;
+
     #[ORM\Column(type: 'string', length: 50)]
     private $name;
 
