@@ -4,13 +4,20 @@ namespace OHMedia\FileBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\FileBundle\Repository\FileRepository;
-use OHMedia\SecurityBundle\Entity\Entity;
+use OHMedia\SecurityBundle\Entity\Traits\Blameable;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
 
 #[ORM\Entity(repositoryClass: FileRepository::class)]
-class File extends Entity
+class File
 {
+    use Blameable;
+
     const PATH_INITIAL = 'initial';
+
+    #[ORM\Id()]
+    #[ORM\GeneratedValue()]
+    #[ORM\Column(type: 'integer')]
+    private $id;
 
     #[ORM\Column(type: 'string', length: 20)]
     private $token;
@@ -47,6 +54,11 @@ class File extends Entity
 
     #[ORM\ManyToOne(targetEntity: FileFolder::class, inversedBy: 'files')]
     private $folder;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     public function getToken(): ?string
     {
