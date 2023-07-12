@@ -6,8 +6,8 @@ use GDImage;
 
 class ImageResource
 {
-    const TYPE_IMAGICK = 'imagick';
-    const TYPE_GD = 'gd';
+    public const TYPE_IMAGICK = 'imagick';
+    public const TYPE_GD = 'gd';
 
     private $im;
     private $width;
@@ -27,8 +27,7 @@ class ImageResource
     {
         if ($this->im instanceof GDImage) {
             $this->setDimensionsGd();
-        }
-        else {
+        } else {
             $this->setDimensionsImagick();
         }
     }
@@ -49,8 +48,7 @@ class ImageResource
     {
         if (class_exists('\Imagick')) {
             return static::createImagick($filepath);
-        }
-        else {
+        } else {
             return static::createGd($filepath);
         }
     }
@@ -74,11 +72,9 @@ class ImageResource
 
         if ('jpg' === $ext || 'jpeg' === $ext) {
             $im = imagecreatefromjpeg($filepath);
-        }
-        else if ('png' === $ext) {
+        } elseif ('png' === $ext) {
             $im = imagecreatefrompng($filepath);
-        }
-        else if ('gif' === $ext) {
+        } elseif ('gif' === $ext) {
             $im = imagecreatefromgif($filepath);
         }
 
@@ -93,8 +89,7 @@ class ImageResource
     {
         if ($this->im instanceof GDImage) {
             $this->fixOrientationGd();
-        }
-        else {
+        } else {
             $this->fixOrientationImagick();
         }
 
@@ -114,30 +109,24 @@ class ImageResource
         if (2 === $orient) {
             // horizontal flip
             imageflip($this->im, 1);
-        }
-        else if (3 === $orient) {
+        } elseif (3 === $orient) {
             // 180 rotate left
             $this->im = imagerotate($this->im, 180, 0);
-        }
-        else if (4 === $orient) {
+        } elseif (4 === $orient) {
             // vertical flip
             imageflip($this->im, 2);
-        }
-        else if (5 === $orient) {
+        } elseif (5 === $orient) {
             // vertical flip + 90 rotate right
             imageflip($this->im, 2);
             $this->im = imagerotate($this->im, -90, 0);
-        }
-        else if (6 === $orient) {
+        } elseif (6 === $orient) {
             // 90 rotate right
             $this->im = imagerotate($this->im, -90, 0);
-        }
-        else if (7 === $orient) {
+        } elseif (7 === $orient) {
             // horizontal flip + 90 rotate right
             imageflip($this->im, 1);
             $this->im = imagerotate($this->im, -90, 0);
-        }
-        else if (8 === $orient) {
+        } elseif (8 === $orient) {
             // 90 rotate left
             $this->im = imagerotate($this->im, 90, 0);
         }
@@ -156,25 +145,19 @@ class ImageResource
         if (\Imagick::ORIENTATION_TOPRIGHT === $orient) {
             $this->im->flipImage();
             $this->im->rotateImage($transparent, 180);
-        }
-        else if (\Imagick::ORIENTATION_BOTTOMRIGHT === $orient) {
+        } elseif (\Imagick::ORIENTATION_BOTTOMRIGHT === $orient) {
             $this->im->rotateImage($transparent, 180);
-        }
-        else if (\Imagick::ORIENTATION_BOTTOMLEFT === $orient) {
+        } elseif (\Imagick::ORIENTATION_BOTTOMLEFT === $orient) {
             $this->im->flipImage();
-        }
-        else if (\Imagick::ORIENTATION_LEFTTOP === $orient) {
+        } elseif (\Imagick::ORIENTATION_LEFTTOP === $orient) {
             $this->im->rotateImage($transparent, -90);
             $this->im->flipImage();
-        }
-        else if (\Imagick::ORIENTATION_RIGHTTOP === $orient) {
+        } elseif (\Imagick::ORIENTATION_RIGHTTOP === $orient) {
             $this->im->rotateImage($transparent, 90);
-        }
-        else if (\Imagick::ORIENTATION_RIGHTBOTTOM === $orient) {
+        } elseif (\Imagick::ORIENTATION_RIGHTBOTTOM === $orient) {
             $this->im->rotateImage($transparent, 90);
             $this->im->flipImage();
-        }
-        else if (\Imagick::ORIENTATION_LEFTBOTTOM === $orient) {
+        } elseif (\Imagick::ORIENTATION_LEFTBOTTOM === $orient) {
             $this->im->rotateImage($transparent, -90);
         }
 
@@ -193,8 +176,7 @@ class ImageResource
                 $this->height,
                 $resizeH
             );
-        }
-        else if (null === $resizeH) {
+        } elseif (null === $resizeH) {
             $resizeH = FileUtil::getTargetHeight(
                 $this->width,
                 $this->height,
@@ -212,8 +194,7 @@ class ImageResource
             $srcH = $this->height;
             $srcW = floor($srcH * $resizeRatio);
             $srcX = floor(($this->width - $srcW) / 2);
-        }
-        else {
+        } else {
             $srcX = 0;
             $srcW = $this->width;
             $srcH = floor($srcW / $resizeRatio);
@@ -222,8 +203,7 @@ class ImageResource
 
         if ($this->im instanceof GDImage) {
             $this->resizeGd($resizeW, $resizeH, $srcX, $srcY, $srcW, $srcH);
-        }
-        else {
+        } else {
             $this->resizeImagick($resizeW, $resizeH, $srcX, $srcY, $srcW, $srcH);
         }
 
@@ -231,11 +211,13 @@ class ImageResource
     }
 
     private function resizeGd(
-        int $resizeW, int $resizeH,
-        int $srcX, int $srcY,
-        int $srcW, int $srcH
-    ): void
-    {
+        int $resizeW,
+        int $resizeH,
+        int $srcX,
+        int $srcY,
+        int $srcW,
+        int $srcH
+    ): void {
         $old = $this->im;
 
         $this->im = imagecreatetruecolor($resizeW, $resizeH);
@@ -247,11 +229,13 @@ class ImageResource
     }
 
     private function resizeImagick(
-        int $resizeW, int $resizeH,
-        int $srcX, int $srcY,
-        int $srcW, int $srcH
-    ): void
-    {
+        int $resizeW,
+        int $resizeH,
+        int $srcX,
+        int $srcY,
+        int $srcW,
+        int $srcH
+    ): void {
         $this->im->cropImage($srcW, $srcH, $srcX, $srcY);
         $this->im->resizeImage($resizeW, $resizeH, \Imagick::FILTER_SINC, 1);
     }
@@ -264,8 +248,7 @@ class ImageResource
 
         if ($this->im instanceof GDImage) {
             return $this->saveGd($filepath);
-        }
-        else {
+        } else {
             return $this->saveImagick($filepath);
         }
     }
@@ -278,11 +261,9 @@ class ImageResource
 
         if ('jpg' === $ext || 'jpeg' === $ext) {
             return imagejpeg($this->im, $filepath, 100);
-        }
-        else if ('png' === $ext) {
+        } elseif ('png' === $ext) {
             return imagepng($this->im, $filepath, 9);
-        }
-        else if ('gif' === $ext) {
+        } elseif ('gif' === $ext) {
             return imagegif($this->im, $filepath);
         }
 

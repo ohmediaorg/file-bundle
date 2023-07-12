@@ -28,5 +28,17 @@ class OHMediaFileExtension extends Extension
         foreach ($config as $key => $value) {
             $container->setParameter("oh_media_file.$key", $value);
         }
+
+        $this->registerWidget($container);
+    }
+
+    protected function registerWidget(ContainerBuilder $container)
+    {
+        $resource = '@OHMediaFile/Form/file_entity_widget.html.twig';
+
+        $container->setParameter('twig.form.resources', array_merge(
+            $container->getParameter('twig.form.resources'),
+            [$resource]
+        ));
     }
 }

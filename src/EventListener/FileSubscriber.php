@@ -35,7 +35,22 @@ class FileSubscriber implements EventSubscriber
         $object = $args->getObject();
 
         if ($object instanceof File) {
-            $this->preSaveFile($object);
+            if ($object->isCloned()) {
+                $copy = $this->manager->copy($object);
+
+                $this->preSaveFile($copy);
+
+                // transfer important values back to $object
+                $object
+                    // IMPORTANT: resetting path prior to calling setFile()
+                    ->setPath(File::PATH_INITIAL)
+                    ->setFile($copy->getFile())
+                    ->setPath($copy->getPath())
+                    ->setToken($copy->getToken())
+                ;
+            } else {
+                $this->preSaveFile($object);
+            }
         }
     }
 
@@ -45,8 +60,7 @@ class FileSubscriber implements EventSubscriber
 
         if ($object instanceof File) {
             $this->postSaveFile($object);
-        }
-        else if ($object instanceof ImageResize) {
+        } elseif ($object instanceof ImageResize) {
             $this->postSaveImageResize($object);
         }
     }
@@ -66,13 +80,10 @@ class FileSubscriber implements EventSubscriber
 
         if ($object instanceof File) {
             $this->postSaveFile($object);
-        }
-        else if ($object instanceof ImageResize) {
+        } elseif ($object instanceof ImageResize) {
             $this->postSaveImageResize($object);
         }
     }
-
-    protected $fileToRemove;
 
     public function preRemove(LifecycleEventArgs $args)
     {

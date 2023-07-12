@@ -4,13 +4,23 @@ namespace OHMedia\FileBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\FileBundle\Repository\FileRepository;
-use OHMedia\SecurityBundle\Entity\Entity;
+use OHMedia\SecurityBundle\Entity\Traits\Blameable;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
 
 #[ORM\Entity(repositoryClass: FileRepository::class)]
-class File extends Entity
+class File
 {
-    const PATH_INITIAL = 'initial';
+    use Blameable;
+
+    public const PATH_INITIAL = 'initial';
+
+    #[ORM\Id()]
+    #[ORM\GeneratedValue()]
+    #[ORM\Column(type: 'integer')]
+    private $id;
+
+    #[ORM\Column(type: 'string', length: 20)]
+    private $token;
 
     #[ORM\Column(type: 'string', length: 255)]
     private $name;
@@ -44,6 +54,36 @@ class File extends Entity
 
     #[ORM\ManyToOne(targetEntity: FileFolder::class, inversedBy: 'files')]
     private $folder;
+
+    private $cloned = false;
+
+    public function __clone()
+    {
+        $this->id = null;
+        $this->cloned = true;
+    }
+
+    public function isCloned(): bool
+    {
+        return $this->cloned;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    public function setToken(string $token): self
+    {
+        $this->token = $token;
+
+        return $this;
+    }
 
     public function getName(): ?string
     {
@@ -198,8 +238,7 @@ class File extends Entity
             // store the old name to delete after the update
             $this->oldPath = $this->path;
             $this->path = null;
-        }
-        else {
+        } else {
             // set it to something not null
             $this->path = self::PATH_INITIAL;
         }

@@ -19,14 +19,14 @@ class ImageEntityType extends AbstractType
             ->add('file', FileEntityType::class, [
                 'label' => $options['image_label'],
                 'file_label' => $options['file_label'],
-                'required' => false,
+                'required' => $options['required'],
                 'data' => $image ? $image->getFile() : null,
                 'file_constraints' => [
                     new FileConstraint([
                         'mimeTypes' => ['image/jpeg', 'image/png', 'image/gif', 'image/svg', 'image/svg+xml'],
                         'mimeTypesMessage' => 'Only JPG/PNG/GIF/SVG is accepted for upload.'
                     ])
-                ]
+                ],
             ])
             ->add('alt', TextType::class, [
                 'label' => 'Screen Reader Text',
@@ -40,7 +40,7 @@ class ImageEntityType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Image::class,
             'image_label' => false,
-            'file_label' => false
+            'file_label' => false,
         ]);
     }
 }

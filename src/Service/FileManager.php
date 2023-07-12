@@ -12,15 +12,17 @@ use OHMedia\FileBundle\Repository\ImageRepository;
 use OHMedia\FileBundle\Util\ImageResource;
 use OHMedia\FileBundle\Util\FileUtil;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class FileManager
 {
-    const FILE_DIR = 'oh_media_files';
+    public const FILE_DIR = 'oh_media_files';
 
     private $absoluteUploadDir;
     private $em;
@@ -34,8 +36,7 @@ class FileManager
         EntityManager $em,
         UrlGeneratorInterface $router,
         string $projectDir
-    )
-    {
+    ) {
         $this->absoluteUploadDir = $projectDir . '/' . static::FILE_DIR;
         $this->em = $em;
         $this->fileRepo = $em->getRepository(FileEntity::class);
@@ -45,9 +46,69 @@ class FileManager
         $this->slugger = new AsciiSlugger();
     }
 
-    public function getFile(int $id): ?FileEntity
+    public function response(?FileEntity $file): ?BinaryFileResponse
     {
-        return $this->fileRepo->find($id);
+        if (!$file) {
+            return null;
+        }
+
+        $physicalFile = $this->getAbsolutePath($file);
+
+        if (!file_exists($physicalFile)) {
+            return null;
+        }
+
+        $mimeType = $file->getMimeType();
+
+        $maliciousMimeTypes = [
+            'application/x-httpd-php',
+            'application/xhtml+xml',
+            'text/html',
+        ];
+
+        if (in_array($mimeType, $maliciousMimeTypes)) {
+            $mimeType = 'text/plain';
+        }
+
+        $response = new BinaryFileResponse($physicalFile);
+        $response->headers->set('Content-Type', $mimeType);
+
+        BinaryFileResponse::trustXSendfileTypeHeader();
+
+        return $response;
+    }
+
+    public function upload(HttpFile ...$httpFiles): JsonResponse
+    {
+        $json = ['files' => []];
+
+        $files = [];
+        foreach ($httpFiles as $httpFile) {
+            $file = new FileEntity();
+            $file
+                ->setFile($httpFile)
+                ->setTemporary(true)
+            ;
+
+            $this->fileRepo->save($file, true);
+
+            $files[] = $file;
+        }
+
+        foreach ($files as $file) {
+            $json['files'][] = [
+                'id' => $file->getId(),
+                'name' => $file->getFilename(),
+                'path' => $this->manager->getWebPath($file)
+            ];
+        }
+
+        return new JsonResponse($json);
+    }
+
+    public function getFileByToken(string $token): ?FileEntity
+    {
+        return $this->fileRepo->findOneByToken($token);
     }
 
     public function getImage(int $id): ?Image
@@ -61,8 +122,7 @@ class FileManager
 
         if (null !== $file->getFile()) {
             $path = $file->getFile()->getPathname();
-        }
-        else {
+        } else {
             $path = $this->getAbsolutePath($file);
         }
 
@@ -133,8 +193,8 @@ class FileManager
             $folder = $folder->getFolder();
         }
 
-        return $this->router->generate('oh_media_file_read', [
-            'id' => $file->getId(),
+        return $this->router->generate('oh_media_file_view', [
+            'token' => $file->getToken(),
             'path' => implode('/', array_reverse($path))
         ]);
     }
@@ -148,6 +208,10 @@ class FileManager
         if (null === $httpFile) {
             return;
         }
+
+        $token = $this->generateFileToken();
+
+        $file->setToken($token);
 
         $this->setFileDimensions($file, $httpFile);
 
@@ -203,6 +267,27 @@ class FileManager
             ->setMimeType($mimeType)
             ->setSize($size ?: null)
         ;
+    }
+
+    private function generateFileToken(): string
+    {
+        $lowercase = implode('', range('a', 'z'));
+        $numbers = implode('', range(0, 9));
+
+        $chars = $lowercase . $numbers;
+        $lastIndex = strlen($chars) - 1;
+
+        $length = 20;
+
+        do {
+            $token = '';
+
+            for ($i = 0; $i < $length; $i++) {
+                $token .= $chars[rand(0, $lastIndex)];
+            }
+        } while($this->fileRepo->findByToken($token));
+
+        return $token;
     }
 
     private function setFileDimensions(FileEntity $file, HttpFile $httpFile)
@@ -285,8 +370,7 @@ class FileManager
         Image $image,
         ?int $width = null,
         ?int $height = null
-    ): ?ImageResize
-    {
+    ): ?ImageResize {
         if (null === $width && null === $height) {
             return null;
         }
@@ -305,8 +389,7 @@ class FileManager
                 $origHeight,
                 $height
             );
-        }
-        else if (null === $height) {
+        } elseif (null === $height) {
             $height = FileUtil::getTargetHeight(
                 $origWidth,
                 $origHeight,
