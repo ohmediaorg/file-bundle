@@ -48,8 +48,7 @@ class FileSubscriber implements EventSubscriber
                     ->setPath($copy->getPath())
                     ->setToken($copy->getToken())
                 ;
-            }
-            else {
+            } else {
                 $this->preSaveFile($object);
             }
         }
@@ -61,8 +60,7 @@ class FileSubscriber implements EventSubscriber
 
         if ($object instanceof File) {
             $this->postSaveFile($object);
-        }
-        else if ($object instanceof ImageResize) {
+        } elseif ($object instanceof ImageResize) {
             $this->postSaveImageResize($object);
         }
     }
@@ -82,8 +80,7 @@ class FileSubscriber implements EventSubscriber
 
         if ($object instanceof File) {
             $this->postSaveFile($object);
-        }
-        else if ($object instanceof ImageResize) {
+        } elseif ($object instanceof ImageResize) {
             $this->postSaveImageResize($object);
         }
     }

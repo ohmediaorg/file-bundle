@@ -18,9 +18,9 @@ use Symfony\Component\Validator\Constraints\File as FileConstraint;
 
 class FileEntityType extends AbstractType
 {
-    const ACTION_KEEP = 'keep';
-    const ACTION_REPLACE = 'replace';
-    const ACTION_DELETE = 'delete';
+    public const ACTION_KEEP = 'keep';
+    public const ACTION_REPLACE = 'replace';
+    public const ACTION_DELETE = 'delete';
 
     private $manager;
 

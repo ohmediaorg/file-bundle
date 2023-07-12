@@ -12,7 +12,7 @@ class File
 {
     use Blameable;
 
-    const PATH_INITIAL = 'initial';
+    public const PATH_INITIAL = 'initial';
 
     #[ORM\Id()]
     #[ORM\GeneratedValue()]
@@ -238,8 +238,7 @@ class File
             // store the old name to delete after the update
             $this->oldPath = $this->path;
             $this->path = null;
-        }
-        else {
+        } else {
             // set it to something not null
             $this->path = self::PATH_INITIAL;
         }

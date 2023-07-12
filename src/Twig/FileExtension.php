@@ -71,8 +71,7 @@ class FileExtension extends AbstractExtension
 
             $attributes['width'] = $resize->getWidth();
             $attributes['height'] = $resize->getHeight();
-        }
-        else {
+        } else {
             $file = $image->getFile();
 
             $attributes['width'] = $image->getWidth();

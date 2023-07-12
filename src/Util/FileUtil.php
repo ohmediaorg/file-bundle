@@ -38,8 +38,7 @@ class FileUtil
         if ($binary) {
             $units = array('B', 'KiB', 'MiB', 'GiB');
             $base = 1024;
-        }
-        else {
+        } else {
             $units = array('B', 'kB', 'MB', 'GB');
             $base = 1000;
         }

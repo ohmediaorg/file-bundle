@@ -29,11 +29,9 @@ class ImageResource
 
         if ('jpg' === $ext || 'jpeg' === $ext) {
             $im = imagecreatefromjpeg($filepath);
-        }
-        else if ('png' === $ext) {
+        } elseif ('png' === $ext) {
             $im = imagecreatefrompng($filepath);
-        }
-        else if ('gif' === $ext) {
+        } elseif ('gif' === $ext) {
             $im = imagecreatefromgif($filepath);
         }
 
@@ -54,30 +52,24 @@ class ImageResource
             if (2 === $orient) {
                 // horizontal flip
                 imageflip($this->im, 1);
-            }
-            else if (3 === $orient) {
+            } elseif (3 === $orient) {
                 // 180 rotate left
                 $this->im = imagerotate($this->im, 180, 0);
-            }
-            else if (4 === $orient) {
+            } elseif (4 === $orient) {
                 // vertical flip
                 imageflip($this->im, 2);
-            }
-            else if (5 === $orient) {
+            } elseif (5 === $orient) {
                 // vertical flip + 90 rotate right
                 imageflip($this->im, 2);
                 $this->im = imagerotate($this->im, -90, 0);
-            }
-            else if (6 === $orient) {
+            } elseif (6 === $orient) {
                 // 90 rotate right
                 $this->im = imagerotate($this->im, -90, 0);
-            }
-            else if (7 === $orient) {
+            } elseif (7 === $orient) {
                 // horizontal flip + 90 rotate right
                 imageflip($this->im, 1);
                 $this->im = imagerotate($this->im, -90, 0);
-            }
-            else if (8 === $orient) {
+            } elseif (8 === $orient) {
                 // 90 rotate left
                 $this->im = imagerotate($this->im, 90, 0);
             }
@@ -98,8 +90,7 @@ class ImageResource
                 $this->height,
                 $resizeH
             );
-        }
-        else if (null === $resizeH) {
+        } elseif (null === $resizeH) {
             $resizeH = FileUtil::getTargetHeight(
                 $this->width,
                 $this->height,
@@ -117,8 +108,7 @@ class ImageResource
             $srcH = $this->height;
             $srcW = floor($srcH * $resizeRatio);
             $srcX = floor(($this->width - $srcW) / 2);
-        }
-        else {
+        } else {
             $srcX = 0;
             $srcW = $this->width;
             $srcH = floor($srcW / $resizeRatio);
@@ -148,11 +138,9 @@ class ImageResource
 
         if ('jpg' === $ext || 'jpeg' === $ext) {
             return imagejpeg($this->im, $filepath, 100);
-        }
-        else if ('png' === $ext) {
+        } elseif ('png' === $ext) {
             return imagepng($this->im, $filepath, 9);
-        }
-        else if ('gif' === $ext) {
+        } elseif ('gif' === $ext) {
             return imagegif($this->im, $filepath);
         }
 

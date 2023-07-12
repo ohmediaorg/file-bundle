@@ -22,7 +22,7 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class FileManager
 {
-    const FILE_DIR = 'oh_media_files';
+    public const FILE_DIR = 'oh_media_files';
 
     private $absoluteUploadDir;
     private $em;
@@ -36,8 +36,7 @@ class FileManager
         EntityManager $em,
         UrlGeneratorInterface $router,
         string $projectDir
-    )
-    {
+    ) {
         $this->absoluteUploadDir = $projectDir . '/' . static::FILE_DIR;
         $this->em = $em;
         $this->fileRepo = $em->getRepository(FileEntity::class);
@@ -123,8 +122,7 @@ class FileManager
 
         if (null !== $file->getFile()) {
             $path = $file->getFile()->getPathname();
-        }
-        else {
+        } else {
             $path = $this->getAbsolutePath($file);
         }
 
@@ -372,8 +370,7 @@ class FileManager
         Image $image,
         ?int $width = null,
         ?int $height = null
-    ): ?ImageResize
-    {
+    ): ?ImageResize {
         if (null === $width && null === $height) {
             return null;
         }
@@ -392,8 +389,7 @@ class FileManager
                 $origHeight,
                 $height
             );
-        }
-        else if (null === $height) {
+        } elseif (null === $height) {
             $height = FileUtil::getTargetHeight(
                 $origWidth,
                 $origHeight,
