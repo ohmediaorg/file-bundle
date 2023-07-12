@@ -33,6 +33,13 @@ class ImageResize
     #[ORM\JoinColumn(nullable: false)]
     private $file;
 
+    public function __clone()
+    {
+        $this->id = null;
+
+        $this->file = clone $this->file;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

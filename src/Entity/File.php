@@ -55,6 +55,19 @@ class File
     #[ORM\ManyToOne(targetEntity: FileFolder::class, inversedBy: 'files')]
     private $folder;
 
+    private $cloned = false;
+
+    public function __clone()
+    {
+        $this->id = null;
+        $this->cloned = true;
+    }
+
+    public function isCloned(): bool
+    {
+        return $this->cloned;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

@@ -33,6 +33,22 @@ class Image
         $this->resizes = new ArrayCollection();
     }
 
+    public function __clone()
+    {
+        $this->id = null;
+
+        $this->file = clone $this->file;
+
+        $resizes = $this->resizes;
+        $this->resizes = new ArrayCollection();
+
+        foreach ($resizes as $resize) {
+            $clone = clone $resize;
+
+            $this->addResize($clone);
+        }
+    }
+
     public function getId(): ?int
     {
         return $this->id;
