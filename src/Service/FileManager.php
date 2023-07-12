@@ -282,11 +282,11 @@ class FileManager
         $length = 20;
 
         do {
-          $token = '';
+            $token = '';
 
-          for ($i = 0; $i < $length; $i++) {
-              $token .= $chars[rand(0, $lastIndex)];
-          }
+            for ($i = 0; $i < $length; $i++) {
+                $token .= $chars[rand(0, $lastIndex)];
+            }
         } while($this->fileRepo->findByToken($token));
 
         return $token;
