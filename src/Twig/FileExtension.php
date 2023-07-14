@@ -13,11 +13,11 @@ use Twig\TwigFunction;
 
 class FileExtension extends AbstractExtension
 {
-    private $manager;
+    private $fileManager;
 
-    public function __construct(FileManager $manager)
+    public function __construct(FileManager $fileManager)
     {
-        $this->manager = $manager;
+        $this->fileManager = $fileManager;
     }
 
     public function getFunctions(): array
@@ -45,12 +45,12 @@ class FileExtension extends AbstractExtension
 
     public function getFilePath(File $file)
     {
-        return $this->manager->getWebPath($file);
+        return $this->fileManager->getWebPath($file);
     }
 
     public function getImagePath(Image $image, int $width = null, int $height = null)
     {
-        $resize = $this->manager->getImageResize($image, $width, $height);
+        $resize = $this->fileManager->getImageResize($image, $width, $height);
 
         $file = $resize
             ? $resize->getFile()
@@ -64,7 +64,7 @@ class FileExtension extends AbstractExtension
         $width = !empty($attributes['width']) ? $attributes['width'] : null;
         $height = !empty($attributes['height']) ? $attributes['height'] : null;
 
-        $resize = $this->manager->getImageResize($image, $width, $height);
+        $resize = $this->fileManager->getImageResize($image, $width, $height);
 
         if ($resize) {
             $file = $resize->getFile();

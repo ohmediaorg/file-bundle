@@ -11,11 +11,11 @@ use OHMedia\FileBundle\Service\FileManager;
 
 class FileSubscriber implements EventSubscriber
 {
-    private $manager;
+    private $fileManager;
 
-    public function __construct(FileManager $manager)
+    public function __construct(FileManager $fileManager)
     {
-        $this->manager = $manager;
+        $this->fileManager = $fileManager;
     }
 
     public function getSubscribedEvents(): array
@@ -36,7 +36,7 @@ class FileSubscriber implements EventSubscriber
 
         if ($object instanceof File) {
             if ($object->isCloned()) {
-                $copy = $this->manager->copy($object);
+                $copy = $this->fileManager->copy($object);
 
                 if (!$copy) {
                     // EDGE CASE: setFile(null) was called then the object was cloned
@@ -110,22 +110,22 @@ class FileSubscriber implements EventSubscriber
         $object = $args->getObject();
 
         if ($object instanceof File) {
-            $this->manager->postRemoveFile($object);
+            $this->fileManager->postRemoveFile($object);
         }
     }
 
     private function preSaveFile(File $file)
     {
-        $this->manager->preSaveFile($file);
+        $this->fileManager->preSaveFile($file);
     }
 
     private function postSaveFile(File $file)
     {
-        $this->manager->postSaveFile($file);
+        $this->fileManager->postSaveFile($file);
     }
 
     private function postSaveImageResize(ImageResize $resize)
     {
-        $this->manager->postSaveImageResize($resize);
+        $this->fileManager->postSaveImageResize($resize);
     }
 }
