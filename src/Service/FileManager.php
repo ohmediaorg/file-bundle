@@ -183,19 +183,27 @@ class FileManager
 
     public function getWebPath(FileEntity $file): ?string
     {
-        $path = [$file->getFilename()];
+        $filename = $file->getFilename();
+
+        $token = $file->getToken();
+
+        if (!$filename || !$token) {
+            return null;
+        }
+
+        $path = [$filename];
 
         $folder = $file->getFolder();
 
         while ($folder) {
-            $path[] = $folder->getName();
+            array_unshift($path, $folder->getName());
 
             $folder = $folder->getFolder();
         }
 
         return $this->router->generate('oh_media_file_view', [
-            'token' => $file->getToken(),
-            'path' => implode('/', array_reverse($path))
+            'token' => $token,
+            'path' => implode('/', $path),
         ]);
     }
 

@@ -43,7 +43,7 @@ class FileExtension extends AbstractExtension
         return FileUtil::formatBytesBinary($file->getSize(), $precision);
     }
 
-    public function getFilePath(File $file)
+    public function getFilePath(File $file): ?string
     {
         return $this->fileManager->getWebPath($file);
     }
