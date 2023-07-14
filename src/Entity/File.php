@@ -8,6 +8,7 @@ use OHMedia\SecurityBundle\Entity\Traits\Blameable;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
 
 #[ORM\Entity(repositoryClass: FileRepository::class)]
+#[ORM\Index(columns: ["token"])]
 class File
 {
     use Blameable;
@@ -19,16 +20,16 @@ class File
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 20)]
+    #[ORM\Column(type: 'string', length: 20, nullable: true)]
     private $token;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $name;
 
-    #[ORM\Column(type: 'string', length: 20)]
+    #[ORM\Column(type: 'string', length: 20, nullable: true)]
     private $ext;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $path;
 
     #[ORM\Column(type: 'boolean', nullable: true)]
@@ -78,7 +79,7 @@ class File
         return $this->token;
     }
 
-    public function setToken(string $token): self
+    public function setToken(?string $token): self
     {
         $this->token = $token;
 
@@ -90,7 +91,7 @@ class File
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
@@ -102,7 +103,7 @@ class File
         return $this->ext;
     }
 
-    public function setExt(string $ext): self
+    public function setExt(?string $ext): self
     {
         $this->ext = $ext;
 
@@ -123,7 +124,7 @@ class File
         return $this->path;
     }
 
-    public function setPath(string $path): self
+    public function setPath(?string $path): self
     {
         $this->path = $path;
 
@@ -237,7 +238,9 @@ class File
         if (isset($this->path) && (self::PATH_INITIAL !== $this->path)) {
             // store the old name to delete after the update
             $this->oldPath = $this->path;
-            $this->path = null;
+
+            // set everything else to null
+            $this->setNull();
         } else {
             // set it to something not null
             $this->path = self::PATH_INITIAL;
@@ -268,5 +271,23 @@ class File
     public function getOldPath(): ?string
     {
         return $this->oldPath;
+    }
+
+    /**
+     * Meant for when the File object is to be blanked out
+     * because it cannot be deleted due to DB relations
+     */
+    public function setNull(): self
+    {
+        $this->token = null;
+        $this->name = null;
+        $this->ext = null;
+        $this->path = null;
+        $this->mime_type = null;
+        $this->size = null;
+        $this->width = null;
+        $this->height = null;
+
+        return $this;
     }
 }

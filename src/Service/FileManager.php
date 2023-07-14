@@ -116,7 +116,7 @@ class FileManager
         return $this->imageRepo->find($id);
     }
 
-    public function copy(FileEntity $file): FileEntity
+    public function copy(FileEntity $file): ?FileEntity
     {
         $path = null;
 
@@ -309,20 +309,18 @@ class FileManager
 
     public function postSaveFile(FileEntity $file)
     {
-        if (null === $file->getPath() || null === $file->getFile()) {
-            return;
+        if ($file->getPath() && $file->getFile()) {
+            $path = explode('/', $file->getPath());
+            $name = array_pop($path);
+            $path = implode('/', $path);
+
+            // if there is an error when moving the file, an exception will
+            // be automatically thrown by move(). This will properly prevent
+            // the entity from being persisted to the database on error
+            $file->getFile()->move($this->absoluteUploadDir . '/' . $path, $name);
+
+            $this->doImageProcessing($file);
         }
-
-        $path = explode('/', $file->getPath());
-        $name = array_pop($path);
-        $path = implode('/', $path);
-
-        // if there is an error when moving the file, an exception will
-        // be automatically thrown by move(). This will properly prevent
-        // the entity from being persisted to the database on error
-        $file->getFile()->move($this->absoluteUploadDir . '/' . $path, $name);
-
-        $this->doImageProcessing($file);
 
         // check if we have an old file
         if ($file->getOldPath()) {
