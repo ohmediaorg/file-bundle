@@ -99,7 +99,7 @@ class FileManager
             $json['files'][] = [
                 'id' => $file->getId(),
                 'name' => $file->getFilename(),
-                'path' => $this->manager->getWebPath($file)
+                'path' => $this->getWebPath($file)
             ];
         }
 
