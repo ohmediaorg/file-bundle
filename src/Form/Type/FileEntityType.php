@@ -22,11 +22,11 @@ class FileEntityType extends AbstractType
     public const ACTION_REPLACE = 'replace';
     public const ACTION_DELETE = 'delete';
 
-    private $manager;
+    private $fileManager;
 
-    public function __construct(FileManager $manager)
+    public function __construct(FileManager $fileManager)
     {
-        $this->manager = $manager;
+        $this->fileManager = $fileManager;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -61,7 +61,7 @@ class FileEntityType extends AbstractType
         if ($fileExists) {
             $keepLabel = sprintf(
                 'Keep the current file <a target="_blank" href="%s">%s</a>',
-                $this->manager->getWebPath($file),
+                $this->fileManager->getWebPath($file),
                 $file->getFilename()
             );
 
