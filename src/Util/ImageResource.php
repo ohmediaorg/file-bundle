@@ -2,8 +2,6 @@
 
 namespace OHMedia\FileBundle\Util;
 
-use GDImage;
-
 class ImageResource
 {
     public const TYPE_IMAGICK = 'imagick';
@@ -25,7 +23,7 @@ class ImageResource
 
     private function setDimensions()
     {
-        if ($this->im instanceof GDImage) {
+        if ($this->im instanceof \GDImage) {
             $this->setDimensionsGd();
         } else {
             $this->setDimensionsImagick();
@@ -78,7 +76,7 @@ class ImageResource
             $im = imagecreatefromgif($filepath);
         }
 
-        if ($im instanceof GDImage) {
+        if ($im instanceof \GDImage) {
             return new static($im, $filepath);
         }
 
@@ -87,7 +85,7 @@ class ImageResource
 
     public function fixOrientation(): self
     {
-        if ($this->im instanceof GDImage) {
+        if ($this->im instanceof \GDImage) {
             $this->fixOrientationGd();
         } else {
             $this->fixOrientationImagick();
@@ -201,7 +199,7 @@ class ImageResource
             $srcY = floor(($this->height - $srcH) / 2);
         }
 
-        if ($this->im instanceof GDImage) {
+        if ($this->im instanceof \GDImage) {
             $this->resizeGd($resizeW, $resizeH, $srcX, $srcY, $srcW, $srcH);
         } else {
             $this->resizeImagick($resizeW, $resizeH, $srcX, $srcY, $srcW, $srcH);
@@ -246,7 +244,7 @@ class ImageResource
             $filepath = $this->filepath;
         }
 
-        if ($this->im instanceof GDImage) {
+        if ($this->im instanceof \GDImage) {
             return $this->saveGd($filepath);
         } else {
             return $this->saveImagick($filepath);
