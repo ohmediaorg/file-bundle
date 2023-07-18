@@ -2,7 +2,6 @@
 
 namespace OHMedia\FileBundle\Service;
 
-use DateTime;
 use Doctrine\ORM\EntityManager;
 use OHMedia\FileBundle\Entity\File as FileEntity;
 use OHMedia\FileBundle\Entity\Image;
@@ -244,7 +243,7 @@ class FileManager
             $ext = '.' . $ext;
         }
 
-        $now = new DateTime();
+        $now = new \DateTime();
 
         $basename = $now->format('His');
 

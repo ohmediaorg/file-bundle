@@ -2,7 +2,6 @@
 
 namespace OHMedia\FileBundle\Repository;
 
-use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use OHMedia\FileBundle\Entity\File;
@@ -40,7 +39,7 @@ class FileRepository extends ServiceEntityRepository
 
     public function deleteTemporary()
     {
-        $yesterday = new DateTime('-1 day');
+        $yesterday = new \DateTime('-1 day');
 
         return $this->createQueryBuilder('f')
             ->delete()
