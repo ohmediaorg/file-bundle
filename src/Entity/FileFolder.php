@@ -6,12 +6,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
-use OHMedia\SecurityBundle\Entity\Traits\Blameable;
+use OHMedia\SecurityBundle\Entity\Traits\BlameableTrait;
 
 #[ORM\Entity(repositoryClass: FileFolderRepository::class)]
 class FileFolder
 {
-    use Blameable;
+    use BlameableTrait;
 
     #[ORM\Id()]
     #[ORM\GeneratedValue()]

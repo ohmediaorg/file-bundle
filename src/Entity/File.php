@@ -4,14 +4,14 @@ namespace OHMedia\FileBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\FileBundle\Repository\FileRepository;
-use OHMedia\SecurityBundle\Entity\Traits\Blameable;
+use OHMedia\SecurityBundle\Entity\Traits\BlameableTrait;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
 
 #[ORM\Entity(repositoryClass: FileRepository::class)]
 #[ORM\Index(columns: ["token"])]
 class File
 {
-    use Blameable;
+    use BlameableTrait;
 
     public const PATH_INITIAL = 'initial';
 

@@ -4,12 +4,12 @@ namespace OHMedia\FileBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\FileBundle\Repository\ImageResizeRepository;
-use OHMedia\SecurityBundle\Entity\Traits\Blameable;
+use OHMedia\SecurityBundle\Entity\Traits\BlameableTrait;
 
 #[ORM\Entity(repositoryClass: ImageResizeRepository::class)]
 class ImageResize
 {
-    use Blameable;
+    use BlameableTrait;
 
     #[ORM\Id()]
     #[ORM\GeneratedValue()]
