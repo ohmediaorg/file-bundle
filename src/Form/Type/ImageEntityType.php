@@ -4,6 +4,7 @@ namespace OHMedia\FileBundle\Form\Type;
 
 use OHMedia\FileBundle\Entity\Image;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -28,11 +29,19 @@ class ImageEntityType extends AbstractType
                     ])
                 ],
             ])
-            ->add('alt', TextType::class, [
+        ;
+
+        if ($options['hide_alt']) {
+            $builder->add('alt', HiddenType::class, [
+                'required' => false,
+                'data' => '',
+            ]);
+        } else {
+            $builder->add('alt', TextType::class, [
                 'label' => 'Screen Reader Text',
                 'required' => false,
-            ])
-        ;
+            ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -41,6 +50,7 @@ class ImageEntityType extends AbstractType
             'data_class' => Image::class,
             'image_label' => false,
             'file_label' => false,
+            'hide_alt' => false,
         ]);
     }
 }
