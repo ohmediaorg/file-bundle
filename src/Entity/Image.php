@@ -37,7 +37,9 @@ class Image
     {
         $this->id = null;
 
-        $this->file = clone $this->file;
+        if ($this->file) {
+            $this->file = clone $this->file;
+        }
 
         $resizes = $this->resizes;
         $this->resizes = new ArrayCollection();

@@ -37,7 +37,9 @@ class ImageResize
     {
         $this->id = null;
 
-        $this->file = clone $this->file;
+        if ($this->file) {
+            $this->file = clone $this->file;
+        }
     }
 
     public function getId(): ?int
