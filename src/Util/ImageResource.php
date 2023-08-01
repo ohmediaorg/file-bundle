@@ -23,7 +23,7 @@ class ImageResource
 
     private function setDimensions()
     {
-        if ($this->im instanceof \GDImage) {
+        if ($this->im instanceof \GdImage) {
             $this->setDimensionsGd();
         } else {
             $this->setDimensionsImagick();
@@ -57,7 +57,7 @@ class ImageResource
             $im = new \Imagick($filepath);
 
             return new static($im, $filepath);
-        } catch(\ImagickException $error) {
+        } catch (\ImagickException $error) {
             return null;
         }
     }
@@ -76,7 +76,7 @@ class ImageResource
             $im = imagecreatefromgif($filepath);
         }
 
-        if ($im instanceof \GDImage) {
+        if ($im instanceof \GdImage) {
             return new static($im, $filepath);
         }
 
@@ -85,7 +85,7 @@ class ImageResource
 
     public function fixOrientation(): self
     {
-        if ($this->im instanceof \GDImage) {
+        if ($this->im instanceof \GdImage) {
             $this->fixOrientationGd();
         } else {
             $this->fixOrientationImagick();
@@ -199,7 +199,7 @@ class ImageResource
             $srcY = floor(($this->height - $srcH) / 2);
         }
 
-        if ($this->im instanceof \GDImage) {
+        if ($this->im instanceof \GdImage) {
             $this->resizeGd($resizeW, $resizeH, $srcX, $srcY, $srcW, $srcH);
         } else {
             $this->resizeImagick($resizeW, $resizeH, $srcX, $srcY, $srcW, $srcH);
@@ -223,7 +223,6 @@ class ImageResource
 
         imagealphablending($this->im, false);
         imagecopyresampled($this->im, $old, 0, 0, $srcX, $srcY, $resizeW, $resizeH, $srcW, $srcH);
-
     }
 
     private function resizeImagick(
@@ -244,7 +243,7 @@ class ImageResource
             $filepath = $this->filepath;
         }
 
-        if ($this->im instanceof \GDImage) {
+        if ($this->im instanceof \GdImage) {
             return $this->saveGd($filepath);
         } else {
             return $this->saveImagick($filepath);

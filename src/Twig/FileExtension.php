@@ -4,10 +4,8 @@ namespace OHMedia\FileBundle\Twig;
 
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\Image;
-use OHMedia\FileBundle\Entity\ImageResize;
 use OHMedia\FileBundle\Service\FileManager;
 use OHMedia\FileBundle\Util\FileUtil;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -28,8 +26,8 @@ class FileExtension extends AbstractExtension
             new TwigFunction('file_path', [$this, 'getFilePath']),
             new TwigFunction('image_path', [$this, 'getImagePath']),
             new TwigFunction('image_tag', [$this, 'getImageTag'], [
-                'is_safe' => ['html']
-            ])
+                'is_safe' => ['html'],
+            ]),
         ];
     }
 

@@ -6,15 +6,13 @@ use Doctrine\ORM\EntityManager;
 use OHMedia\FileBundle\Entity\File as FileEntity;
 use OHMedia\FileBundle\Entity\Image;
 use OHMedia\FileBundle\Entity\ImageResize;
-use OHMedia\FileBundle\Repository\FileRepository;
-use OHMedia\FileBundle\Repository\ImageRepository;
-use OHMedia\FileBundle\Util\ImageResource;
 use OHMedia\FileBundle\Util\FileUtil;
+use OHMedia\FileBundle\Util\ImageResource;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\String\Slugger\AsciiSlugger;
@@ -36,7 +34,7 @@ class FileManager
         UrlGeneratorInterface $router,
         string $projectDir
     ) {
-        $this->absoluteUploadDir = $projectDir . '/' . static::FILE_DIR;
+        $this->absoluteUploadDir = $projectDir.'/'.static::FILE_DIR;
         $this->em = $em;
         $this->fileRepo = $em->getRepository(FileEntity::class);
         $this->fileSystem = new FileSystem();
@@ -98,7 +96,7 @@ class FileManager
             $json['files'][] = [
                 'id' => $file->getId(),
                 'name' => $file->getFilename(),
-                'path' => $this->getWebPath($file)
+                'path' => $this->getWebPath($file),
             ];
         }
 
@@ -176,7 +174,7 @@ class FileManager
     public function getAbsolutePath(FileEntity $file): ?string
     {
         return null !== $file->getPath()
-            ? $this->absoluteUploadDir . '/' . $file->getPath()
+            ? $this->absoluteUploadDir.'/'.$file->getPath()
             : null;
     }
 
@@ -226,7 +224,7 @@ class FileManager
             $name = $httpFile->getClientOriginalName();
             $ext = $httpFile->getClientOriginalExtension();
 
-            $name = preg_replace('/\.' . preg_quote($ext) . '$/', '', $name);
+            $name = preg_replace('/\.'.preg_quote($ext).'$/', '', $name);
 
             $name = $this->slugger->slug($name);
             $ext = $this->slugger->slug($ext);
@@ -240,7 +238,7 @@ class FileManager
         $ext = $httpFile->guessExtension();
 
         if ($ext) {
-            $ext = '.' . $ext;
+            $ext = '.'.$ext;
         }
 
         $now = new \DateTime();
@@ -249,21 +247,21 @@ class FileManager
 
         $path = $now->format('Y/m/d');
 
-        $fullPath = $this->absoluteUploadDir . '/' . $path;
+        $fullPath = $this->absoluteUploadDir.'/'.$path;
 
         $this->fileSystem->mkdir($fullPath);
 
         $i = 1;
         $temp = $basename;
-        while(glob("$fullPath/$temp.*") || isset($this->newFiles["$fullPath/$temp"])) {
-            $temp = $basename . '-' . $i;
+        while (glob("$fullPath/$temp.*") || isset($this->newFiles["$fullPath/$temp"])) {
+            $temp = $basename.'-'.$i;
 
-            $i++;
+            ++$i;
         }
 
         $this->newFiles["$fullPath/$temp"] = 1;
 
-        $path .= '/' . $temp . $ext;
+        $path .= '/'.$temp.$ext;
 
         $mimeType = $this->getMimeType($file);
 
@@ -281,7 +279,7 @@ class FileManager
         $lowercase = implode('', range('a', 'z'));
         $numbers = implode('', range(0, 9));
 
-        $chars = $lowercase . $numbers;
+        $chars = $lowercase.$numbers;
         $lastIndex = strlen($chars) - 1;
 
         $length = 20;
@@ -289,10 +287,10 @@ class FileManager
         do {
             $token = '';
 
-            for ($i = 0; $i < $length; $i++) {
+            for ($i = 0; $i < $length; ++$i) {
                 $token .= $chars[rand(0, $lastIndex)];
             }
-        } while($this->fileRepo->findByToken($token));
+        } while ($this->fileRepo->findByToken($token));
 
         return $token;
     }
@@ -324,7 +322,7 @@ class FileManager
             // if there is an error when moving the file, an exception will
             // be automatically thrown by move(). This will properly prevent
             // the entity from being persisted to the database on error
-            $file->getFile()->move($this->absoluteUploadDir . '/' . $path, $name);
+            $file->getFile()->move($this->absoluteUploadDir.'/'.$path, $name);
 
             $this->doImageProcessing($file);
         }
@@ -332,7 +330,7 @@ class FileManager
         // check if we have an old file
         if ($file->getOldPath()) {
             // delete the old file
-            $this->fileSystem->remove($this->absoluteUploadDir . '/' . $file->getOldPath());
+            $this->fileSystem->remove($this->absoluteUploadDir.'/'.$file->getOldPath());
             // clear the temp file path
             $file->setOldPath(null);
         }
@@ -373,8 +371,8 @@ class FileManager
 
     public function getImageResize(
         Image $image,
-        ?int $width = null,
-        ?int $height = null
+        int $width = null,
+        int $height = null
     ): ?ImageResize {
         if (null === $width && null === $height) {
             return null;
@@ -410,7 +408,7 @@ class FileManager
             $copy = $this->copy($image->getFile());
 
             $copy
-                ->setName($copy->getName() . '-' .$name)
+                ->setName($copy->getName().'-'.$name)
                 ->setHidden(true)
             ;
 

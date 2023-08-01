@@ -25,8 +25,8 @@ class ImageEntityType extends AbstractType
                 'file_constraints' => [
                     new FileConstraint([
                         'mimeTypes' => ['image/jpeg', 'image/png', 'image/gif', 'image/svg', 'image/svg+xml'],
-                        'mimeTypesMessage' => 'Only JPG/PNG/GIF/SVG is accepted for upload.'
-                    ])
+                        'mimeTypesMessage' => 'Only JPG/PNG/GIF/SVG is accepted for upload.',
+                    ]),
                 ],
             ])
         ;

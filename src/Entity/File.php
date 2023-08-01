@@ -8,7 +8,7 @@ use OHMedia\SecurityBundle\Entity\Traits\BlameableTrait;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
 
 #[ORM\Entity(repositoryClass: FileRepository::class)]
-#[ORM\Index(columns: ["token"])]
+#[ORM\Index(columns: ['token'])]
 class File
 {
     use BlameableTrait;
@@ -113,7 +113,7 @@ class File
     public function getFilename(): string
     {
         if ($this->ext) {
-            return $this->name . '.' . $this->ext;
+            return $this->name.'.'.$this->ext;
         }
 
         return $this->name;
@@ -275,7 +275,7 @@ class File
 
     /**
      * Meant for when the File object is to be blanked out
-     * because it cannot be deleted due to DB relations
+     * because it cannot be deleted due to DB relations.
      */
     public function setNull(): self
     {

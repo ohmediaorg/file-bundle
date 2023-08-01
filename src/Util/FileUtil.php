@@ -36,10 +36,10 @@ class FileUtil
     private static function formatBytes(int $bytes, int $precision, bool $binary): string
     {
         if ($binary) {
-            $units = array('B', 'KiB', 'MiB', 'GiB');
+            $units = ['B', 'KiB', 'MiB', 'GiB'];
             $base = 1024;
         } else {
-            $units = array('B', 'kB', 'MB', 'GB');
+            $units = ['B', 'kB', 'MB', 'GB'];
             $base = 1000;
         }
 
@@ -50,9 +50,9 @@ class FileUtil
 
         while ($bytes > $base && $unit < $maxUnit) {
             $bytes /= $base;
-            $unit++;
+            ++$unit;
         }
 
-        return round($bytes, $precision) . ' ' . $units[$unit];
+        return round($bytes, $precision).' '.$units[$unit];
     }
 }
