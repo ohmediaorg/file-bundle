@@ -195,10 +195,13 @@ abstract class AbstractFileBackendController extends AbstractController
 
     protected function formRedirect(File $file): Response
     {
-        // TODO: redirect to either file index or folder index
-        return $this->redirectToRoute('file_view', [
-            'id' => $file->getId(),
-        ]);
+        if ($folder = $file->getFolder()) {
+            return $this->redirectToRoute('folder_view', [
+                'id' => $folder->getId(),
+            ]);
+        }
+
+        return $this->redirectToRoute('file_index');
     }
 
     #[Route('/file/{id}/delete', name: 'file_delete', methods: ['GET', 'POST'])]
@@ -226,8 +229,6 @@ abstract class AbstractFileBackendController extends AbstractController
 
             return $this->deleteRedirect($file);
         }
-
-        $this->addFlash('warning', 'Deleting a file will also delete all descendant files!');
 
         return $this->deleteRender($form->createView(), $file);
     }
