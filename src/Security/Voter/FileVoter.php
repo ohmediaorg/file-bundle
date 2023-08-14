@@ -10,6 +10,7 @@ class FileVoter extends AbstractEntityVoter
 {
     public const INDEX = 'index';
     public const CREATE = 'create';
+    // NOTE: this is only for frontend; there is no backend file view
     public const VIEW = 'view';
     public const EDIT = 'edit';
     public const COPY = 'copy';
