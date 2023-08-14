@@ -130,8 +130,6 @@ abstract class AbstractFileBackendController extends AbstractController
 
         $form->handleRequest($request);
 
-        $this->setFileSlug($file, $fileRepository);
-
         if ($form->isSubmitted() && $form->isValid()) {
             $fileRepository->save($file, true);
 
@@ -143,41 +141,41 @@ abstract class AbstractFileBackendController extends AbstractController
         return $this->editRender($form->createView(), $file);
     }
 
-    #[Route('/file/{id}/copy', name: 'file_copy', methods: ['GET', 'POST'])]
+    #[Route('/file/{id}/copy', name: 'file_copy', methods: ['POST'])]
     public function copy(
         Request $request,
         File $file,
-        FileRepository $fileRepository
+        FileRepository $fileRepository,
+        ImageRepository $imageRepository
     ): Response {
         $this->denyAccessUnlessGranted(
-            FileVoter::DUPLICATE,
+            FileVoter::COPY,
             $file,
             'You cannot copy this file.'
         );
 
-        $file = clone $file;
+        $csrfTokenName = 'copy_file_'.$file->getId();
+        $csrfTokenValue = $request->request->get($csrfTokenName);
 
-        $form = $this->createForm(FileCreateType::class, $file);
+        if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
+            $image = $file->getImage();
 
-        $form->add('submit', SubmitType::class);
+            if ($image) {
+                $image = clone $image;
 
-        $form->handleRequest($request);
+                $imageRepository->save($image, true);
 
-        $this->setFileSlug($file, $fileRepository);
+                $this->addFlash('notice', 'The image was copied successfully.');
+            } else {
+                $file = clone $file;
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            // make sure this file is last locally
-            // the event subscriber will clean things up
-            $file->setOrderLocal(File::ORDER_LOCAL_END);
+                $fileRepository->save($file, true);
 
-            $fileRepository->save($file, true);
-
-            $this->addFlash('notice', 'The file was copyd successfully.');
-
-            return $this->copyRedirect($file);
+                $this->addFlash('notice', 'The file was copied successfully.');
+            }
         }
 
-        return $this->copyRender($form->createView(), $file);
+        return $this->copyRedirect($file);
     }
 
     protected function createRedirect(File $file): Response
