@@ -35,9 +35,6 @@ class File
     private ?string $path = null;
 
     #[ORM\Column(options: ['default' => false])]
-    private bool $temporary = false;
-
-    #[ORM\Column(options: ['default' => false])]
     private bool $private = false;
 
     #[ORM\Column(options: ['default' => false])]
@@ -132,18 +129,6 @@ class File
     public function setPath(?string $path): self
     {
         $this->path = $path;
-
-        return $this;
-    }
-
-    public function isTemporary(): bool
-    {
-        return $this->temporary;
-    }
-
-    public function setTemporary(bool $temporary): self
-    {
-        $this->temporary = $temporary;
 
         return $this;
     }

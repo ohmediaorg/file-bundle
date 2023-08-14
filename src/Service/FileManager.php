@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
@@ -73,34 +72,6 @@ class FileManager
         BinaryFileResponse::trustXSendfileTypeHeader();
 
         return $response;
-    }
-
-    public function upload(HttpFile ...$httpFiles): JsonResponse
-    {
-        $json = ['files' => []];
-
-        $files = [];
-        foreach ($httpFiles as $httpFile) {
-            $file = new FileEntity();
-            $file
-                ->setFile($httpFile)
-                ->setTemporary(true)
-            ;
-
-            $this->fileRepo->save($file, true);
-
-            $files[] = $file;
-        }
-
-        foreach ($files as $file) {
-            $json['files'][] = [
-                'id' => $file->getId(),
-                'name' => $file->getFilename(),
-                'path' => $this->getWebPath($file),
-            ];
-        }
-
-        return new JsonResponse($json);
     }
 
     public function getFileByToken(string $token): ?FileEntity
