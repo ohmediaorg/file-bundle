@@ -58,6 +58,9 @@ class File
     #[ORM\ManyToOne(inversedBy: 'files')]
     private ?FileFolder $folder = null;
 
+    #[ORM\OneToOne(mappedBy: 'file', cascade: ['persist', 'remove'])]
+    private ?Image $image = null;
+
     private $cloned = false;
 
     public function __clone()
@@ -225,6 +228,28 @@ class File
     public function setFolder(?FileFolder $folder): self
     {
         $this->folder = $folder;
+
+        return $this;
+    }
+
+    public function getImage(): ?Image
+    {
+        return $this->image;
+    }
+
+    public function setImage(?Image $image): self
+    {
+        // unset the owning side of the relation if necessary
+        if (null === $image && null !== $this->image) {
+            $this->image->setFile(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if (null !== $image && $image->getFile() !== $this) {
+            $image->setFile($this);
+        }
+
+        $this->image = $image;
 
         return $this;
     }
