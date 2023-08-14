@@ -39,13 +39,21 @@ abstract class AbstractFileBackendController extends AbstractController
             'You cannot access the list of files.'
         );
 
-        $fileQueryBuilder = $fileRepository->createQueryBuilder('f');
-        $fileQueryBuilder->where('f.browser = 1');
+        // TODO: put in common function with optional FileFolder param
+        $files = $fileRepository->createQueryBuilder('f')
+            ->where('f.browser = 1')
+            ->orderBy('f.name', 'ASC')
+            ->getQuery()
+            ->getResult();
 
-        $fileFolderQueryBuilder = $fileFolderRepository->createQueryBuilder('f');
-        $fileFolderQueryBuilder->where('f.browser = 1');
+        // TODO: put in common function with optional FileFolder param
+        $folders = $fileFolderRepository->createQueryBuilder('f')
+            ->where('f.browser = 1')
+            ->orderBy('f.name', 'ASC')
+            ->getQuery()
+            ->getResult();
 
-        return $this->indexRender($fileQueryBuilder, $fileFolderQueryBuilder);
+        return $this->indexRender($files, $folders);
     }
 
     // folder/create

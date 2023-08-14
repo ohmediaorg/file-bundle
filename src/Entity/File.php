@@ -64,6 +64,11 @@ class File
     {
         $this->id = null;
         $this->cloned = true;
+
+        if ($this->folder) {
+            // TODO: necessary?
+            $this->folder->add($this);
+        }
     }
 
     public function isCloned(): bool
