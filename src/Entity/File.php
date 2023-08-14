@@ -35,10 +35,10 @@ class File
     private ?string $path = null;
 
     #[ORM\Column(options: ['default' => false])]
-    private bool $private = false;
+    private bool $browser = false;
 
     #[ORM\Column(options: ['default' => false])]
-    private bool $hidden = false;
+    private bool $locked = false;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $mime_type = null;
@@ -133,26 +133,34 @@ class File
         return $this;
     }
 
-    public function isPrivate(): bool
+    public function isBrowser(): bool
     {
-        return $this->private;
+        if ($this->folder) {
+            return $this->folder->isBrowser();
+        }
+
+        return $this->browser;
     }
 
-    public function setPrivate(bool $private): self
+    public function setBrowser(bool $private): self
     {
-        $this->private = $private;
+        $this->browser = $browser;
 
         return $this;
     }
 
-    public function isHidden(): bool
+    public function isLocked(): bool
     {
-        return $this->hidden;
+        if ($this->folder) {
+            return $this->folder->isLocked();
+        }
+
+        return $this->locked;
     }
 
-    public function setHidden(bool $hidden): self
+    public function setLocked(bool $hidden): self
     {
-        $this->hidden = $hidden;
+        $this->locked = $locked;
 
         return $this;
     }

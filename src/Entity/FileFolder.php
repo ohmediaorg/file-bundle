@@ -22,7 +22,10 @@ class FileFolder
     private ?string $name = null;
 
     #[ORM\Column(options: ['default' => false])]
-    private bool $private = false;
+    private bool $browser = false;
+
+    #[ORM\Column(options: ['default' => false])]
+    private bool $locked = false;
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'folders')]
     private ?self $folder = null;
@@ -56,14 +59,34 @@ class FileFolder
         return $this;
     }
 
-    public function isPrivate(): bool
+    public function isBrowser(): bool
     {
-        return $this->private;
+        if ($this->folder) {
+            return $this->folder->isBrowser();
+        }
+
+        return $this->browser;
     }
 
-    public function setPrivate(bool $private): self
+    public function setBrowser(bool $private): self
     {
-        $this->private = $private;
+        $this->browser = $browser;
+
+        return $this;
+    }
+
+    public function isLocked(): bool
+    {
+        if ($this->folder) {
+            return $this->folder->isLocked();
+        }
+
+        return $this->locked;
+    }
+
+    public function setLocked(bool $hidden): self
+    {
+        $this->locked = $locked;
 
         return $this;
     }
