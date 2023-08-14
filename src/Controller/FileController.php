@@ -2,6 +2,7 @@
 
 namespace OHMedia\FileBundle\Controller;
 
+use OHMedia\FileBundle\Security\Voter\FileVoter;
 use OHMedia\FileBundle\Service\FileManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,6 +19,14 @@ class FileController extends AbstractController
 
         if (!$response) {
             throw $this->createNotFoundException('File not found');
+        }
+
+        if ($file->isLocked()) {
+            $this->denyAccessUnlessGranted(
+                FileVoter::VIEW,
+                $file,
+                'You cannot view this file.'
+            );
         }
 
         return $response;
