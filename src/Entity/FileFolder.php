@@ -72,6 +72,14 @@ class FileFolder
     {
         $this->browser = $browser;
 
+        foreach ($this->getFolders() as $folder) {
+            $folder->setBrowser($browser);
+        }
+
+        foreach ($this->getFiles() as $file) {
+            $file->setBrowser($browser);
+        }
+
         return $this;
     }
 
