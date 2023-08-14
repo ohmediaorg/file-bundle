@@ -13,25 +13,25 @@ class FileFolder
 {
     use BlameableTrait;
 
-    #[ORM\Id()]
-    #[ORM\GeneratedValue()]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $name;
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
 
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private $private;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $private = false;
 
-    #[ORM\ManyToOne(targetEntity: FileFolder::class, inversedBy: 'folders')]
-    private $folder;
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'folders')]
+    private ?self $folder = null;
 
-    #[ORM\OneToMany(targetEntity: FileFolder::class, mappedBy: 'folder')]
-    private $folders;
+    #[ORM\OneToMany(mappedBy: 'folder', targetEntity: self::class)]
+    private Collection $folders;
 
-    #[ORM\OneToMany(targetEntity: File::class, mappedBy: 'folder')]
-    private $files;
+    #[ORM\OneToMany(mappedBy: 'folder', targetEntity: File::class)]
+    private Collection $files;
 
     public function __construct()
     {
@@ -56,12 +56,12 @@ class FileFolder
         return $this;
     }
 
-    public function getPrivate(): ?bool
+    public function isPrivate(): bool
     {
         return $this->private;
     }
 
-    public function setPrivate(?bool $private): self
+    public function setPrivate(bool $private): self
     {
         $this->private = $private;
 
@@ -81,7 +81,7 @@ class FileFolder
     }
 
     /**
-     * @return Collection|self[]
+     * @return Collection<int, self>
      */
     public function getFolders(): Collection
     {
@@ -91,7 +91,7 @@ class FileFolder
     public function addFolder(self $folder): self
     {
         if (!$this->folders->contains($folder)) {
-            $this->folders[] = $folder;
+            $this->folders->add($folder);
             $folder->setFolder($this);
         }
 
@@ -100,8 +100,7 @@ class FileFolder
 
     public function removeFolder(self $folder): self
     {
-        if ($this->folders->contains($folder)) {
-            $this->folders->removeElement($folder);
+        if ($this->folders->removeElement($folder)) {
             // set the owning side to null (unless already changed)
             if ($folder->getFolder() === $this) {
                 $folder->setFolder(null);
@@ -112,7 +111,7 @@ class FileFolder
     }
 
     /**
-     * @return Collection|File[]
+     * @return Collection<int, File>
      */
     public function getFiles(): Collection
     {
@@ -122,7 +121,7 @@ class FileFolder
     public function addFile(File $file): self
     {
         if (!$this->files->contains($file)) {
-            $this->files[] = $file;
+            $this->files->add($file);
             $file->setFolder($this);
         }
 
@@ -131,8 +130,7 @@ class FileFolder
 
     public function removeFile(File $file): self
     {
-        if ($this->files->contains($file)) {
-            $this->files->removeElement($file);
+        if ($this->files->removeElement($file)) {
             // set the owning side to null (unless already changed)
             if ($file->getFolder() === $this) {
                 $file->setFolder(null);
