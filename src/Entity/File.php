@@ -2,6 +2,7 @@
 
 namespace OHMedia\FileBundle\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\SecurityBundle\Entity\Traits\BlameableTrait;
@@ -16,46 +17,46 @@ class File
     public const PATH_INITIAL = 'initial';
     public const TOKEN_LENGTH = 30;
 
-    #[ORM\Id()]
-    #[ORM\GeneratedValue()]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: self::TOKEN_LENGTH, nullable: true)]
-    private $token;
+    #[ORM\Column(length: 30, nullable: true)]
+    private ?string $token = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $name;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $name = null;
 
-    #[ORM\Column(type: 'string', length: 20, nullable: true)]
-    private $ext;
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $ext = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $path;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $path = null;
 
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private $temporary;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $temporary = false;
 
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private $private;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $private = false;
 
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private $hidden;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $hidden = false;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $mime_type;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $mime_type = null;
 
-    #[ORM\Column(type: 'bigint', nullable: true)]
-    private $size;
+    #[ORM\Column(type: Types::BIGINT, nullable: true)]
+    private ?string $size = null;
 
-    #[ORM\Column(type: 'smallint', nullable: true)]
-    private $width;
+    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    private ?int $width = null;
 
-    #[ORM\Column(type: 'smallint', nullable: true)]
-    private $height;
+    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    private ?int $height = null;
 
-    #[ORM\ManyToOne(targetEntity: FileFolder::class, inversedBy: 'files')]
-    private $folder;
+    #[ORM\ManyToOne(inversedBy: 'files')]
+    private ?FileFolder $folder = null;
 
     private $cloned = false;
 
@@ -132,36 +133,36 @@ class File
         return $this;
     }
 
-    public function getTemporary(): ?bool
+    public function isTemporary(): bool
     {
         return $this->temporary;
     }
 
-    public function setTemporary(?bool $temporary): self
+    public function setTemporary(bool $temporary): self
     {
         $this->temporary = $temporary;
 
         return $this;
     }
 
-    public function getPrivate(): ?bool
+    public function isPrivate(): bool
     {
         return $this->private;
     }
 
-    public function setPrivate(?bool $private): self
+    public function setPrivate(bool $private): self
     {
         $this->private = $private;
 
         return $this;
     }
 
-    public function getHidden(): ?bool
+    public function isHidden(): bool
     {
         return $this->hidden;
     }
 
-    public function setHidden(?bool $hidden): self
+    public function setHidden(bool $hidden): self
     {
         $this->hidden = $hidden;
 
@@ -173,19 +174,19 @@ class File
         return $this->mime_type;
     }
 
-    public function setMimeType(?string $mimeType): self
+    public function setMimeType(?string $mime_type): self
     {
-        $this->mime_type = $mimeType;
+        $this->mime_type = $mime_type;
 
         return $this;
     }
 
-    public function getSize(): ?int
+    public function getSize(): ?string
     {
         return $this->size;
     }
 
-    public function setSize(?int $size): self
+    public function setSize(?string $size): self
     {
         $this->size = $size;
 
@@ -221,7 +222,7 @@ class File
         return $this->folder;
     }
 
-    public function setFolder(?self $folder): self
+    public function setFolder(?FileFolder $folder): self
     {
         $this->folder = $folder;
 
