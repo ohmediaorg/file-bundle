@@ -14,13 +14,14 @@ class File
     use BlameableTrait;
 
     public const PATH_INITIAL = 'initial';
+    public const TOKEN_LENGTH = 30;
 
     #[ORM\Id()]
     #[ORM\GeneratedValue()]
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 20, nullable: true)]
+    #[ORM\Column(type: 'string', length: self::TOKEN_LENGTH, nullable: true)]
     private $token;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]

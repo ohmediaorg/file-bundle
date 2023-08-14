@@ -282,7 +282,7 @@ class FileManager
         $chars = $lowercase.$numbers;
         $lastIndex = strlen($chars) - 1;
 
-        $length = 20;
+        $length = FileEntity::TOKEN_LENGTH;
 
         do {
             $token = '';
