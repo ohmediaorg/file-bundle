@@ -39,7 +39,7 @@ class FileVoter extends AbstractEntityVoter
 
     protected function canCreate(File $file, User $loggedIn): bool
     {
-        return true;
+        return $file->isBrowser();
     }
 
     protected function canView(File $file, User $loggedIn): bool
@@ -50,16 +50,16 @@ class FileVoter extends AbstractEntityVoter
     protected function canEdit(File $file, User $loggedIn): bool
     {
         // TODO: prevent uploaded file from being changed?
-        return true;
+        return $file->isBrowser();
     }
 
     protected function canCopy(File $file, User $loggedIn): bool
     {
-        return true;
+        return $file->isBrowser();
     }
 
     protected function canDelete(File $file, User $loggedIn): bool
     {
-        return true;
+        return $file->isBrowser();
     }
 }
