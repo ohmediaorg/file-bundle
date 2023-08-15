@@ -24,7 +24,7 @@ class ImageEntityType extends AbstractType
                 'data' => $image ? $image->getFile() : null,
                 'file_constraints' => [
                     new FileConstraint([
-                        'mimeTypes' => ['image/jpeg', 'image/png', 'image/gif', 'image/svg', 'image/svg+xml'],
+                        'mimeTypes' => Image::MIME_TYPES,
                         'mimeTypesMessage' => 'Only JPG/PNG/GIF/SVG is accepted for upload.',
                     ]),
                 ],
