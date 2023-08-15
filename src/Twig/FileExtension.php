@@ -3,7 +3,9 @@
 namespace OHMedia\FileBundle\Twig;
 
 use OHMedia\FileBundle\Entity\File;
+use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Entity\Image;
+use OHMedia\FileBundle\Entity\ImageResize;
 use OHMedia\FileBundle\Service\FileManager;
 use OHMedia\FileBundle\Util\FileUtil;
 use Twig\Extension\AbstractExtension;
@@ -21,6 +23,10 @@ class FileExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
+            new TwigFunction('is_file_entity', [$this, 'isFileEntity']),
+            new TwigFunction('is_file_folder_entity', [$this, 'isFileFolderEntity']),
+            new TwigFunction('is_image_entity', [$this, 'isImageEntity']),
+            new TwigFunction('is_image_resize_entity', [$this, 'isImageResizeEntity']),
             new TwigFunction('file_size', [$this, 'getFileSize']),
             new TwigFunction('file_size_binary', [$this, 'getFileSizeBinary']),
             new TwigFunction('file_path', [$this, 'getFilePath']),
@@ -29,6 +35,26 @@ class FileExtension extends AbstractExtension
                 'is_safe' => ['html'],
             ]),
         ];
+    }
+
+    public function isFileEntity(mixed $value): bool
+    {
+        return $value instanceof File;
+    }
+
+    public function isFileFolderEntity(mixed $value): bool
+    {
+        return $value instanceof FileFolder;
+    }
+
+    public function isImageEntity(mixed $value): bool
+    {
+        return $value instanceof Image;
+    }
+
+    public function isImageResizeEntity(mixed $value): bool
+    {
+        return $value instanceof ImageResize;
     }
 
     public function getFileSize(File $file, int $precision = 1): string
