@@ -59,10 +59,6 @@ class FileSubscriber implements EventSubscriber
                     ->setToken($copy->getToken())
                 ;
             } else {
-                if ($object->isBrowser()) {
-                    // TODO: determine if Image object should be created
-                }
-
                 $this->preSaveFile($object);
             }
         }
