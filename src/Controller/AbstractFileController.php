@@ -5,7 +5,6 @@ namespace OHMedia\FileBundle\Controller;
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Form\Type\FileCreateType;
-use OHMedia\FileBundle\Form\Type\FileEditType;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Security\Voter\FileVoter;
@@ -24,8 +23,6 @@ abstract class AbstractFileController extends AbstractController
     abstract protected function indexRender(array $items, File $newFile, FileFolder $newFileFolder): Response;
 
     abstract protected function createRender(FormView $formView, File $file): Response;
-
-    abstract protected function editRender(FormView $formView, File $file): Response;
 
     abstract protected function deleteRender(FormView $formView, File $file): Response;
 
@@ -125,33 +122,56 @@ abstract class AbstractFileController extends AbstractController
         return $this->createRender($form->createView(), $file);
     }
 
-    #[Route('/file/{id}/edit', name: 'file_edit', methods: ['GET', 'POST'])]
-    public function edit(
+    #[Route('/file/{id}/lock', name: 'file_lock', methods: ['POST'])]
+    public function lock(
         Request $request,
         File $file,
         FileRepository $fileRepository
     ): Response {
         $this->denyAccessUnlessGranted(
-            FileVoter::EDIT,
+            FileVoter::LOCK,
             $file,
-            'You cannot edit this file.'
+            'You cannot lock this file.'
         );
 
-        $form = $this->createForm(FileEditType::class, $file);
+        $csrfTokenName = 'lock_file'.$file->getId();
+        $csrfTokenValue = $request->request->get($csrfTokenName);
 
-        $form->add('submit', SubmitType::class);
+        if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
+            $file->setLocked(true);
 
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
             $fileRepository->save($file, true);
 
-            $this->addFlash('notice', 'Changes to the file were saved successfully.');
-
-            return $this->editRedirect($file);
+            $this->addFlash('notice', 'The file was locked successfully.');
         }
 
-        return $this->editRender($form->createView(), $file);
+        return $this->lockRedirect($file);
+    }
+
+    #[Route('/file/{id}/unlock', name: 'file_unlock', methods: ['POST'])]
+    public function unlock(
+        Request $request,
+        File $file,
+        FileRepository $fileRepository
+    ): Response {
+        $this->denyAccessUnlessGranted(
+            FileVoter::UNLOCK,
+            $file,
+            'You cannot unlock this file.'
+        );
+
+        $csrfTokenName = 'unlock_file'.$file->getId();
+        $csrfTokenValue = $request->request->get($csrfTokenName);
+
+        if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
+            $file->setLocked(false);
+
+            $fileRepository->save($file, true);
+
+            $this->addFlash('notice', 'The file was unlocked successfully.');
+        }
+
+        return $this->unlockRedirect($file);
     }
 
     protected function createRedirect(File $file): Response
@@ -159,7 +179,12 @@ abstract class AbstractFileController extends AbstractController
         return $this->formRedirect($file);
     }
 
-    protected function editRedirect(File $file): Response
+    protected function lockRedirect(File $file): Response
+    {
+        return $this->formRedirect($file);
+    }
+
+    protected function unlockRedirect(File $file): Response
     {
         return $this->formRedirect($file);
     }
