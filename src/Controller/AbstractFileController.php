@@ -17,6 +17,7 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\File as FileConstraint;
 
 abstract class AbstractFileController extends AbstractController
 {
@@ -82,7 +83,32 @@ abstract class AbstractFileController extends AbstractController
             'You cannot create a new file.'
         );
 
-        $form = $this->createForm(FileCreateType::class, $file);
+        $form = $this->createForm(FileCreateType::class, $file, [
+            // TODO: what should these be?
+            'file_constraints' => [
+                new FileConstraint([
+                    'mimeTypes' => [
+                        'application/msword',
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                        'application/vnd.oasis.opendocument.presentation',
+                        'application/vnd.oasis.opendocument.spreadsheet',
+                        'application/vnd.oasis.opendocument.text',
+                        'application/vnd.ms-powerpoint',
+                        'application/vnd.ms-excel',
+                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                        'application/pdf',
+                        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                        'application/rtf',
+                        'text/csv',
+                        'text/plain',
+                        'audio/mpeg',
+                        'video/mp4',
+                        'video/mpeg',
+                    ],
+                    'mimeTypesMessage' => 'Only text files, documents, audio, and video are accepted for upload.',
+                ]),
+            ],
+        ]);
 
         $form->add('submit', SubmitType::class);
 
