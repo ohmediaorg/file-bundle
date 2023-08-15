@@ -24,8 +24,6 @@ abstract class AbstractFileBackendController extends AbstractController
 
     abstract protected function editRender(FormView $formView, File $file): Response;
 
-    abstract protected function copyRender(FormView $formView, File $file): Response;
-
     abstract protected function deleteRender(FormView $formView, File $file): Response;
 
     #[Route('/files', name: 'file_index', methods: ['GET'])]
@@ -141,54 +139,12 @@ abstract class AbstractFileBackendController extends AbstractController
         return $this->editRender($form->createView(), $file);
     }
 
-    #[Route('/file/{id}/copy', name: 'file_copy', methods: ['POST'])]
-    public function copy(
-        Request $request,
-        File $file,
-        FileRepository $fileRepository,
-        ImageRepository $imageRepository
-    ): Response {
-        $this->denyAccessUnlessGranted(
-            FileVoter::COPY,
-            $file,
-            'You cannot copy this file.'
-        );
-
-        $csrfTokenName = 'copy_file_'.$file->getId();
-        $csrfTokenValue = $request->request->get($csrfTokenName);
-
-        if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
-            $image = $file->getImage();
-
-            if ($image) {
-                $image = clone $image;
-
-                $imageRepository->save($image, true);
-
-                $this->addFlash('notice', 'The image was copied successfully.');
-            } else {
-                $file = clone $file;
-
-                $fileRepository->save($file, true);
-
-                $this->addFlash('notice', 'The file was copied successfully.');
-            }
-        }
-
-        return $this->copyRedirect($file);
-    }
-
     protected function createRedirect(File $file): Response
     {
         return $this->formRedirect($file);
     }
 
     protected function editRedirect(File $file): Response
-    {
-        return $this->formRedirect($file);
-    }
-
-    protected function copyRedirect(File $file): Response
     {
         return $this->formRedirect($file);
     }

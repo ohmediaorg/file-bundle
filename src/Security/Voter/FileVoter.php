@@ -13,7 +13,7 @@ class FileVoter extends AbstractEntityVoter
     // NOTE: this is only for frontend; there is no backend file view
     public const VIEW = 'view';
     public const EDIT = 'edit';
-    public const COPY = 'copy';
+    public const MOVE = 'move';
     public const DELETE = 'delete';
 
     protected function getAttributes(): array
@@ -23,7 +23,7 @@ class FileVoter extends AbstractEntityVoter
             self::CREATE,
             self::VIEW,
             self::EDIT,
-            self::COPY,
+            self::MOVE,
             self::DELETE,
         ];
     }
@@ -54,7 +54,7 @@ class FileVoter extends AbstractEntityVoter
         return $file->isBrowser();
     }
 
-    protected function canCopy(File $file, User $loggedIn): bool
+    protected function canMove(File $file, User $loggedIn): bool
     {
         return $file->isBrowser();
     }
