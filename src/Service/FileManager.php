@@ -417,4 +417,48 @@ class FileManager
 
         $imageResource->fixOrientation()->save();
     }
+
+    public function getListing(FileFolder $parent = null): array
+    {
+        $fileQueryBuilder = $this->fileRepository
+            ->createQueryBuilder('f')
+            ->where('f.browser = 1');
+
+        if ($parent) {
+            $fileQueryBuilder
+                ->andWhere('f.folder :folder')
+                ->setParameter('folder', $folder)
+        }
+
+        $files = $fileQueryBuilder
+            ->orderBy('f.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $fileFolderQueryBuilder = $this->fileFolderRepository
+            ->createQueryBuilder('ff')
+            ->where('ff.browser = 1');
+
+        if ($parent) {
+            $fileFolderQueryBuilder
+                ->andWhere('ff.folder :folder')
+                ->setParameter('folder', $folder)
+        }
+
+        $folders = $fileFolderQueryBuilder
+            ->orderBy('ff.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $items = array_merge($files, $folders);
+
+        usort($items, function($a, $b) {
+            $aProp = $a instanceof FileEntity ? $a->getFilename() : $a->getName();
+            $bProp = $b instanceof FileEntity ? $b->getFilename() : $b->getName();
+
+            return $aProp <=> $bProp;
+        });
+
+        return $items;
+    }
 }
