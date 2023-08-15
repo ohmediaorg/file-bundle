@@ -4,8 +4,8 @@ namespace OHMedia\FileBundle\Controller;
 
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
-use OHMedia\FileBundle\Form\FileCreateType;
-use OHMedia\FileBundle\Form\FileEditType;
+use OHMedia\FileBundle\Form\Type\FileCreateType;
+use OHMedia\FileBundle\Form\Type\FileEditType;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Security\Voter\FileVoter;
