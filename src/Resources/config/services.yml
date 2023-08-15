@@ -1,6 +1,12 @@
 services:
     OHMedia\FileBundle\Service\FileManager:
-        arguments: ["@doctrine.orm.entity_manager", "@router.default", "%kernel.project_dir%"]
+        arguments:
+            - "@oh_media_file.file_repository"
+            - "@oh_media_file.file_folder_repository"
+            - "@oh_media_file.image_repository"
+            - "@oh_media_file.image_resize_repository"
+            - "@router.default"
+            - "%kernel.project_dir%"
 
     oh_media_file.file_manager:
         alias: OHMedia\FileBundle\Service\FileManager
@@ -31,6 +37,9 @@ services:
         autowire: true
         tags: ["doctrine.repository_service"]
 
+    oh_media_file.file_folder_repository:
+        alias: OHMedia\FileBundle\Repository\FileFolderRepository
+
     OHMedia\FileBundle\Repository\ImageRepository:
         autowire: true
         tags: ["doctrine.repository_service"]
@@ -41,6 +50,9 @@ services:
     OHMedia\FileBundle\Repository\ImageResizeRepository:
         autowire: true
         tags: ["doctrine.repository_service"]
+
+    oh_media_file.image_resize_repository:
+        alias: OHMedia\FileBundle\Repository\ImageResizeRepository
 
     OHMedia\FileBundle\Controller\FileController:
         tags: ["controller.service_arguments"]

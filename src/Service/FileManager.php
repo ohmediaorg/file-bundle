@@ -2,10 +2,13 @@
 
 namespace OHMedia\FileBundle\Service;
 
-use Doctrine\ORM\EntityManager;
 use OHMedia\FileBundle\Entity\File as FileEntity;
 use OHMedia\FileBundle\Entity\Image;
 use OHMedia\FileBundle\Entity\ImageResize;
+use OHMedia\FileBundle\Repository\FileRepository;
+use OHMedia\FileBundle\Repository\FileFolderRepository;
+use OHMedia\FileBundle\Repository\ImageRepository;
+use OHMedia\FileBundle\Repository\ImageResizeRepository;
 use OHMedia\FileBundle\Util\FileUtil;
 use OHMedia\FileBundle\Util\ImageResource;
 use Symfony\Component\Filesystem\Filesystem;
@@ -21,23 +24,28 @@ class FileManager
     public const FILE_DIR = 'oh_media_files';
 
     private $absoluteUploadDir;
-    private $em;
-    private $fileRepo;
-    private $imageRepo;
+    private $fileRepository;
+    private $fileFolderRepository;
     private $fileSystem;
+    private $imageRepository;
+    private $imageResizeRepository;
     private $router;
     private $slugger;
 
     public function __construct(
-        EntityManager $em,
+        FileRepository $fileRepository,
+        FileFolderRepository $fileFolderRepository,
+        ImageRepository $imageRepository,
+        ImageResizeRepository $imageResizeRepository,
         UrlGeneratorInterface $router,
         string $projectDir
     ) {
         $this->absoluteUploadDir = $projectDir.'/'.static::FILE_DIR;
-        $this->em = $em;
-        $this->fileRepo = $em->getRepository(FileEntity::class);
+        $this->fileRepository = $fileRepository;
+        $this->fileFolderRepository = $fileFolderRepository;
         $this->fileSystem = new FileSystem();
-        $this->imageRepo = $em->getRepository(Image::class);
+        $this->imageRepository = $imageRepository;
+        $this->imageResizeRepository = $imageResizeRepository;
         $this->router = $router;
         $this->slugger = new AsciiSlugger();
     }
@@ -76,12 +84,12 @@ class FileManager
 
     public function getFileByToken(string $token): ?FileEntity
     {
-        return $this->fileRepo->findOneByToken($token);
+        return $this->fileRepository->findOneByToken($token);
     }
 
     public function getImage(int $id): ?Image
     {
-        return $this->imageRepo->find($id);
+        return $this->imageRepository->find($id);
     }
 
     public function copy(FileEntity $file): ?FileEntity
@@ -261,7 +269,7 @@ class FileManager
             for ($i = 0; $i < $length; ++$i) {
                 $token .= $chars[rand(0, $lastIndex)];
             }
-        } while ($this->fileRepo->findByToken($token));
+        } while ($this->fileRepository->findByToken($token));
 
         return $token;
     }
@@ -391,8 +399,7 @@ class FileManager
                 ->setHeight($height)
                 ->setImage($image);
 
-            $this->em->persist($resize);
-            $this->em->flush();
+            $this->imageResizeRepository->save($resize, true);
         }
 
         return $resize;
