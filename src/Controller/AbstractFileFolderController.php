@@ -1,13 +1,13 @@
 <?php
 
-namespace OHMedia\FileFolderBundle\Controller;
+namespace OHMedia\FileBundle\Controller;
 
-use Doctrine\ORM\QueryBuilder;
-use OHMedia\FileFolderBundle\Entity\FileFolder;
-use OHMedia\FileFolderBundle\Form\FileFolderCreateType;
-use OHMedia\FileFolderBundle\Form\FileFolderEditType;
-use OHMedia\FileFolderBundle\Repository\FileFolderRepository;
-use OHMedia\FileFolderBundle\Security\Voter\FileFolderVoter;
+use OHMedia\FileBundle\Entity\File;
+use OHMedia\FileBundle\Entity\FileFolder;
+use OHMedia\FileBundle\Form\FileFolderCreateType;
+use OHMedia\FileBundle\Form\FileFolderEditType;
+use OHMedia\FileBundle\Repository\FileFolderRepository;
+use OHMedia\FileBundle\Security\Voter\FileFolderVoter;
 use OHMedia\SecurityBundle\Form\DeleteType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -16,9 +16,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-abstract class AbstractFileFolderBackendController extends AbstractController
+abstract class AbstractFileFolderController extends AbstractController
 {
-    abstract protected function viewRender(QueryBuilder $queryBuilder): Response;
+    abstract protected function viewRender(array $items, File $newFile, FileFolder $newFileFolder): Response;
 
     abstract protected function createRender(FormView $formView, FileFolder $folder): Response;
 

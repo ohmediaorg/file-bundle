@@ -2,8 +2,8 @@
 
 namespace OHMedia\FileBundle\Controller;
 
-use Doctrine\ORM\QueryBuilder;
 use OHMedia\FileBundle\Entity\File;
+use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Form\FileCreateType;
 use OHMedia\FileBundle\Form\FileEditType;
 use OHMedia\FileBundle\Repository\FileRepository;
@@ -17,9 +17,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-abstract class AbstractFileBackendController extends AbstractController
+abstract class AbstractFileController extends AbstractController
 {
-    abstract protected function indexRender(QueryBuilder $queryBuilder): Response;
+    abstract protected function indexRender(array $items, File $newFile, FileFolder $newFileFolder): Response;
 
     abstract protected function createRender(FormView $formView, File $file): Response;
 
@@ -46,9 +46,6 @@ abstract class AbstractFileBackendController extends AbstractController
 
         return $this->indexRender($items, $newFile, $newFolder);
     }
-
-    // folder/create
-    // folder/{id}/folder/create
 
     #[Route('/file/create', name: 'file_create_no_folder', methods: ['GET', 'POST'])]
     public function createNoFolder(
