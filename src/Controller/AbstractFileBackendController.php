@@ -60,18 +60,18 @@ abstract class AbstractFileBackendController extends AbstractController
     // folder/{id}/folder/create
 
     #[Route('/file/create', name: 'file_create_no_folder', methods: ['GET', 'POST'])]
-    public function createFileNoFolder(
+    public function createNoFolder(
         Request $request,
         FileRepository $fileRepository
     ): Response {
         $file = new File();
         $file->setBrowser(true);
 
-        return $this->createFile($request, $fileRepository, $file);
+        return $this->create($request, $fileRepository, $file);
     }
 
     #[Route('/folder/{id}/file/create', name: 'file_create_with_folder', methods: ['GET', 'POST'])]
-    public function createFileInFolder(
+    public function createWithFolder(
         Request $request,
         FileRepository $fileRepository,
         FileFolder $folder
@@ -81,10 +81,10 @@ abstract class AbstractFileBackendController extends AbstractController
 
         $folder->addFile($file);
 
-        return $this->createFile($request, $fileRepository, $file);
+        return $this->create($request, $fileRepository, $file);
     }
 
-    private function createFile(
+    private function create(
         Request $request,
         FileRepository $fileRepository,
         File $file
