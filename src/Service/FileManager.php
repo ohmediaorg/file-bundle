@@ -450,14 +450,24 @@ class FileManager
             ->getQuery()
             ->getResult();
 
-        $items = array_merge($files, $folders);
+        // TODO: potential preferenes?
+        $filesFirst = false;
+        $foldersFirst = false;
 
-        usort($items, function($a, $b) {
-            $aProp = $a instanceof FileEntity ? $a->getFilename() : $a->getName();
-            $bProp = $b instanceof FileEntity ? $b->getFilename() : $b->getName();
+        if ($filesFirst) {
+            $items = array_merge($files, $folders);
+        } elseif ($foldersFirst) {
+            $items = array_merge($folders, $files);
+        } else {
+            $items = array_merge($files, $folders);
 
-            return $aProp <=> $bProp;
-        });
+            usort($items, function ($a, $b) {
+                $aProp = $a instanceof FileEntity ? $a->getFilename() : $a->getName();
+                $bProp = $b instanceof FileEntity ? $b->getFilename() : $b->getName();
+
+                return $aProp <=> $bProp;
+            });
+        }
 
         return $items;
     }
