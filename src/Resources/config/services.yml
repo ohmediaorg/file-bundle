@@ -59,3 +59,9 @@ services:
         calls:
             - method: setContainer
               arguments: ["@service_container"]
+
+    OHMedia\FileBundle\Security\Voter\FileVoter:
+        tags: ["security.voter"]
+
+    OHMedia\FileBundle\Security\Voter\FileFolderVoter:
+        tags: ["security.voter"]
