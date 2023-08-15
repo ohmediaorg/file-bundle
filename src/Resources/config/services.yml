@@ -65,3 +65,6 @@ services:
 
     OHMedia\FileBundle\Security\Voter\FileFolderVoter:
         tags: ["security.voter"]
+
+    OHMedia\FileBundle\Security\Voter\ImageVoter:
+        tags: ["security.voter"]

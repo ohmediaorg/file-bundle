@@ -5,7 +5,8 @@ namespace OHMedia\FileBundle\Controller;
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Entity\Image;
-use OHMedia\FileBundle\Repository\FileRepository;
+use OHMedia\FileBundle\Form\Type\ImageCreateType;
+use OHMedia\FileBundle\Form\Type\ImageEditType;
 use OHMedia\FileBundle\Repository\ImageRepository;
 use OHMedia\FileBundle\Security\Voter\ImageVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -66,6 +67,10 @@ abstract class AbstractImageController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $locked = $form->get('locked')->getData();
+
+            $image->getFile()->setLocked($locked);
+
             $imageRepository->save($image, true);
 
             $this->addFlash('notice', 'The image was created successfully.');
@@ -79,8 +84,8 @@ abstract class AbstractImageController extends AbstractController
     #[Route('/image/{id}/edit', name: 'image_edit', methods: ['GET', 'POST'])]
     public function edit(
         Request $request,
-        File $file,
-        FileRepository $fileRepository
+        Image $image,
+        ImageRepository $imageRepository
     ): Response {
         $this->denyAccessUnlessGranted(
             ImageVoter::EDIT,
@@ -115,7 +120,7 @@ abstract class AbstractImageController extends AbstractController
         return $this->formRedirect($image);
     }
 
-    protected function formRedirect(File $file): Response
+    protected function formRedirect(Image $image): Response
     {
         if ($folder = $image->getFile()->getFolder()) {
             return $this->redirectToRoute('folder_view', [

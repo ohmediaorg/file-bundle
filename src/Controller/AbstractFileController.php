@@ -4,6 +4,7 @@ namespace OHMedia\FileBundle\Controller;
 
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
+use OHMedia\FileBundle\Entity\Image;
 use OHMedia\FileBundle\Form\Type\FileCreateType;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Repository\FileRepository;
@@ -20,7 +21,7 @@ use Symfony\Component\Validator\Constraints\File as FileConstraint;
 
 abstract class AbstractFileController extends AbstractController
 {
-    abstract protected function indexRender(array $items, File $newFile, FileFolder $newFileFolder): Response;
+    abstract protected function indexRender(array $items, File $newFile, FileFolder $newFileFolder, Image $newImage): Response;
 
     abstract protected function createRender(FormView $formView, File $file): Response;
 
@@ -34,6 +35,7 @@ abstract class AbstractFileController extends AbstractController
     ): Response {
         $newFile = (new File())->setBrowser(true);
         $newFolder = (new FileFolder())->setBrowser(true);
+        $newImage = (new Image())->setFile($newFile);
 
         $this->denyAccessUnlessGranted(
             FileVoter::INDEX,
@@ -43,7 +45,7 @@ abstract class AbstractFileController extends AbstractController
 
         $items = $fileManager->getListing();
 
-        return $this->indexRender($items, $newFile, $newFolder);
+        return $this->indexRender($items, $newFile, $newFolder, $newImage);
     }
 
     #[Route('/file/create', name: 'file_create_no_folder', methods: ['GET', 'POST'])]

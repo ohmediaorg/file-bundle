@@ -388,7 +388,7 @@ class FileManager
 
             $copy
                 ->setName($copy->getName().'-'.$name)
-                ->setHidden(true)
+                ->setBrowser(false)
             ;
 
             $resize = new ImageResize();

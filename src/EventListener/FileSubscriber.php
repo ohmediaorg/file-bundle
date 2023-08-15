@@ -60,6 +60,8 @@ class FileSubscriber implements EventSubscriber
                 ;
             } else {
                 $this->preSaveFile($object);
+
+                // TODO: determine if Image object should be created
             }
         }
     }
