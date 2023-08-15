@@ -151,7 +151,7 @@ class File
         return false;
     }
 
-    public function setBrowser(bool $private): self
+    public function setBrowser(bool $browser): self
     {
         $this->browser = $browser;
 
@@ -171,7 +171,7 @@ class File
         return false;
     }
 
-    public function setLocked(bool $hidden): self
+    public function setLocked(bool $locked): self
     {
         $this->locked = $locked;
 
