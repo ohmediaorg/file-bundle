@@ -191,6 +191,12 @@ abstract class AbstractFileBackendController extends AbstractController
 
     protected function deleteRedirect(File $file): Response
     {
+        if ($folder = $file->getFolder()) {
+            return $this->redirectToRoute('file_folder_view', [
+                'id' => $folder->getId(),
+            ]);
+        }
+
         return $this->redirectToRoute('file_index');
     }
 }
