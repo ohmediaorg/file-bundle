@@ -31,8 +31,7 @@ abstract class AbstractFileFolderBackendController extends AbstractController
         Request $request,
         FileFolderRepository $fileFolderRepository
     ): Response {
-        $folder = new FileFolder();
-        $folder->setBrowser(true);
+        $folder = (new FileFolder())->setBrowser(true);
 
         return $this->create($request, $fileFolderRepository, $folder);
     }
@@ -43,8 +42,7 @@ abstract class AbstractFileFolderBackendController extends AbstractController
         FileFolderRepository $fileFolderRepository,
         FileFolder $parent
     ): Response {
-        $folder = new FileFolder();
-        $folder->setBrowser(true);
+        $folder = (new FileFolder())->setBrowser(true);
 
         $parent->addFolder($folder);
 
@@ -91,25 +89,17 @@ abstract class AbstractFileFolderBackendController extends AbstractController
             'You cannot view this folder.'
         );
 
-        // TODO: put in common function with optional FileFolder param
-        $files = $fileRepository->createQueryBuilder('f')
-            ->where('f.browser = 1')
-            ->andWhere('f.folder :folder')
-            ->setParameter('folder', $folder)
-            ->orderBy('f.name', 'ASC')
-            ->getQuery()
-            ->getResult();
+        $newFile = (new File())
+            ->setBrowser(true)
+            ->setFolder($folder);
 
-        // TODO: put in common function with optional FileFolder param
-        $folders = $fileFolderRepository->createQueryBuilder('f')
-            ->where('f.browser = 1')
-            ->andWhere('f.folder :folder')
-            ->setParameter('folder', $folder)
-            ->orderBy('f.name', 'ASC')
-            ->getQuery()
-            ->getResult();
+        $newFolder = (new FileFolder())
+            ->setBrowser(true)
+            ->setFolder($folder);
 
-        return $this->indexRender($folders, $files);
+        $items = $fileManager->getListing($folder);
+
+        return $this->indexRender($items, $newFile, $newFolder);
     }
 
     #[Route('/folder/{id}/edit', name: 'file_folder_edit', methods: ['GET', 'POST'])]

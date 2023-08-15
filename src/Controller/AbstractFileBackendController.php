@@ -8,6 +8,7 @@ use OHMedia\FileBundle\Form\FileCreateType;
 use OHMedia\FileBundle\Form\FileEditType;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Security\Voter\FileVoter;
+use OHMedia\FileBundle\Service\FileManager;
 use OHMedia\SecurityBundle\Form\DeleteType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -28,30 +29,22 @@ abstract class AbstractFileBackendController extends AbstractController
 
     #[Route('/files', name: 'file_index', methods: ['GET'])]
     public function index(
+        FileManager $fileManager,
         FileRepository $fileRepository,
         FileFolderRepository $fileFolderRepository
     ): Response {
+        $newFile = (new File())->setBrowser(true);
+        $newFolder = (new FileFolder())->setBrowser(true);
+
         $this->denyAccessUnlessGranted(
             FileVoter::INDEX,
-            new File(),
+            $newFile,
             'You cannot access the list of files.'
         );
 
-        // TODO: put in common function with optional FileFolder param
-        $files = $fileRepository->createQueryBuilder('f')
-            ->where('f.browser = 1')
-            ->orderBy('f.name', 'ASC')
-            ->getQuery()
-            ->getResult();
+        $items = $fileManager->getListing();
 
-        // TODO: put in common function with optional FileFolder param
-        $folders = $fileFolderRepository->createQueryBuilder('f')
-            ->where('f.browser = 1')
-            ->orderBy('f.name', 'ASC')
-            ->getQuery()
-            ->getResult();
-
-        return $this->indexRender($files, $folders);
+        return $this->indexRender($items, $newFile, $newFolder);
     }
 
     // folder/create
@@ -62,8 +55,7 @@ abstract class AbstractFileBackendController extends AbstractController
         Request $request,
         FileRepository $fileRepository
     ): Response {
-        $file = new File();
-        $file->setBrowser(true);
+        $file = (new File())->setBrowser(true);
 
         return $this->create($request, $fileRepository, $file);
     }
@@ -74,8 +66,7 @@ abstract class AbstractFileBackendController extends AbstractController
         FileRepository $fileRepository,
         FileFolder $folder
     ): Response {
-        $file = new File();
-        $file->setBrowser(true);
+        $file = (new File())->setBrowser(true);
 
         $folder->addFile($file);
 
