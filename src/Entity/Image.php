@@ -91,6 +91,11 @@ class Image
         return $this->file ? $this->file->getHeight() : null;
     }
 
+    public function isBrowser(): bool
+    {
+        return $this->file ? $this->file->isBrowser() : false;
+    }
+
     /**
      * @return Collection<int, ImageResize>
      */
