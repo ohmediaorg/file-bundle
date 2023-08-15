@@ -140,11 +140,15 @@ class File
 
     public function isBrowser(): bool
     {
+        if ($this->browser) {
+            return true;
+        }
+
         if ($this->folder) {
             return $this->folder->isBrowser();
         }
 
-        return $this->browser;
+        return false;
     }
 
     public function setBrowser(bool $private): self
@@ -156,11 +160,15 @@ class File
 
     public function isLocked(): bool
     {
+        if ($this->locked) {
+            return true;
+        }
+
         if ($this->folder) {
             return $this->folder->isLocked();
         }
 
-        return $this->locked;
+        return false;
     }
 
     public function setLocked(bool $hidden): self
