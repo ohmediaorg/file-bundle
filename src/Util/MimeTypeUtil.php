@@ -80,15 +80,29 @@ class MimeTypeUtil
     public static function getFileConstraint(array ...$consts)
     {
         $mimeTypes = self::getMimeTypes(...$consts);
-        $exts = self::getExtensions(...$consts);;
+        $exts = self::getExtensions(...$consts);
+
+        $lastExt = array_pop($exts);
+
+        if ($exts) {
+            $exts = implode(', ', $exts);
+
+            $mimeTypesMessage = sprintf(
+                'Only %s, and %s are accepted for upload.',
+                strtoupper($exts),
+                strtoupper($lastExt)
+            );
+        } else {
+            $mimeTypesMessage = sprintf(
+                'Only %s is accepted for upload.',
+                strtoupper($lastExt)
+            );
+        }
 
         return new FileConstraint([
             'mimeTypes' => $mimeTypes,
-            'mimeTypesMessage' => sprintf(
-                'Only %s are accepted for upload.',
-                strtoupper(implode('/', $exts)),
-            ),
-        ]),
+            'mimeTypesMessage' => $mimeTypesMessage,
+        ]);
     }
 
     public static function getAllFileConstraint(): FileConstraint
