@@ -58,7 +58,9 @@ class MimeTypeUtil
             $mimeTypes = array_merge($mimeTypes, array_keys($const));
         }
 
-        return $mimeTypes;
+        sort($mimeTypes);
+
+        return array_unique($mimeTypes);
     }
 
     public static function getExtensions(array ...$consts): array
@@ -69,7 +71,9 @@ class MimeTypeUtil
             $exts = array_merge($exts, array_values($const));
         }
 
-        return $exts;
+        sort($exts);
+
+        return array_unique($exts);
     }
 
     public static function getFileConstraint(array ...$consts)
