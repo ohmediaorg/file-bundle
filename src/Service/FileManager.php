@@ -438,6 +438,8 @@ class FileManager
             $fileQueryBuilder
                 ->andWhere('f.folder = :folder')
                 ->setParameter('folder', $parent);
+        } else {
+            $fileQueryBuilder->andWhere('IDENTITY(f.folder) IS NULL');
         }
 
         $files = $fileQueryBuilder
@@ -453,6 +455,8 @@ class FileManager
             $fileFolderQueryBuilder
                 ->andWhere('ff.folder = :folder')
                 ->setParameter('folder', $parent);
+        } else {
+            $fileFolderQueryBuilder->andWhere('IDENTITY(ff.folder) IS NULL');
         }
 
         $folders = $fileFolderQueryBuilder
