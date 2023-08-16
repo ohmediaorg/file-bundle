@@ -133,12 +133,74 @@ abstract class AbstractFileFolderController extends AbstractController
         return $this->editRender($form->createView(), $folder);
     }
 
+    #[Route('/folder/{id}/lock', name: 'file_folder_lock', methods: ['POST'])]
+    public function lock(
+        Request $request,
+        FileFolder $folder,
+        FileFolderRepository $fileFolderRepository
+    ): Response {
+        $this->denyAccessUnlessGranted(
+            FileFolderVoter::LOCK,
+            $folder,
+            'You cannot lock this folder.'
+        );
+
+        $csrfTokenName = 'lock_file_folder'.$folder->getId();
+        $csrfTokenValue = $request->request->get($csrfTokenName);
+
+        if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
+            $folder->setLocked(true);
+
+            $fileFolderRepository->save($folder, true);
+
+            $this->addFlash('notice', 'The folder was locked successfully.');
+        }
+
+        return $this->lockRedirect($folder);
+    }
+
+    #[Route('/folder/{id}/unlock', name: 'file_folder_unlock', methods: ['POST'])]
+    public function unlock(
+        Request $request,
+        FileFolder $folder,
+        FileFolderRepository $fileFolderRepository
+    ): Response {
+        $this->denyAccessUnlessGranted(
+            FileFolderVoter::UNLOCK,
+            $folder,
+            'You cannot unlock this folder.'
+        );
+
+        $csrfTokenName = 'unlock_file_folder'.$folder->getId();
+        $csrfTokenValue = $request->request->get($csrfTokenName);
+
+        if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
+            $folder->setLocked(false);
+
+            $fileFolderRepository->save($folder, true);
+
+            $this->addFlash('notice', 'The folder was unlocked successfully.');
+        }
+
+        return $this->unlockRedirect($folder);
+    }
+
     protected function createRedirect(FileFolder $folder): Response
     {
         return $this->formRedirect($folder);
     }
 
     protected function editRedirect(FileFolder $folder): Response
+    {
+        return $this->formRedirect($folder);
+    }
+
+    protected function lockRedirect(FileFolder $folder): Response
+    {
+        return $this->formRedirect($folder);
+    }
+
+    protected function unlockRedirect(FileFolder $folder): Response
     {
         return $this->formRedirect($folder);
     }
