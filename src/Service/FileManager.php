@@ -443,7 +443,7 @@ class FileManager
         }
 
         $files = $fileQueryBuilder
-            ->orderBy('f.name', 'ASC')
+            ->orderBy('LOWER(f.name)', 'ASC')
             ->getQuery()
             ->getResult();
 
@@ -460,7 +460,7 @@ class FileManager
         }
 
         $folders = $fileFolderQueryBuilder
-            ->orderBy('ff.name', 'ASC')
+            ->orderBy('LOWER(ff.name)', 'ASC')
             ->getQuery()
             ->getResult();
 
@@ -479,7 +479,7 @@ class FileManager
                 $aProp = $a instanceof FileEntity ? $a->getFilename() : $a->getName();
                 $bProp = $b instanceof FileEntity ? $b->getFilename() : $b->getName();
 
-                return $aProp <=> $bProp;
+                return strtolower($aProp) <=> strtolower($bProp);
             });
         }
 
