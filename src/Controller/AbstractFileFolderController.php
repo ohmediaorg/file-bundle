@@ -213,9 +213,7 @@ abstract class AbstractFileFolderController extends AbstractController
             ]);
         }
 
-        return $this->redirectToRoute('file_folder_view', [
-            'id' => $folder->getId(),
-        ]);
+        return $this->redirectToRoute('file_index');
     }
 
     #[Route('/folder/{id}/delete', name: 'file_folder_delete', methods: ['GET', 'POST'])]
