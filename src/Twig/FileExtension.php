@@ -8,6 +8,7 @@ use OHMedia\FileBundle\Entity\Image;
 use OHMedia\FileBundle\Entity\ImageResize;
 use OHMedia\FileBundle\Service\FileManager;
 use OHMedia\FileBundle\Util\FileUtil;
+use OHMedia\FileBundle\Util\MimeTypeUtil;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -85,26 +86,7 @@ class FileExtension extends AbstractExtension
 
     public function getImageTag(Image $image, array $attributes = [])
     {
-        $width = !empty($attributes['width']) ? $attributes['width'] : null;
-        $height = !empty($attributes['height']) ? $attributes['height'] : null;
-
-        $resize = $this->fileManager->getImageResize($image, $width, $height);
-
-        if ($resize) {
-            $file = $resize->getFile();
-
-            $attributes['width'] = $resize->getWidth();
-            $attributes['height'] = $resize->getHeight();
-        } else {
-            $file = $image->getFile();
-
-            $attributes['width'] = $image->getWidth();
-            $attributes['height'] = $image->getHeight();
-        }
-
-        $attributes['src'] = $this->getFilePath($file);
-
-        $attributes['alt'] = $image->getAlt();
+        $this->setImageTagAttributes($image, $attributes);
 
         $attributesString = [];
         foreach ($attributes as $attribute => $value) {
@@ -118,5 +100,35 @@ class FileExtension extends AbstractExtension
         $attributesString = implode(' ', $attributesString);
 
         return "<img $attributesString />";
+    }
+
+    private function setImageTagAttributes(Image $image, array &$attributes): void
+    {
+        $attributes['alt'] = $image->getAlt();
+
+        $file = $image->getFile();
+
+        if (MimeTypeUtil::SVG === $image->getFile()->getMimeType()) {
+            $attributes['src'] = $this->getFilePath($file);
+
+            return;
+        }
+
+        $width = !empty($attributes['width']) ? $attributes['width'] : null;
+        $height = !empty($attributes['height']) ? $attributes['height'] : null;
+
+        $resize = $this->fileManager->getImageResize($image, $width, $height);
+
+        if ($resize) {
+            $file = $resize->getFile();
+
+            $attributes['width'] = $resize->getWidth();
+            $attributes['height'] = $resize->getHeight();
+        } else {
+            $attributes['width'] = $image->getWidth();
+            $attributes['height'] = $image->getHeight();
+        }
+
+        $attributes['src'] = $this->getFilePath($file);
     }
 }
