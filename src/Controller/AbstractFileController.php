@@ -194,7 +194,7 @@ abstract class AbstractFileController extends AbstractController
     protected function formRedirect(File $file): Response
     {
         if ($folder = $file->getFolder()) {
-            return $this->redirectToRoute('folder_view', [
+            return $this->redirectToRoute('file_folder_view', [
                 'id' => $folder->getId(),
             ]);
         }

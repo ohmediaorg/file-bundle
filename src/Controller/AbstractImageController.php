@@ -123,7 +123,7 @@ abstract class AbstractImageController extends AbstractController
     protected function formRedirect(Image $image): Response
     {
         if ($folder = $image->getFile()->getFolder()) {
-            return $this->redirectToRoute('folder_view', [
+            return $this->redirectToRoute('file_folder_view', [
                 'id' => $folder->getId(),
             ]);
         }

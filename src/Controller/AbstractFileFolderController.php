@@ -4,10 +4,12 @@ namespace OHMedia\FileBundle\Controller;
 
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
+use OHMedia\FileBundle\Entity\Image;
 use OHMedia\FileBundle\Form\FileFolderCreateType;
 use OHMedia\FileBundle\Form\FileFolderEditType;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Security\Voter\FileFolderVoter;
+use OHMedia\FileBundle\Service\FileManager;
 use OHMedia\SecurityBundle\Form\DeleteType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -18,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 abstract class AbstractFileFolderController extends AbstractController
 {
-    abstract protected function viewRender(array $items, File $newFile, FileFolder $newFileFolder): Response;
+    abstract protected function viewRender(FileFolder $folder, array $items, File $newFile, FileFolder $newFileFolder, Image $newImage): Response;
 
     abstract protected function createRender(FormView $formView, FileFolder $folder): Response;
 
@@ -78,11 +80,8 @@ abstract class AbstractFileFolderController extends AbstractController
     }
 
     #[Route('/folder/{id}', name: 'file_folder_view', methods: ['GET'])]
-    public function index(
-        FileRepository $fileRepository,
-        FileFolderRepository $fileFolderRepository,
-        FileFolder $folder
-    ): Response {
+    public function view(FileFolder $folder, FileManager $fileManager): Response
+    {
         $this->denyAccessUnlessGranted(
             FileFolderVoter::VIEW,
             $folder,
@@ -97,9 +96,12 @@ abstract class AbstractFileFolderController extends AbstractController
             ->setBrowser(true)
             ->setFolder($folder);
 
+        $newImage = (new Image())
+            ->setFile($newFile);
+
         $items = $fileManager->getListing($folder);
 
-        return $this->indexRender($items, $newFile, $newFolder);
+        return $this->viewRender($folder, $items, $newFile, $newFolder, $newImage);
     }
 
     #[Route('/folder/{id}/edit', name: 'file_folder_edit', methods: ['GET', 'POST'])]

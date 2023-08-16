@@ -3,6 +3,7 @@
 namespace OHMedia\FileBundle\Service;
 
 use OHMedia\FileBundle\Entity\File as FileEntity;
+use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Entity\Image;
 use OHMedia\FileBundle\Entity\ImageResize;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
@@ -426,8 +427,8 @@ class FileManager
 
         if ($parent) {
             $fileQueryBuilder
-                ->andWhere('f.folder :folder')
-                ->setParameter('folder', $folder);
+                ->andWhere('f.folder = :folder')
+                ->setParameter('folder', $parent);
         }
 
         $files = $fileQueryBuilder
@@ -441,8 +442,8 @@ class FileManager
 
         if ($parent) {
             $fileFolderQueryBuilder
-                ->andWhere('ff.folder :folder')
-                ->setParameter('folder', $folder);
+                ->andWhere('ff.folder = :folder')
+                ->setParameter('folder', $parent);
         }
 
         $folders = $fileFolderQueryBuilder
