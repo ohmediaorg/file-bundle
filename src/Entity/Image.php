@@ -13,8 +13,6 @@ class Image
 {
     use BlameableTrait;
 
-    public const MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/svg', 'image/svg+xml'];
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

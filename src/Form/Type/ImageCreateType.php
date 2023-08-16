@@ -3,12 +3,12 @@
 namespace OHMedia\FileBundle\Form\Type;
 
 use OHMedia\FileBundle\Entity\Image;
+use OHMedia\FileBundle\Util\MimeTypeUtil;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\File as FileConstraint;
 
 class ImageCreateType extends AbstractType
 {
@@ -19,10 +19,7 @@ class ImageCreateType extends AbstractType
                 'label' => false,
                 'file_label' => 'Image',
                 'file_constraints' => [
-                    new FileConstraint([
-                        'mimeTypes' => Image::MIME_TYPES,
-                        'mimeTypesMessage' => 'Only JPG/PNG/GIF/SVG is accepted for upload.',
-                    ]),
+                    MimeTypeUtil::getImageFileConstraint(),
                 ],
             ])
             ->add('alt', TextType::class, [
