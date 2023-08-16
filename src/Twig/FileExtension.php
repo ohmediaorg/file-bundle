@@ -81,7 +81,7 @@ class FileExtension extends AbstractExtension
             ? $resize->getFile()
             : $image->getFile();
 
-        return $this->getFilePath($file);
+        return $file ? $this->getFilePath($file) : '';
     }
 
     public function getImageTag(Image $image, array $attributes = [])
@@ -107,6 +107,12 @@ class FileExtension extends AbstractExtension
         $attributes['alt'] = $image->getAlt();
 
         $file = $image->getFile();
+
+        if (!$file) {
+            $attributes['src'] = '';
+
+            return;
+        }
 
         if (MimeTypeUtil::SVG === $image->getFile()->getMimeType()) {
             $attributes['src'] = $this->getFilePath($file);
