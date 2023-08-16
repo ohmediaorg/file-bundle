@@ -4,6 +4,7 @@ namespace OHMedia\FileBundle\Form\Type;
 
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Service\FileManager;
+use OHMedia\FileBundle\Util\MimeTypeUtil;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -121,7 +122,9 @@ class FileEntityType extends AbstractType
         $resolver->setDefaults([
             'row_attr' => ['class' => 'file-entity-type'],
             'data_class' => File::class,
-            'file_constraints' => [],
+            'file_constraints' => [
+                MimeTypeUtil::getAllFileConstraint(),
+            ],
             'file_label' => false,
         ]);
     }

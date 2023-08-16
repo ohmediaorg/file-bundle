@@ -7,13 +7,13 @@ use Symfony\Component\Validator\Constraints\File as FileConstraint;
 class MimeTypeUtil
 {
     // supported by <audio> element
-    private const AUDIO = [
+    public const AUDIO = [
         'audio/mpeg' => 'mp3',
         'audio/ogg' => 'oga',
         'audio/wav' => 'wav',
     ];
 
-    private const DOCUMENT = [
+    public const DOCUMENT = [
         'application/x-abiword' => 'abw',
         'application/msword' => 'doc',
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx',
@@ -30,87 +30,75 @@ class MimeTypeUtil
     ];
 
     // supported by Image entity
-    private const IMAGE = [
+    public const IMAGE = [
         'image/gif' => 'gif',
         'image/jpeg' => 'jpeg',
         'image/png' => 'png',
         'image/svg+xml' => 'svg',
     ];
 
-    private const TEXT = [
+    public const TEXT = [
         'text/csv' => 'csv',
         'text/calendar' => 'ics',
         'text/plain' => 'txt',
     ];
 
     // supported by <video> element
-    private const VIDEO = [
+    public const VIDEO = [
         'video/mp4' => 'mp4',
         'video/ogg' => 'ogv',
         'video/webm' => 'webm',
     ];
 
-    public static function getAudioMimeTypes(): array
+    public static function getMimeTypes(array ...$consts): array
     {
-        return array_keys(self::AUDIO);
+        $mimeTypes = [];
+
+        foreach ($consts as $const) {
+            $mimeTypes = array_merge($mimeTypes, array_keys($const));
+        }
+
+        return $mimeTypes;
     }
 
-    public static function getAudioExtensions(): array
+    public static function getExtensions(array ...$consts): array
     {
-        return array_values(self::AUDIO);
+        $exts = [];
+
+        foreach ($consts as $const) {
+            $exts = array_merge($exts, array_values($const));
+        }
+
+        return $exts;
     }
 
-    public static function getDocumentMimeTypes(): array
+    public static function getFileConstraint(array ...$consts)
     {
-        return array_keys(self::DOCUMENT);
+        $mimeTypes = self::getMimeTypes(...$consts);
+        $exts = self::getExtensions(...$consts);;
+
+        return new FileConstraint([
+            'mimeTypes' => $mimeTypes,
+            'mimeTypesMessage' => sprintf(
+                'Only %s are accepted for upload.',
+                strtoupper(implode('/', $exts)),
+            ),
+        ]),
     }
 
-    public static function getDocumentExtensions(): array
+    public static function getAllFileConstraint(): FileConstraint
     {
-        return array_values(self::DOCUMENT);
-    }
-
-    public static function getImageMimeTypes(): array
-    {
-        return array_keys(self::IMAGE);
-    }
-
-    public static function getImageExtensions(): array
-    {
-        return array_values(self::IMAGE);
-    }
-
-    public static function getTextMimeTypes(): array
-    {
-        return array_keys(self::TEXT);
-    }
-
-    public static function getTextExtensions(): array
-    {
-        return array_values(self::TEXT);
-    }
-
-    public static function getVideoMimeTypes(): array
-    {
-        return array_keys(self::VIDEO);
-    }
-
-    public static function getVideoExtensions(): array
-    {
-        return array_values(self::VIDEO);
+        return self::getFileConstraint(
+            self::AUDIO,
+            self::DOCUMENT,
+            self::IMAGE,
+            self::TEXT,
+            self::VIDEO
+        );
     }
 
     public static function getImageFileConstraint(): FileConstraint
     {
-        $imageMimeTypes = self::getImageMimeTypes();
-        $imageExtensions = self::getImageExtensions();
-
-        return new FileConstraint([
-            'mimeTypes' => $imageMimeTypes,
-            'mimeTypesMessage' => sprintf(
-                'Only %s is accepted for upload.',
-                strtoupper(implode('/', $imageExtensions)),
-            ),
-        ]),
+        return self::getFileConstraint(self::IMAGE);
     }
 }
