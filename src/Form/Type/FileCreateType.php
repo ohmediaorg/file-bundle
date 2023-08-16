@@ -3,34 +3,32 @@
 namespace OHMedia\FileBundle\Form\Type;
 
 use OHMedia\FileBundle\Entity\File;
+use OHMedia\FileBundle\Util\MimeTypeUtil;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\File as FileConstraint;
 
 class FileCreateType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $accept = [];
+        $mimes = [
+            MimeTypeUtil::AUDIO,
+            MimeTypeUtil::DOCUMENT,
+            MimeTypeUtil::TEXT,
+            MimeTypeUtil::VIDEO,
+        ];
 
-        foreach ($options['file_constraints'] as $constraint) {
-            if (!($constraint instanceof FileConstraint)) {
-                continue;
-            }
-
-            $mimeTypes = (array) $constraint->mimeTypes;
-
-            $accept = array_merge($accept, $mimeTypes);
-        }
+        $fileConstraint = MimeTypeUtil::getFileConstraint(...$mimes);
+        $mimeTypes = MimeTypeUtil::getMimeTypes(...$mimes);
 
         $builder
             ->add('file', FileType::class, [
-                'constraints' => $options['file_constraints'],
+                'constraints' => [$fileConstraint],
                 'attr' => [
-                    'accept' => implode(',', $accept),
+                    'accept' => implode(',', $mimeTypes),
                 ],
             ])
             ->add('locked', CheckboxType::class, [
@@ -44,7 +42,6 @@ class FileCreateType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => File::class,
-            'file_constraints' => [],
         ]);
     }
 }
