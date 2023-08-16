@@ -57,6 +57,7 @@ class FileVoter extends AbstractEntityVoter
 
     protected function canUnlock(File $file, User $loggedIn): bool
     {
+        // TODO: if the parent is locked, you can't unlock
         return $file->isBrowser() && $file->isLocked();
     }
 
