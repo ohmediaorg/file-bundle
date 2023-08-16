@@ -38,6 +38,7 @@ class MimeTypeUtil
     ];
 
     public const TEXT = [
+        'application/csv' => 'csv',
         'text/csv' => 'csv',
         'text/calendar' => 'ics',
         'text/plain' => 'txt',
