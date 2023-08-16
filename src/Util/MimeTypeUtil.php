@@ -29,12 +29,14 @@ class MimeTypeUtil
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'xlsx',
     ];
 
+    public const SVG = 'image/svg+xml';
+
     // supported by Image entity
     public const IMAGE = [
         'image/gif' => 'gif',
         'image/jpeg' => 'jpeg',
         'image/png' => 'png',
-        'image/svg+xml' => 'svg',
+        self::SVG => 'svg',
     ];
 
     public const TEXT = [

@@ -12,6 +12,7 @@ use OHMedia\FileBundle\Repository\ImageRepository;
 use OHMedia\FileBundle\Repository\ImageResizeRepository;
 use OHMedia\FileBundle\Util\FileUtil;
 use OHMedia\FileBundle\Util\ImageResource;
+use OHMedia\FileBundle\Util\MimeTypeUtil;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
@@ -329,6 +330,10 @@ class FileManager
     {
         $sourceFile = $resize->getImage()->getFile();
 
+        if (MimeTypeUtil::SVG === $sourceFile->getMimeType()) {
+            return;
+        }
+
         $sourceFilepath = $this->getAbsolutePath($sourceFile);
 
         $imageResource = ImageResource::create($sourceFilepath);
@@ -408,6 +413,10 @@ class FileManager
 
     private function doImageProcessing(FileEntity $file)
     {
+        if (MimeTypeUtil::SVG === $file->getMimeType()) {
+            return;
+        }
+
         $filepath = $this->getAbsolutePath($file);
 
         $imageResource = ImageResource::create($filepath);
