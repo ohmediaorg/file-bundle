@@ -169,19 +169,15 @@ class FileManager
             return null;
         }
 
-        $path = [$filename];
-
-        $folder = $file->getFolder();
-
-        while ($folder) {
-            array_unshift($path, $folder->getName());
-
-            $folder = $folder->getFolder();
+        if ($folder = $file->getFolder()) {
+            $path = $folder->getPath().'/'.$filename;
+        } else {
+            $path = $filename;
         }
 
         return $this->router->generate('oh_media_file_view', [
             'token' => $token,
-            'path' => implode('/', $path),
+            'path' => $path,
         ]);
     }
 

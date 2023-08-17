@@ -149,6 +149,21 @@ class FileFolder
         return $this;
     }
 
+    public function getPath(): string
+    {
+        $path = [$this->getName()];
+
+        $parent = $this->getFolder();
+
+        while ($parent) {
+            array_unshift($path, $parent->getName());
+
+            $parent = $parent->getFolder();
+        }
+
+        return implode('/', $path);
+    }
+
     /**
      * @return Collection<int, File>
      */
