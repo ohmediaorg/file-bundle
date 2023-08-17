@@ -17,6 +17,7 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 abstract class AbstractFileFolderController extends AbstractController
 {
@@ -69,6 +70,8 @@ abstract class AbstractFileFolderController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->setFolderName($folder);
+
             $fileFolderRepository->save($folder, true);
 
             $this->addFlash('notice', 'The folder was created successfully.');
@@ -123,6 +126,8 @@ abstract class AbstractFileFolderController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->setFolderName($folder);
+
             $folderRepository->save($folder, true);
 
             $this->addFlash('notice', 'Changes to the folder were saved successfully.');
@@ -131,6 +136,15 @@ abstract class AbstractFileFolderController extends AbstractController
         }
 
         return $this->editRender($form->createView(), $folder);
+    }
+
+    private function setFolderName(FileFolder $folder): void
+    {
+        $slugger = new AsciiSlugger();
+
+        $name = $slugger->slug($folder->getName());
+
+        $folder->setName($name);
     }
 
     #[Route('/folder/{id}/lock', name: 'file_folder_lock', methods: ['POST'])]
