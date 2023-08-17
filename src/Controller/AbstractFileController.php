@@ -110,7 +110,7 @@ abstract class AbstractFileController extends AbstractController
             'You cannot lock this file.'
         );
 
-        $csrfTokenName = 'lock_file'.$file->getId();
+        $csrfTokenName = 'lock_file_'.$file->getId();
         $csrfTokenValue = $request->request->get($csrfTokenName);
 
         if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
@@ -136,7 +136,7 @@ abstract class AbstractFileController extends AbstractController
             'You cannot unlock this file.'
         );
 
-        $csrfTokenName = 'unlock_file'.$file->getId();
+        $csrfTokenName = 'unlock_file_'.$file->getId();
         $csrfTokenValue = $request->request->get($csrfTokenName);
 
         if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
