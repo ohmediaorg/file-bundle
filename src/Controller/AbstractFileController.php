@@ -6,6 +6,7 @@ use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Entity\Image;
 use OHMedia\FileBundle\Form\Type\FileCreateType;
+use OHMedia\FileBundle\Form\Type\FileMoveType;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Security\Voter\FileVoter;
@@ -23,6 +24,8 @@ abstract class AbstractFileController extends AbstractController
     abstract protected function indexRender(array $items, File $newFile, FileFolder $newFileFolder, Image $newImage): Response;
 
     abstract protected function createRender(FormView $formView, File $file): Response;
+
+    abstract protected function moveRender(FormView $formView, File $file): Response;
 
     abstract protected function deleteRender(FormView $formView, File $file): Response;
 
@@ -98,6 +101,35 @@ abstract class AbstractFileController extends AbstractController
         return $this->createRender($form->createView(), $file);
     }
 
+    #[Route('/file/{id}/move', name: 'file_move', methods: ['GET', 'POST'])]
+    public function move(
+        Request $request,
+        File $file,
+        FileRepository $fileRepository
+    ): Response {
+        $this->denyAccessUnlessGranted(
+            FileVoter::MOVE,
+            $file,
+            'You cannot move this file.'
+        );
+
+        $form = $this->createForm(FileMoveType::class, $file);
+
+        $form->add('submit', SubmitType::class);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $fileRepository->save($file, true);
+
+            $this->addFlash('notice', 'The file was moved successfully.');
+
+            return $this->moveRedirect($file);
+        }
+
+        return $this->moveRender($form->createView(), $file);
+    }
+
     #[Route('/file/{id}/lock', name: 'file_lock', methods: ['POST'])]
     public function lock(
         Request $request,
@@ -151,6 +183,11 @@ abstract class AbstractFileController extends AbstractController
     }
 
     protected function createRedirect(File $file): Response
+    {
+        return $this->formRedirect($file);
+    }
+
+    protected function moveRedirect(File $file): Response
     {
         return $this->formRedirect($file);
     }
