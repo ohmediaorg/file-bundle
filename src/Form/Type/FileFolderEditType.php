@@ -20,6 +20,7 @@ class FileFolderEditType extends AbstractType
             ->add('name')
             ->add('folder', EntityType::class, [
                 'class' => FileFolder::class,
+                'required' => false,
                 'query_builder' => function (EntityRepository $er) use ($folder) {
                     return $er->createQueryBuilder('ff')
                         ->where('ff.browser = 1')
@@ -27,7 +28,10 @@ class FileFolderEditType extends AbstractType
                         ->setParameter('id', $folder->getId())
                         ->orderBy('LOWER(ff.name)', 'ASC');
                 },
-                'choice_label' => 'path',
+                'placeholder' => '/',
+                'choice_label' => function (FileFolder $folder) {
+                    return '/'.$folder->getPath();
+                },
             ])
             ->add('locked', CheckboxType::class, [
                 'required' => false,
