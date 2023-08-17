@@ -138,6 +138,7 @@ abstract class AbstractFileFolderController extends AbstractController
         return $this->editRender($form->createView(), $folder);
     }
 
+    // TODO: move this to subscriber?
     private function setFolderName(FileFolder $folder): void
     {
         $slugger = new AsciiSlugger();
