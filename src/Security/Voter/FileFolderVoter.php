@@ -56,8 +56,17 @@ class FileFolderVoter extends AbstractEntityVoter
 
     protected function canUnlock(FileFolder $folder, User $loggedIn): bool
     {
-        // TODO: if the parent is locked, you can't unlock
-        return $folder->isBrowser() && $folder->isLocked();
+        if (!$folder->isBrowser()) {
+            return false;
+        }
+
+        $parent = $folder->getFolder();
+
+        if ($parent && $parent->isLocked()) {
+            return false;
+        }
+
+        return $folder->isLocked();
     }
 
     protected function canMove(FileFolder $folder, User $loggedIn): bool
