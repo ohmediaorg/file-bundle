@@ -14,7 +14,6 @@ use OHMedia\FileBundle\Util\FileUtil;
 use OHMedia\FileBundle\Util\ImageResource;
 use OHMedia\FileBundle\Util\MimeTypeUtil;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -50,39 +49,6 @@ class FileManager
         $this->imageResizeRepository = $imageResizeRepository;
         $this->router = $router;
         $this->slugger = new AsciiSlugger();
-    }
-
-    public function response(FileEntity $file): ?BinaryFileResponse
-    {
-        $physicalFile = $this->getAbsolutePath($file);
-
-        if (!file_exists($physicalFile)) {
-            return null;
-        }
-
-        $mimeType = $file->getMimeType();
-
-        $maliciousMimeTypes = [
-            'application/x-httpd-php',
-            'application/xhtml+xml',
-            'text/html',
-        ];
-
-        if (in_array($mimeType, $maliciousMimeTypes)) {
-            $mimeType = 'text/plain';
-        }
-
-        $response = new BinaryFileResponse($physicalFile);
-        $response->headers->set('Content-Type', $mimeType);
-
-        BinaryFileResponse::trustXSendfileTypeHeader();
-
-        return $response;
-    }
-
-    public function getFileByToken(string $token): ?FileEntity
-    {
-        return $this->fileRepository->findOneByToken($token);
     }
 
     public function getImage(int $id): ?Image

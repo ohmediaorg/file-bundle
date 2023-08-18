@@ -2,8 +2,9 @@
 
 namespace OHMedia\FileBundle\Controller;
 
+use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Security\Voter\FileVoter;
-use OHMedia\FileBundle\Service\FileManager;
+use OHMedia\FileBundle\Service\FileResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,15 +12,19 @@ use Symfony\Component\Routing\Annotation\Route;
 class FileController extends AbstractController
 {
     #[Route('/f/{token}/{path}', name: 'oh_media_file_view', requirements: ['path' => '.+'], methods: ['GET'])]
-    public function view(FileManager $fileManager, string $token, string $path = ''): Response
-    {
-        $file = $fileManager->getFileByToken($token);
+    public function view(
+        FileResponse $fileResponse,
+        FileRepository $fileRepository,
+        string $token,
+        string $path = ''
+    ): Response {
+        $file = $fileRepository->findOneByToken($token);
 
         if (!$file) {
             throw $this->createNotFoundException('File not found');
         }
 
-        $response = $fileManager->response($file);
+        $response = $fileResponse->get($file);
 
         if ($file->isLocked()) {
             $this->denyAccessUnlessGranted(

@@ -11,6 +11,9 @@ services:
     oh_media_file.file_manager:
         alias: OHMedia\FileBundle\Service\FileManager
 
+    OHMedia\FileBundle\Service\FileResponse:
+        autowire: true
+
     OHMedia\FileBundle\Twig\FileExtension:
         arguments: ["@oh_media_file.file_manager"]
         tags: ["twig.extension"]
