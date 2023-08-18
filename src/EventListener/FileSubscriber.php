@@ -8,6 +8,7 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Entity\ImageResize;
+use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Service\FileManager;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
@@ -15,8 +16,11 @@ class FileSubscriber implements EventSubscriber
 {
     private $fileManager;
 
-    public function __construct(FileManager $fileManager)
-    {
+    public function __construct(
+        FileFolderRepository $fileFolderRepository,
+        FileManager $fileManager
+    ) {
+        $this->fileFolderRepository = $fileFolderRepository;
         $this->fileManager = $fileManager;
     }
 
@@ -139,9 +143,18 @@ class FileSubscriber implements EventSubscriber
     {
         $slugger = new AsciiSlugger();
 
-        $name = $slugger->slug($folder->getName());
+        $name = strtolower($folder->getName());
 
-        $folder->setName($name);
+        $slug = $slugger->slug($name);
+
+        $i = 1;
+        while ($this->fileFolderRepository->countByName($slug, $folder)) {
+            $slug = $slugger->slug($name.'-'.$i);
+
+            ++$i;
+        }
+
+        $folder->setName($slug);
     }
 
     private function postSaveImageResize(ImageResize $resize)
