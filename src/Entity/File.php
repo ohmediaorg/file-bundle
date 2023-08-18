@@ -22,7 +22,7 @@ class File
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 30, nullable: true)]
+    #[ORM\Column(length: self::TOKEN_LENGTH, nullable: true)]
     private ?string $token = null;
 
     #[ORM\Column(length: 255, nullable: true)]
