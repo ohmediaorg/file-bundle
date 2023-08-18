@@ -18,16 +18,13 @@ class FileSubscriber implements EventSubscriber
 {
     private $fileFolderRepository;
     private $fileManager;
-    private $fileFolderRepository;
 
     public function __construct(
         FileFolderRepository $fileFolderRepository,
-        FileManager $fileManager,
-        ImageManager $imageManager
+        FileManager $fileManager
     ) {
         $this->fileFolderRepository = $fileFolderRepository;
         $this->fileManager = $fileManager;
-        $this->imageManager = $imageManager;
     }
 
     public function getSubscribedEvents(): array
