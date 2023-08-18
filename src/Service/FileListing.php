@@ -1,0 +1,85 @@
+<?php
+
+namespace OHMedia\FileBundle\Service;
+
+use OHMedia\FileBundle\Entity\File as FileEntity;
+use OHMedia\FileBundle\Entity\FileFolder;
+use OHMedia\FileBundle\Repository\FileFolderRepository;
+use OHMedia\FileBundle\Repository\FileRepository;
+
+class FileListing
+{
+    private $fileRepository;
+    private $fileFolderRepository;
+
+    public function __construct(
+        FileRepository $fileRepository,
+        FileFolderRepository $fileFolderRepository
+    ) {
+        $this->fileRepository = $fileRepository;
+        $this->fileFolderRepository = $fileFolderRepository;
+    }
+
+    public function get(FileFolder $parent = null): array
+    {
+        $fileQueryBuilder = $this->fileRepository
+            ->createQueryBuilder('f')
+            ->where('f.browser = 1');
+
+        if ($parent) {
+            $fileQueryBuilder
+                ->andWhere('f.folder = :folder')
+                ->setParameter('folder', $parent);
+        } else {
+            $fileQueryBuilder->andWhere('IDENTITY(f.folder) IS NULL');
+        }
+
+        $files = $fileQueryBuilder
+            ->orderBy('LOWER(f.name)', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $fileFolderQueryBuilder = $this->fileFolderRepository
+            ->createQueryBuilder('ff')
+            ->where('ff.browser = 1');
+
+        if ($parent) {
+            $fileFolderQueryBuilder
+                ->andWhere('ff.folder = :folder')
+                ->setParameter('folder', $parent);
+        } else {
+            $fileFolderQueryBuilder->andWhere('IDENTITY(ff.folder) IS NULL');
+        }
+
+        $folders = $fileFolderQueryBuilder
+            ->orderBy('LOWER(ff.name)', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        // TODO: potential user preferences?
+        $filesFirst = false;
+        $foldersFirst = true;
+
+        if ($filesFirst) {
+            $items = array_merge($files, $folders);
+        } elseif ($foldersFirst) {
+            $items = array_merge($folders, $files);
+        } else {
+            $items = array_merge($files, $folders);
+
+            usort($items, function ($a, $b) {
+                $aProp = $a instanceof FileEntity
+                    ? $a->getFilename()
+                    : $a->getName();
+
+                $bProp = $b instanceof FileEntity
+                    ? $b->getFilename()
+                    : $b->getName();
+
+                return strtolower($aProp) <=> strtolower($bProp);
+            });
+        }
+
+        return $items;
+    }
+}

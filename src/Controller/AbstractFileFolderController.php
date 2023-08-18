@@ -9,7 +9,7 @@ use OHMedia\FileBundle\Form\Type\FileFolderCreateType;
 use OHMedia\FileBundle\Form\Type\FileFolderEditType;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Security\Voter\FileFolderVoter;
-use OHMedia\FileBundle\Service\FileManager;
+use OHMedia\FileBundle\Service\FileListing;
 use OHMedia\SecurityBundle\Form\DeleteType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -80,7 +80,7 @@ abstract class AbstractFileFolderController extends AbstractController
     }
 
     #[Route('/folder/{id}', name: 'file_folder_view', methods: ['GET'])]
-    public function view(FileFolder $folder, FileManager $fileManager): Response
+    public function view(FileFolder $folder, FileListing $fileListing): Response
     {
         $this->denyAccessUnlessGranted(
             FileFolderVoter::VIEW,
@@ -99,7 +99,7 @@ abstract class AbstractFileFolderController extends AbstractController
         $newImage = (new Image())
             ->setFile($newFile);
 
-        $items = $fileManager->getListing($folder);
+        $items = $fileListing->get($folder);
 
         return $this->viewRender($folder, $items, $newFile, $newFolder, $newImage);
     }

@@ -10,7 +10,7 @@ use OHMedia\FileBundle\Form\Type\FileMoveType;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Security\Voter\FileVoter;
-use OHMedia\FileBundle\Service\FileManager;
+use OHMedia\FileBundle\Service\FileListing;
 use OHMedia\SecurityBundle\Form\DeleteType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -31,7 +31,7 @@ abstract class AbstractFileController extends AbstractController
 
     #[Route('/files', name: 'file_index', methods: ['GET'])]
     public function index(
-        FileManager $fileManager,
+        FileListing $fileListing,
         FileRepository $fileRepository,
         FileFolderRepository $fileFolderRepository
     ): Response {
@@ -45,7 +45,7 @@ abstract class AbstractFileController extends AbstractController
             'You cannot access the list of files.'
         );
 
-        $items = $fileManager->getListing();
+        $items = $fileListing->get();
 
         return $this->indexRender($items, $newFile, $newFolder, $newImage);
     }
