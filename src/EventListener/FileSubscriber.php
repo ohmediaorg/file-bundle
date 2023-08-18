@@ -10,18 +10,24 @@ use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Entity\ImageResize;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Service\FileManager;
+use OHMedia\FileBundle\Util\ImageResource;
+use OHMedia\FileBundle\Util\MimeTypeUtil;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class FileSubscriber implements EventSubscriber
 {
+    private $fileFolderRepository;
     private $fileManager;
+    private $fileFolderRepository;
 
     public function __construct(
         FileFolderRepository $fileFolderRepository,
-        FileManager $fileManager
+        FileManager $fileManager,
+        ImageManager $imageManager
     ) {
         $this->fileFolderRepository = $fileFolderRepository;
         $this->fileManager = $fileManager;
+        $this->imageManager = $imageManager;
     }
 
     public function getSubscribedEvents(): array
@@ -159,6 +165,29 @@ class FileSubscriber implements EventSubscriber
 
     private function postSaveImageResize(ImageResize $resize)
     {
-        $this->fileManager->postSaveImageResize($resize);
+        $sourceFile = $resize->getImage()->getFile();
+
+        if (MimeTypeUtil::SVG === $sourceFile->getMimeType()) {
+            return;
+        }
+
+        $sourceFilepath = $this->fileManager->getAbsolutePath($sourceFile);
+
+        $imageResource = ImageResource::create($sourceFilepath);
+
+        if (!$imageResource) {
+            return;
+        }
+
+        $width = $resize->getWidth();
+        $height = $resize->getHeight();
+
+        $imageResource->resize($width, $height);
+
+        $file = $resize->getFile();
+
+        $filepath = $this->fileManager->getAbsolutePath($file);
+
+        $imageResource->save($filepath);
     }
 }

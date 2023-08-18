@@ -2,8 +2,6 @@ services:
     OHMedia\FileBundle\Service\FileManager:
         arguments:
             - "@oh_media_file.file_repository"
-            - "@oh_media_file.image_repository"
-            - "@oh_media_file.image_resize_repository"
             - "@router.default"
             - "%kernel.project_dir%"
 

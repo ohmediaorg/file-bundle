@@ -3,12 +3,7 @@
 namespace OHMedia\FileBundle\Service;
 
 use OHMedia\FileBundle\Entity\File as FileEntity;
-use OHMedia\FileBundle\Entity\Image;
-use OHMedia\FileBundle\Entity\ImageResize;
 use OHMedia\FileBundle\Repository\FileRepository;
-use OHMedia\FileBundle\Repository\ImageRepository;
-use OHMedia\FileBundle\Repository\ImageResizeRepository;
-use OHMedia\FileBundle\Util\FileUtil;
 use OHMedia\FileBundle\Util\ImageResource;
 use OHMedia\FileBundle\Util\MimeTypeUtil;
 use Symfony\Component\Filesystem\Filesystem;
@@ -25,30 +20,19 @@ class FileManager
     private $absoluteUploadDir;
     private $fileRepository;
     private $fileSystem;
-    private $imageRepository;
-    private $imageResizeRepository;
     private $router;
     private $slugger;
 
     public function __construct(
         FileRepository $fileRepository,
-        ImageRepository $imageRepository,
-        ImageResizeRepository $imageResizeRepository,
         UrlGeneratorInterface $router,
         string $projectDir
     ) {
         $this->absoluteUploadDir = $projectDir.'/'.static::FILE_DIR;
         $this->fileRepository = $fileRepository;
         $this->fileSystem = new FileSystem();
-        $this->imageRepository = $imageRepository;
-        $this->imageResizeRepository = $imageResizeRepository;
         $this->router = $router;
         $this->slugger = new AsciiSlugger();
-    }
-
-    public function getImage(int $id): ?Image
-    {
-        return $this->imageRepository->find($id);
     }
 
     public function copy(FileEntity $file): ?FileEntity
@@ -277,91 +261,6 @@ class FileManager
         $filepath = $this->getAbsolutePath($file);
 
         $this->fileSystem->remove($filepath);
-    }
-
-    public function postSaveImageResize(ImageResize $resize)
-    {
-        $sourceFile = $resize->getImage()->getFile();
-
-        if (MimeTypeUtil::SVG === $sourceFile->getMimeType()) {
-            return;
-        }
-
-        $sourceFilepath = $this->getAbsolutePath($sourceFile);
-
-        $imageResource = ImageResource::create($sourceFilepath);
-
-        if (!$imageResource) {
-            return;
-        }
-
-        $width = $resize->getWidth();
-        $height = $resize->getHeight();
-
-        $imageResource->resize($width, $height);
-
-        $file = $resize->getFile();
-
-        $filepath = $this->getAbsolutePath($file);
-
-        $imageResource->save($filepath);
-    }
-
-    public function getImageResize(
-        Image $image,
-        int $width = null,
-        int $height = null
-    ): ?ImageResize {
-        if (null === $width && null === $height) {
-            return null;
-        }
-
-        $origWidth = $image->getWidth();
-        $origHeight = $image->getHeight();
-
-        if (!$origWidth || !$origHeight) {
-            // something is not right, don't try to resize
-            return null;
-        }
-
-        if (null === $width) {
-            $width = FileUtil::getTargetWidth(
-                $origWidth,
-                $origHeight,
-                $height
-            );
-        } elseif (null === $height) {
-            $height = FileUtil::getTargetHeight(
-                $origWidth,
-                $origHeight,
-                $width
-            );
-        }
-
-        $name = sprintf('%sx%s', $width, $height);
-
-        $resize = $image->getResize($name);
-
-        if (!$resize) {
-            $copy = $this->copy($image->getFile());
-
-            $copy
-                ->setName($copy->getName().'-'.$name)
-                ->setBrowser(false)
-            ;
-
-            $resize = new ImageResize();
-            $resize
-                ->setFile($copy)
-                ->setName($name)
-                ->setWidth($width)
-                ->setHeight($height)
-                ->setImage($image);
-
-            $this->imageResizeRepository->save($resize, true);
-        }
-
-        return $resize;
     }
 
     private function doImageProcessing(FileEntity $file)

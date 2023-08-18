@@ -15,10 +15,14 @@ use Twig\TwigFunction;
 class FileExtension extends AbstractExtension
 {
     private $fileManager;
+    private $imageSizeRepository;
 
-    public function __construct(FileManager $fileManager)
-    {
+    public function __construct(
+        FileManager $fileManager,
+        ImageSizeRepository $imageSizeRepository
+    ) {
         $this->fileManager = $fileManager;
+        $this->imageSizeRepository = $imageSizeRepository;
     }
 
     public function getFunctions(): array
@@ -75,7 +79,7 @@ class FileExtension extends AbstractExtension
 
     public function getImagePath(Image $image, int $width = null, int $height = null)
     {
-        $resize = $this->fileManager->getImageResize($image, $width, $height);
+        $resize = $this->getImageResize($image, $width, $height);
 
         $file = $resize
             ? $resize->getFile()
@@ -123,7 +127,7 @@ class FileExtension extends AbstractExtension
         $width = !empty($attributes['width']) ? $attributes['width'] : null;
         $height = !empty($attributes['height']) ? $attributes['height'] : null;
 
-        $resize = $this->fileManager->getImageResize($image, $width, $height);
+        $resize = $this->getImageResize($image, $width, $height);
 
         if ($resize) {
             $file = $resize->getFile();
@@ -136,5 +140,62 @@ class FileExtension extends AbstractExtension
         }
 
         $attributes['src'] = $this->getFilePath($file);
+    }
+
+    private function getImageResize(
+        Image $image,
+        int $width = null,
+        int $height = null
+    ): ?ImageResize {
+        if (null === $width && null === $height) {
+            return null;
+        }
+
+        $origWidth = $image->getWidth();
+        $origHeight = $image->getHeight();
+
+        if (!$origWidth || !$origHeight) {
+            // something is not right, don't try to resize
+            return null;
+        }
+
+        if (null === $width) {
+            $width = FileUtil::getTargetWidth(
+                $origWidth,
+                $origHeight,
+                $height
+            );
+        } elseif (null === $height) {
+            $height = FileUtil::getTargetHeight(
+                $origWidth,
+                $origHeight,
+                $width
+            );
+        }
+
+        $name = sprintf('%sx%s', $width, $height);
+
+        $resize = $image->getResize($name);
+
+        if (!$resize) {
+            $copy = $this->fileManager->copy($image->getFile());
+
+            $copy
+                ->setName($copy->getName().'-'.$name)
+                ->setBrowser(false)
+            ;
+
+            $resize = new ImageResize();
+            $resize
+                ->setFile($copy)
+                ->setName($name)
+                ->setWidth($width)
+                ->setHeight($height)
+                ->setImage($image);
+
+            $this->imageResizeRepository->save($resize, true);
+        }
+
+        return $resize;
     }
 }
