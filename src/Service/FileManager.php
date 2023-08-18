@@ -462,7 +462,7 @@ class FileManager
 
         // TODO: potential user preferences?
         $filesFirst = false;
-        $foldersFirst = false;
+        $foldersFirst = true;
 
         if ($filesFirst) {
             $items = array_merge($files, $folders);
