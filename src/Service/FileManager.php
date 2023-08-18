@@ -3,36 +3,28 @@
 namespace OHMedia\FileBundle\Service;
 
 use OHMedia\FileBundle\Entity\File as FileEntity;
-use OHMedia\FileBundle\Repository\FileRepository;
-use OHMedia\FileBundle\Util\ImageResource;
-use OHMedia\FileBundle\Util\MimeTypeUtil;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class FileManager
 {
     public const FILE_DIR = 'oh_media_files';
 
     private $absoluteUploadDir;
-    private $fileRepository;
-    private $fileSystem;
     private $router;
-    private $slugger;
 
     public function __construct(
-        FileRepository $fileRepository,
         UrlGeneratorInterface $router,
         string $projectDir
     ) {
         $this->absoluteUploadDir = $projectDir.'/'.static::FILE_DIR;
-        $this->fileRepository = $fileRepository;
-        $this->fileSystem = new FileSystem();
         $this->router = $router;
-        $this->slugger = new AsciiSlugger();
+    }
+
+    public function getAbsoluteUploadDir(): string
+    {
+        return $this->absoluteUploadDir;
     }
 
     public function copy(FileEntity $file): ?FileEntity
@@ -120,163 +112,5 @@ class FileManager
             'token' => $token,
             'path' => $path,
         ]);
-    }
-
-    private $newFiles = [];
-
-    public function preSaveFile(FileEntity $file)
-    {
-        $httpFile = $file->getFile();
-
-        if (null === $httpFile) {
-            return;
-        }
-
-        $token = $this->generateFileToken();
-
-        $file->setToken($token);
-
-        $this->setFileDimensions($file, $httpFile);
-
-        if ($httpFile instanceof UploadedFile) {
-            $name = $httpFile->getClientOriginalName();
-            $ext = $httpFile->getClientOriginalExtension();
-
-            $name = preg_replace('/\.'.preg_quote($ext).'$/', '', $name);
-
-            $name = $this->slugger->slug($name);
-            $ext = $this->slugger->slug($ext);
-
-            $file
-                ->setName($name)
-                ->setExt($ext)
-            ;
-        }
-
-        $ext = $httpFile->guessExtension();
-
-        if ($ext) {
-            $ext = '.'.$ext;
-        }
-
-        $now = new \DateTime();
-
-        $basename = $now->format('His');
-
-        $path = $now->format('Y/m/d');
-
-        $fullPath = $this->absoluteUploadDir.'/'.$path;
-
-        $this->fileSystem->mkdir($fullPath);
-
-        $i = 1;
-        $temp = $basename;
-        while (glob("$fullPath/$temp.*") || isset($this->newFiles["$fullPath/$temp"])) {
-            $temp = $basename.'-'.$i;
-
-            ++$i;
-        }
-
-        $this->newFiles["$fullPath/$temp"] = 1;
-
-        $path .= '/'.$temp.$ext;
-
-        $mimeType = $this->getMimeType($file);
-
-        $size = $httpFile->getSize();
-
-        $file
-            ->setPath($path)
-            ->setMimeType($mimeType)
-            ->setSize($size ?: null)
-        ;
-    }
-
-    private function generateFileToken(): string
-    {
-        $lowercase = implode('', range('a', 'z'));
-        $numbers = implode('', range(0, 9));
-
-        $chars = $lowercase.$numbers;
-        $lastIndex = strlen($chars) - 1;
-
-        $length = FileEntity::TOKEN_LENGTH;
-
-        do {
-            $token = '';
-
-            for ($i = 0; $i < $length; ++$i) {
-                $token .= $chars[rand(0, $lastIndex)];
-            }
-        } while ($this->fileRepository->findByToken($token));
-
-        return $token;
-    }
-
-    private function setFileDimensions(FileEntity $file, HttpFile $httpFile)
-    {
-        $width = $height = null;
-
-        $imageSize = @getimagesize($httpFile->getRealPath());
-
-        if ($imageSize) {
-            $width = $imageSize[0];
-            $height = $imageSize[1];
-        }
-
-        $file
-            ->setWidth($width)
-            ->setHeight($height)
-        ;
-    }
-
-    public function postSaveFile(FileEntity $file)
-    {
-        if ($file->getPath() && $file->getFile()) {
-            $path = explode('/', $file->getPath());
-            $name = array_pop($path);
-            $path = implode('/', $path);
-
-            // if there is an error when moving the file, an exception will
-            // be automatically thrown by move(). This will properly prevent
-            // the entity from being persisted to the database on error
-            $file->getFile()->move($this->absoluteUploadDir.'/'.$path, $name);
-
-            $this->doImageProcessing($file);
-        }
-
-        // check if we have an old file
-        if ($file->getOldPath()) {
-            // delete the old file
-            $this->fileSystem->remove($this->absoluteUploadDir.'/'.$file->getOldPath());
-            // clear the temp file path
-            $file->setOldPath(null);
-        }
-
-        $file->clearFile();
-    }
-
-    public function postRemoveFile(FileEntity $file)
-    {
-        $filepath = $this->getAbsolutePath($file);
-
-        $this->fileSystem->remove($filepath);
-    }
-
-    private function doImageProcessing(FileEntity $file)
-    {
-        if (MimeTypeUtil::SVG === $file->getMimeType()) {
-            return;
-        }
-
-        $filepath = $this->getAbsolutePath($file);
-
-        $imageResource = ImageResource::create($filepath);
-
-        if (!$imageResource) {
-            return;
-        }
-
-        $imageResource->fixOrientation()->save();
     }
 }
