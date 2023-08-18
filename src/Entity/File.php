@@ -66,7 +66,6 @@ class File
         $this->cloned = true;
 
         if ($this->folder) {
-            // TODO: necessary?
             $this->folder->add($this);
         }
     }

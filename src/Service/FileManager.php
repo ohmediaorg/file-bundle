@@ -460,7 +460,7 @@ class FileManager
             ->getQuery()
             ->getResult();
 
-        // TODO: potential preferenes?
+        // TODO: potential user preferences?
         $filesFirst = false;
         $foldersFirst = false;
 
