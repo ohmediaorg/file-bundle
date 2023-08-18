@@ -15,11 +15,11 @@ class FileController extends AbstractController
     {
         $file = $fileManager->getFileByToken($token);
 
-        $response = $fileManager->response($file);
-
-        if (!$response) {
+        if (!$file) {
             throw $this->createNotFoundException('File not found');
         }
+
+        $response = $fileManager->response($file);
 
         if ($file->isLocked()) {
             $this->denyAccessUnlessGranted(

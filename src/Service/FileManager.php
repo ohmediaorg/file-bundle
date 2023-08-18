@@ -52,12 +52,8 @@ class FileManager
         $this->slugger = new AsciiSlugger();
     }
 
-    public function response(?FileEntity $file): ?BinaryFileResponse
+    public function response(FileEntity $file): ?BinaryFileResponse
     {
-        if (!$file) {
-            return null;
-        }
-
         $physicalFile = $this->getAbsolutePath($file);
 
         if (!file_exists($physicalFile)) {
