@@ -24,6 +24,10 @@ services:
         autowire: true
         tags: ["twig.extension"]
 
+    OHMedia\FileBundle\Twig\WysiwygExtension:
+        autowire: true
+        tags: ["twig.extension", "oh_media_wysiwyg.extension"]
+
     OHMedia\FileBundle\EventListener\FileSubscriber:
         autowire: true
         tags: ["doctrine.event_subscriber"]
@@ -36,29 +40,17 @@ services:
         autowire: true
         tags: ["doctrine.repository_service"]
 
-    oh_media_file.file_repository:
-        alias: OHMedia\FileBundle\Repository\FileRepository
-
     OHMedia\FileBundle\Repository\FileFolderRepository:
         autowire: true
         tags: ["doctrine.repository_service"]
-
-    oh_media_file.file_folder_repository:
-        alias: OHMedia\FileBundle\Repository\FileFolderRepository
 
     OHMedia\FileBundle\Repository\ImageRepository:
         autowire: true
         tags: ["doctrine.repository_service"]
 
-    oh_media_file.image_repository:
-        alias: OHMedia\FileBundle\Repository\ImageRepository
-
     OHMedia\FileBundle\Repository\ImageResizeRepository:
         autowire: true
         tags: ["doctrine.repository_service"]
-
-    oh_media_file.image_resize_repository:
-        alias: OHMedia\FileBundle\Repository\ImageResizeRepository
 
     OHMedia\FileBundle\Controller\FileController:
         tags: ["controller.service_arguments"]
