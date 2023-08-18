@@ -32,7 +32,9 @@ class WysiwygExtension extends AbstractWysiwygExtension
     {
         return [
             new TwigFunction('file_href', [$this, 'fileHref']),
-            new TwigFunction('image', [$this, 'image']),
+            new TwigFunction('image', [$this, 'image'], [
+                'is_safe' => ['html'],
+            ]),
         ];
     }
 
@@ -48,12 +50,9 @@ class WysiwygExtension extends AbstractWysiwygExtension
 
     public function image(int $id, int $width = null)
     {
-        $image = $this->imageRepository->findOneBy([
-            'id' => $id,
-            'browser' => true,
-        ]);
+        $image = $this->imageRepository->find($id);
 
-        if (!$image) {
+        if (!$image || !$image->isBrowser()) {
             return '';
         }
 
