@@ -231,7 +231,7 @@ class FileSubscriber implements EventSubscriber
             for ($i = 0; $i < $length; ++$i) {
                 $token .= $chars[rand(0, $lastIndex)];
             }
-        } while ($this->fileRepository->findByToken($token));
+        } while ($this->fileRepository->findOneByToken($token));
 
         return $token;
     }
