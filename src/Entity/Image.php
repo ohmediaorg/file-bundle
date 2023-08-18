@@ -13,20 +13,19 @@ class Image
 {
     use BlameableTrait;
 
-    #[ORM\Id()]
-    #[ORM\GeneratedValue()]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $alt;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $alt = null;
 
-    #[ORM\OneToOne(targetEntity: File::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn()]
-    private $file;
+    #[ORM\OneToOne(inversedBy: 'image', cascade: ['persist', 'remove'])]
+    private ?File $file = null;
 
-    #[ORM\OneToMany(targetEntity: ImageResize::class, mappedBy: 'image', orphanRemoval: true)]
-    private $resizes;
+    #[ORM\OneToMany(mappedBy: 'image', targetEntity: ImageResize::class, orphanRemoval: true)]
+    private Collection $resizes;
 
     public function __construct()
     {
@@ -73,7 +72,7 @@ class Image
         return $this->file;
     }
 
-    public function setFile(File $file): self
+    public function setFile(?File $file): self
     {
         $this->file = $file;
 
@@ -90,8 +89,13 @@ class Image
         return $this->file ? $this->file->getHeight() : null;
     }
 
+    public function isBrowser(): bool
+    {
+        return $this->file ? $this->file->isBrowser() : false;
+    }
+
     /**
-     * @return Collection|ImageResize[]
+     * @return Collection<int, ImageResize>
      */
     public function getResizes(): Collection
     {
@@ -101,7 +105,7 @@ class Image
     public function addResize(ImageResize $resize): self
     {
         if (!$this->resizes->contains($resize)) {
-            $this->resizes[] = $resize;
+            $this->resizes->add($resize);
             $resize->setImage($this);
         }
 
@@ -110,8 +114,7 @@ class Image
 
     public function removeResize(ImageResize $resize): self
     {
-        if ($this->resizes->contains($resize)) {
-            $this->resizes->removeElement($resize);
+        if ($this->resizes->removeElement($resize)) {
             // set the owning side to null (unless already changed)
             if ($resize->getImage() === $this) {
                 $resize->setImage(null);

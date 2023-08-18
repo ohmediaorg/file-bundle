@@ -1,19 +1,35 @@
 services:
     OHMedia\FileBundle\Service\FileManager:
-        arguments: ["@doctrine.orm.entity_manager", "@router.default", "%kernel.project_dir%"]
+        arguments:
+            - "@router.default"
+            - "%kernel.project_dir%"
 
     oh_media_file.file_manager:
         alias: OHMedia\FileBundle\Service\FileManager
 
+    OHMedia\FileBundle\Service\ImageManager:
+        autowire: true
+
+    OHMedia\FileBundle\Service\FileListing:
+        autowire: true
+
+    OHMedia\FileBundle\Service\FileResponse:
+        autowire: true
+
     OHMedia\FileBundle\Twig\FileExtension:
-        arguments: ["@oh_media_file.file_manager"]
+        autowire: true
         tags: ["twig.extension"]
 
-    oh_media_file.file_extension:
-        alias: OHMedia\FileBundle\Twig\FileExtension
+    OHMedia\FileBundle\Twig\ImageExtension:
+        autowire: true
+        tags: ["twig.extension"]
+
+    OHMedia\FileBundle\Twig\WysiwygExtension:
+        autowire: true
+        tags: ["twig.extension", "oh_media_wysiwyg.extension"]
 
     OHMedia\FileBundle\EventListener\FileSubscriber:
-        arguments: ["@oh_media_file.file_manager"]
+        autowire: true
         tags: ["doctrine.event_subscriber"]
 
     OHMedia\FileBundle\Form\Type\FileEntityType:
@@ -24,9 +40,6 @@ services:
         autowire: true
         tags: ["doctrine.repository_service"]
 
-    oh_media_file.file_repository:
-        alias: OHMedia\FileBundle\Repository\FileRepository
-
     OHMedia\FileBundle\Repository\FileFolderRepository:
         autowire: true
         tags: ["doctrine.repository_service"]
@@ -35,19 +48,21 @@ services:
         autowire: true
         tags: ["doctrine.repository_service"]
 
-    oh_media_file.image_repository:
-        alias: OHMedia\FileBundle\Repository\ImageRepository
-
     OHMedia\FileBundle\Repository\ImageResizeRepository:
         autowire: true
         tags: ["doctrine.repository_service"]
-
-    OHMedia\FileBundle\Cleanup\FileCleaner:
-        arguments: ["@oh_media_file.file_repository"]
-        tags: ["oh_media_cleanup.cleaner"]
 
     OHMedia\FileBundle\Controller\FileController:
         tags: ["controller.service_arguments"]
         calls:
             - method: setContainer
               arguments: ["@service_container"]
+
+    OHMedia\FileBundle\Security\Voter\FileVoter:
+        tags: ["security.voter"]
+
+    OHMedia\FileBundle\Security\Voter\FileFolderVoter:
+        tags: ["security.voter"]
+
+    OHMedia\FileBundle\Security\Voter\ImageVoter:
+        tags: ["security.voter"]

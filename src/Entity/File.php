@@ -2,6 +2,7 @@
 
 namespace OHMedia\FileBundle\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\SecurityBundle\Entity\Traits\BlameableTrait;
@@ -14,47 +15,48 @@ class File
     use BlameableTrait;
 
     public const PATH_INITIAL = 'initial';
+    public const TOKEN_LENGTH = 30;
 
-    #[ORM\Id()]
-    #[ORM\GeneratedValue()]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 20, nullable: true)]
-    private $token;
+    #[ORM\Column(length: 30, nullable: true)]
+    private ?string $token = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $name;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $name = null;
 
-    #[ORM\Column(type: 'string', length: 20, nullable: true)]
-    private $ext;
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $ext = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $path;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $path = null;
 
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private $temporary;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $browser = false;
 
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private $private;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $locked = false;
 
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private $hidden;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $mime_type = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $mime_type;
+    #[ORM\Column(type: Types::BIGINT, nullable: true)]
+    private ?string $size = null;
 
-    #[ORM\Column(type: 'bigint', nullable: true)]
-    private $size;
+    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    private ?int $width = null;
 
-    #[ORM\Column(type: 'smallint', nullable: true)]
-    private $width;
+    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    private ?int $height = null;
 
-    #[ORM\Column(type: 'smallint', nullable: true)]
-    private $height;
+    #[ORM\ManyToOne(inversedBy: 'files')]
+    private ?FileFolder $folder = null;
 
-    #[ORM\ManyToOne(targetEntity: FileFolder::class, inversedBy: 'files')]
-    private $folder;
+    #[ORM\OneToOne(mappedBy: 'file', cascade: ['persist', 'remove'])]
+    private ?Image $image = null;
 
     private $cloned = false;
 
@@ -62,6 +64,10 @@ class File
     {
         $this->id = null;
         $this->cloned = true;
+
+        if ($this->folder) {
+            $this->folder->add($this);
+        }
     }
 
     public function isCloned(): bool
@@ -131,38 +137,42 @@ class File
         return $this;
     }
 
-    public function getTemporary(): ?bool
+    public function isBrowser(): bool
     {
-        return $this->temporary;
+        if ($this->browser) {
+            return true;
+        }
+
+        if ($this->folder) {
+            return $this->folder->isBrowser();
+        }
+
+        return false;
     }
 
-    public function setTemporary(?bool $temporary): self
+    public function setBrowser(bool $browser): self
     {
-        $this->temporary = $temporary;
+        $this->browser = $browser;
 
         return $this;
     }
 
-    public function getPrivate(): ?bool
+    public function isLocked(): bool
     {
-        return $this->private;
+        if ($this->locked) {
+            return true;
+        }
+
+        if ($this->folder) {
+            return $this->folder->isLocked();
+        }
+
+        return false;
     }
 
-    public function setPrivate(?bool $private): self
+    public function setLocked(bool $locked): self
     {
-        $this->private = $private;
-
-        return $this;
-    }
-
-    public function getHidden(): ?bool
-    {
-        return $this->hidden;
-    }
-
-    public function setHidden(?bool $hidden): self
-    {
-        $this->hidden = $hidden;
+        $this->locked = $locked;
 
         return $this;
     }
@@ -172,19 +182,19 @@ class File
         return $this->mime_type;
     }
 
-    public function setMimeType(?string $mimeType): self
+    public function setMimeType(?string $mime_type): self
     {
-        $this->mime_type = $mimeType;
+        $this->mime_type = $mime_type;
 
         return $this;
     }
 
-    public function getSize(): ?int
+    public function getSize(): ?string
     {
         return $this->size;
     }
 
-    public function setSize(?int $size): self
+    public function setSize(?string $size): self
     {
         $this->size = $size;
 
@@ -220,9 +230,31 @@ class File
         return $this->folder;
     }
 
-    public function setFolder(?self $folder): self
+    public function setFolder(?FileFolder $folder): self
     {
         $this->folder = $folder;
+
+        return $this;
+    }
+
+    public function getImage(): ?Image
+    {
+        return $this->image;
+    }
+
+    public function setImage(?Image $image): self
+    {
+        // unset the owning side of the relation if necessary
+        if (null === $image && null !== $this->image) {
+            $this->image->setFile(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if (null !== $image && $image->getFile() !== $this) {
+            $image->setFile($this);
+        }
+
+        $this->image = $image;
 
         return $this;
     }

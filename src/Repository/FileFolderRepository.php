@@ -36,4 +36,31 @@ class FileFolderRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    public function countByName(string $name, FileFolder $folder)
+    {
+        $params = [
+            'name' => $name,
+        ];
+
+        $qb = $this->createQueryBuilder('ff')
+            ->select('COUNT(ff.id)')
+            ->where('ff.name = :name');
+
+        if ($id = $folder->getId()) {
+            $qb->andWhere('ff.id <> :id');
+
+            $params['id'] = $id;
+        }
+
+        if ($parent = $folder->getFolder()) {
+            $qb->andWhere('ff.folder = :parent');
+
+            $params['parent'] = $parent;
+        }
+
+        return $qb->setParameters($params)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

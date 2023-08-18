@@ -2,6 +2,7 @@
 
 namespace OHMedia\FileBundle\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\FileBundle\Repository\ImageResizeRepository;
 use OHMedia\SecurityBundle\Entity\Traits\BlameableTrait;
@@ -11,27 +12,27 @@ class ImageResize
 {
     use BlameableTrait;
 
-    #[ORM\Id()]
-    #[ORM\GeneratedValue()]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 50)]
-    private $name;
+    #[ORM\Column(length: 50)]
+    private ?string $name = null;
 
-    #[ORM\Column(type: 'smallint', nullable: true)]
-    private $width;
+    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    private ?int $width = null;
 
-    #[ORM\Column(type: 'smallint', nullable: true)]
-    private $height;
+    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    private ?int $height = null;
 
-    #[ORM\ManyToOne(targetEntity: Image::class, inversedBy: 'resizes')]
+    #[ORM\ManyToOne(inversedBy: 'resizes')]
     #[ORM\JoinColumn(nullable: false)]
-    private $image;
+    private ?Image $image = null;
 
-    #[ORM\OneToOne(targetEntity: File::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    private $file;
+    private ?File $file = null;
 
     public function __clone()
     {

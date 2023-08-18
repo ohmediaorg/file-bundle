@@ -36,17 +36,4 @@ class FileRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-
-    public function deleteTemporary()
-    {
-        $yesterday = new \DateTime('-1 day');
-
-        return $this->createQueryBuilder('f')
-            ->delete()
-            ->where('f.temporary = 1')
-            ->andWhere('f.created_at < :yesterday')
-            ->setParameter('yesterday', $yesterday)
-            ->getQuery()
-            ->execute();
-    }
 }
