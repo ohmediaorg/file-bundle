@@ -472,8 +472,13 @@ class FileManager
             $items = array_merge($files, $folders);
 
             usort($items, function ($a, $b) {
-                $aProp = $a instanceof FileEntity ? $a->getFilename() : $a->getName();
-                $bProp = $b instanceof FileEntity ? $b->getFilename() : $b->getName();
+                $aProp = $a instanceof FileEntity
+                    ? $a->getFilename()
+                    : $a->getName();
+
+                $bProp = $b instanceof FileEntity
+                    ? $b->getFilename()
+                    : $b->getName();
 
                 return strtolower($aProp) <=> strtolower($bProp);
             });
