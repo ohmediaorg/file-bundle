@@ -6,7 +6,7 @@ use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Repository\ImageRepository;
 use OHMedia\FileBundle\Service\FileManager;
 use OHMedia\FileBundle\Service\ImageManager;
-use OHMedia\WysiwygBundle\Twig\Extension\AbstractWysiwygExtension;
+use OHMedia\WysiwygBundle\Twig\AbstractWysiwygExtension;
 use Twig\TwigFunction;
 
 class WysiwygExtension extends AbstractWysiwygExtension
