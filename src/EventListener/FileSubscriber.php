@@ -139,7 +139,7 @@ class FileSubscriber implements EventSubscriber
         $object = $args->getObject();
 
         if ($object instanceof FileEntity) {
-            $filepath = $this->fileManager->getAbsolutePath($file);
+            $filepath = $this->fileManager->getAbsolutePath($object);
 
             $this->fileSystem->remove($filepath);
         }
