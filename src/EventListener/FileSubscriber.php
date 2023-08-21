@@ -139,9 +139,7 @@ class FileSubscriber implements EventSubscriber
         $object = $args->getObject();
 
         if ($object instanceof FileEntity) {
-            $filepath = $this->fileManager->getAbsolutePath($object);
-
-            $this->fileSystem->remove($filepath);
+            $this->removeFilepath($object->getPath());
         }
     }
 
@@ -255,15 +253,23 @@ class FileSubscriber implements EventSubscriber
 
     private function postSaveFile(FileEntity $file)
     {
-        if ($file->getPath() && $file->getFile()) {
-            $path = explode('/', $file->getPath());
+        $filepath = $file->getPath();
+
+        if ($filepath && $file->getFile()) {
+            if (!$this->isValidUploadFilepath($filepath)) {
+                throw new \Exception('Invalid filepath');
+            }
+
+            $path = explode('/', $filepath);
             $name = array_pop($path);
             $path = implode('/', $path);
+
+            $uploadDir = $this->fileManager->getAbsoluteUploadDir();
 
             // if there is an error when moving the file, an exception will
             // be automatically thrown by move(). This will properly prevent
             // the entity from being persisted to the database on error
-            $file->getFile()->move($this->fileManager->getAbsoluteUploadDir().'/'.$path, $name);
+            $file->getFile()->move($uploadDir.'/'.$path, $name);
 
             $this->doImageProcessing($file);
         }
@@ -271,7 +277,7 @@ class FileSubscriber implements EventSubscriber
         // check if we have an old file
         if ($file->getOldPath()) {
             // delete the old file
-            $this->fileSystem->remove($this->fileManager->getAbsoluteUploadDir().'/'.$file->getOldPath());
+            $this->removeFilepath($file->getOldPath());
             // clear the temp file path
             $file->setOldPath(null);
         }
@@ -338,5 +344,40 @@ class FileSubscriber implements EventSubscriber
         $filepath = $this->fileManager->getAbsolutePath($file);
 
         $imageResource->save($filepath);
+    }
+
+    private function isValidUploadFilepath(?string $filepath): bool
+    {
+        if (!$filepath) {
+            return false;
+        }
+
+        // Make sure we are staying within the upload directory by
+        // preventing the use of the ".." path.
+        // This should never happen, but better safe than sorry!
+        if (str_contains($filepath, '..')) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function removeFilepath(?string $filepath)
+    {
+        if (!$this->isValidUploadFilepath($filepath)) {
+            return;
+        }
+
+        $uploadDir = $this->fileManager->getAbsoluteUploadDir();
+
+        $absolutePath = $uploadDir.'/'.$filepath;
+
+        // Ignore directories and symlinks.
+        // Again, this should never happen, but better safe than sorry!
+        if (is_dir($absolutePath) || is_link($absolutePath)) {
+            return false;
+        }
+
+        $this->fileSystem->remove($absolutePath);
     }
 }
