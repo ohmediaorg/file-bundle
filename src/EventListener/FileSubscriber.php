@@ -259,7 +259,7 @@ class FileSubscriber implements EventSubscriber
         $filepath = $file->getPath();
 
         if ($filepath && $file->getFile()) {
-            if (!$this->isValidUploadFilepath($filepath)) {
+            if (!$this->fileManager->isValidUploadFilepath($filepath)) {
                 throw new \Exception('Invalid filepath');
             }
 
@@ -349,25 +349,9 @@ class FileSubscriber implements EventSubscriber
         $imageResource->save($filepath);
     }
 
-    private function isValidUploadFilepath(?string $filepath): bool
-    {
-        if (!$filepath) {
-            return false;
-        }
-
-        // Make sure we are staying within the upload directory by
-        // preventing the use of the ".." path.
-        // This should never happen, but better safe than sorry!
-        if (str_contains($filepath, '..')) {
-            return false;
-        }
-
-        return true;
-    }
-
     private function removeFilepath(?string $filepath)
     {
-        if (!$this->isValidUploadFilepath($filepath)) {
+        if (!$this->fileManager->isValidUploadFilepath($filepath)) {
             return;
         }
 

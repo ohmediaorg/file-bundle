@@ -16,7 +16,15 @@ class FileResponse
 
     public function get(FileEntity $file): ?BinaryFileResponse
     {
-        $physicalFile = $this->fileManager->getAbsolutePath($file);
+        $filepath = $file->getPath();
+
+        if (!$this->fileManager->isValidUploadFilepath($filepath)) {
+            return null;
+        }
+
+        $uploadDir = $this->fileManager->getAbsoluteUploadDir();
+
+        $physicalFile = $uploadDir.'/'.$filepath;
 
         if (!file_exists($physicalFile)) {
             return null;

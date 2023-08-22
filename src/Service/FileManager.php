@@ -27,6 +27,22 @@ class FileManager
         return $this->absoluteUploadDir;
     }
 
+    public function isValidUploadFilepath(?string $filepath): bool
+    {
+        if (!$filepath) {
+            return false;
+        }
+
+        // Make sure we are staying within the upload directory by
+        // preventing the use of the ".." path.
+        // This should never happen, but better safe than sorry!
+        if (str_contains($filepath, '..')) {
+            return false;
+        }
+
+        return true;
+    }
+
     public function copy(FileEntity $file): ?FileEntity
     {
         $path = null;
