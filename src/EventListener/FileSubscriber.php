@@ -5,6 +5,7 @@ namespace OHMedia\FileBundle\EventListener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
+use Doctrine\Persistence\Proxy;
 use OHMedia\FileBundle\Entity\File as FileEntity;
 use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Entity\ImageResize;
@@ -129,8 +130,10 @@ class FileSubscriber implements EventSubscriber
         $object = $args->getObject();
 
         if ($object instanceof FileEntity) {
-            // force load the proxy
-            $object->__load();
+            if ($object instanceof Proxy) {
+                // force load the proxy
+                $object->__load();
+            }
         }
     }
 
