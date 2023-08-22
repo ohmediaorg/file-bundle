@@ -64,10 +64,9 @@ class File
     {
         $this->id = null;
         $this->cloned = true;
-
-        if ($this->folder) {
-            $this->folder->add($this);
-        }
+        $this->browser = false;
+        $this->locked = false;
+        $this->folder = null;
     }
 
     public function isCloned(): bool
