@@ -372,12 +372,10 @@ class FileSubscriber implements EventSubscriber
 
         $absolutePath = $uploadDir.'/'.$filepath;
 
-        // Ignore directories and symlinks.
+        // Only delete files that are not symlinks.
         // Again, this should never happen, but better safe than sorry!
-        if (is_dir($absolutePath) || is_link($absolutePath)) {
-            return false;
+        if (is_file($absolutePath) && !is_link($absolutePath)) {
+            $this->fileSystem->remove($absolutePath);
         }
-
-        $this->fileSystem->remove($absolutePath);
     }
 }
