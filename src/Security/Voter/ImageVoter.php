@@ -24,13 +24,13 @@ class ImageVoter extends AbstractEntityVoter
         return Image::class;
     }
 
-    protected function canCreate(Image $file, User $loggedIn): bool
+    protected function canCreate(Image $image, User $loggedIn): bool
     {
-        return $file->isBrowser();
+        return $image->isBrowser();
     }
 
-    protected function canEdit(Image $file, User $loggedIn): bool
+    protected function canEdit(Image $image, User $loggedIn): bool
     {
-        return $file->isBrowser();
+        return $image->isBrowser();
     }
 }
