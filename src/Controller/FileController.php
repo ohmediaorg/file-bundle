@@ -21,10 +21,14 @@ class FileController extends AbstractController
         $file = $fileRepository->findOneByToken($token);
 
         if (!$file) {
-            throw $this->createNotFoundException('File not found');
+            throw $this->createNotFoundException('File not found.');
         }
 
         $response = $fileResponse->get($file);
+
+        if (!$response) {
+            throw $this->createNotFoundException('File not found.');
+        }
 
         if ($file->isLocked()) {
             $this->denyAccessUnlessGranted(
