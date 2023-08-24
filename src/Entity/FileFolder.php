@@ -30,10 +30,10 @@ class FileFolder
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'folders')]
     private ?self $folder = null;
 
-    #[ORM\OneToMany(mappedBy: 'folder', targetEntity: self::class)]
+    #[ORM\OneToMany(mappedBy: 'folder', targetEntity: self::class, cascade: ['persist', 'remove'])]
     private Collection $folders;
 
-    #[ORM\OneToMany(mappedBy: 'folder', targetEntity: File::class)]
+    #[ORM\OneToMany(mappedBy: 'folder', targetEntity: File::class, cascade: ['persist', 'remove'])]
     private Collection $files;
 
     public function __construct()
