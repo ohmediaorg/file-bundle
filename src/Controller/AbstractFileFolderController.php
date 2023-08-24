@@ -249,6 +249,6 @@ abstract class AbstractFileFolderController extends AbstractController
             ]);
         }
 
-        return $this->redirectToRoute('file_folder_index');
+        return $this->redirectToRoute('file_index');
     }
 }
