@@ -11,7 +11,6 @@ use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Security\Voter\FileVoter;
 use OHMedia\FileBundle\Service\FileListing;
-use OHMedia\SecurityBundle\Form\DeleteType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormView;
@@ -26,8 +25,6 @@ abstract class AbstractFileController extends AbstractController
     abstract protected function createRender(FormView $formView, File $file): Response;
 
     abstract protected function moveRender(FormView $formView, File $file): Response;
-
-    abstract protected function deleteRender(FormView $formView, File $file): Response;
 
     #[Route('/files', name: 'file_index', methods: ['GET'])]
     public function index(
@@ -213,7 +210,7 @@ abstract class AbstractFileController extends AbstractController
         return $this->redirectToRoute('file_index');
     }
 
-    #[Route('/file/{id}/delete', name: 'file_delete', methods: ['GET', 'POST'])]
+    #[Route('/file/{id}/delete', name: 'file_delete', methods: ['POST'])]
     public function delete(
         Request $request,
         File $file,
@@ -225,21 +222,16 @@ abstract class AbstractFileController extends AbstractController
             'You cannot delete this file.'
         );
 
-        $form = $this->createForm(DeleteType::class, null);
+        $csrfTokenName = 'delete_file_'.$file->getId();
+        $csrfTokenValue = $request->request->get($csrfTokenName);
 
-        $form->add('delete', SubmitType::class);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
             $fileRepository->remove($file, true);
 
             $this->addFlash('notice', 'The file was deleted successfully.');
-
-            return $this->deleteRedirect($file);
         }
 
-        return $this->deleteRender($form->createView(), $file);
+        return $this->deleteRedirect($file);
     }
 
     protected function deleteRedirect(File $file): Response

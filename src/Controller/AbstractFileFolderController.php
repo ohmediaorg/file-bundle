@@ -10,7 +10,6 @@ use OHMedia\FileBundle\Form\Type\FileFolderEditType;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Security\Voter\FileFolderVoter;
 use OHMedia\FileBundle\Service\FileListing;
-use OHMedia\SecurityBundle\Form\DeleteType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormView;
@@ -25,8 +24,6 @@ abstract class AbstractFileFolderController extends AbstractController
     abstract protected function createRender(FormView $formView, FileFolder $folder): Response;
 
     abstract protected function editRender(FormView $formView, FileFolder $folder): Response;
-
-    abstract protected function deleteRender(FormView $formView, FileFolder $folder): Response;
 
     #[Route('/folder/create', name: 'file_folder_create_no_folder', methods: ['GET', 'POST'])]
     public function createNoFolder(
@@ -212,11 +209,11 @@ abstract class AbstractFileFolderController extends AbstractController
         ]);
     }
 
-    #[Route('/folder/{id}/delete', name: 'file_folder_delete', methods: ['GET', 'POST'])]
+    #[Route('/folder/{id}/delete', name: 'file_folder_delete', methods: ['POST'])]
     public function delete(
         Request $request,
         FileFolder $folder,
-        FileFolderRepository $folderRepository
+        FileFolderRepository $fileFolderRepository
     ): Response {
         $this->denyAccessUnlessGranted(
             FileFolderVoter::DELETE,
@@ -224,21 +221,16 @@ abstract class AbstractFileFolderController extends AbstractController
             'You cannot delete this folder.'
         );
 
-        $form = $this->createForm(DeleteType::class, null);
+        $csrfTokenName = 'delete_file_folder_'.$folder->getId();
+        $csrfTokenValue = $request->request->get($csrfTokenName);
 
-        $form->add('delete', SubmitType::class);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $folderRepository->remove($folder, true);
+        if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
+            $fileFolderRepository->remove($folder, true);
 
             $this->addFlash('notice', 'The folder was deleted successfully.');
-
-            return $this->deleteRedirect($folder);
         }
 
-        return $this->deleteRender($form->createView(), $folder);
+        return $this->deleteRedirect($folder);
     }
 
     protected function deleteRedirect(FileFolder $folder): Response
