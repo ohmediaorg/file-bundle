@@ -23,9 +23,11 @@ class FileExtension extends AbstractExtension
         return [
             new TwigFunction('is_file_entity', [$this, 'isFileEntity']),
             new TwigFunction('is_file_folder_entity', [$this, 'isFileFolderEntity']),
-            new TwigFunction('file_size', [$this, 'getFileSize']),
-            new TwigFunction('file_size_binary', [$this, 'getFileSizeBinary']),
-            new TwigFunction('file_path', [$this, 'getFilePath']),
+            new TwigFunction('file_size', [$this, 'fileSize']),
+            new TwigFunction('file_size_binary', [$this, 'fileSizeBinary']),
+            new TwigFunction('format_bytes', [$this, 'formatBytes']),
+            new TwigFunction('format_bytes_binary', [$this, 'formatBytesBinary']),
+            new TwigFunction('file_path', [$this, 'filePath']),
         ];
     }
 
@@ -39,17 +41,27 @@ class FileExtension extends AbstractExtension
         return $value instanceof FileFolder;
     }
 
-    public function getFileSize(File $file, int $precision = 1): string
+    public function fileSize(File $file, int $precision = 1): string
     {
         return FileUtil::formatBytesDecimal($file->getSize(), $precision);
     }
 
-    public function getFileSizeBinary(File $file, int $precision = 1): string
+    public function fileSizeBinary(File $file, int $precision = 1): string
     {
         return FileUtil::formatBytesBinary($file->getSize(), $precision);
     }
 
-    public function getFilePath(File $file): ?string
+    public function formatBytes(int $bytes, int $precision = 1): string
+    {
+        return FileUtil::formatBytesDecimal($bytes, $precision);
+    }
+
+    public function formatBytesBinary(int $bytes, int $precision = 1): string
+    {
+        return FileUtil::formatBytesBinary($bytes, $precision);
+    }
+
+    public function filePath(File $file): ?string
     {
         return $this->fileManager->getWebPath($file);
     }
