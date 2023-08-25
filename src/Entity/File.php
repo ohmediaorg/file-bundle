@@ -43,13 +43,13 @@ class File
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $mime_type = null;
 
-    #[ORM\Column(type: Types::BIGINT, nullable: true)]
+    #[ORM\Column(type: Types::BIGINT, nullable: true, options: ['unsigned' => true])]
     private ?string $size = null;
 
-    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    #[ORM\Column(type: Types::SMALLINT, nullable: true, options: ['unsigned' => true])]
     private ?int $width = null;
 
-    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    #[ORM\Column(type: Types::SMALLINT, nullable: true, options: ['unsigned' => true])]
     private ?int $height = null;
 
     #[ORM\ManyToOne(inversedBy: 'files')]
