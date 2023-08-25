@@ -193,4 +193,19 @@ class FileFolder
 
         return $this;
     }
+
+    public function getSize(): int
+    {
+        $size = 0;
+
+        foreach ($this->files as $file) {
+            $size += $file->getSize();
+        }
+
+        foreach ($this->folders as $folder) {
+            $size += $folder->getSize();
+        }
+
+        return $size;
+    }
 }
