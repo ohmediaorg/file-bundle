@@ -35,11 +35,11 @@ class FileUtil
 
     private static function formatBytes(int $bytes, int $precision, bool $binary): string
     {
+        $units = ['B', 'KB', 'MB', 'GB'];
+
         if ($binary) {
-            $units = ['B', 'KiB', 'MiB', 'GiB'];
             $base = 1024;
         } else {
-            $units = ['B', 'kB', 'MB', 'GB'];
             $base = 1000;
         }
 
