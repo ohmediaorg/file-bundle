@@ -185,7 +185,7 @@ class FileSubscriber implements EventSubscriber
 
         $now = new \DateTime();
 
-        $basename = $now->format('His');
+        $basename = $now->format('Hisu');
 
         $path = $now->format('Y/m/d');
 
