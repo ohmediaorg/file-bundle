@@ -2,39 +2,38 @@
 
 namespace OHMedia\FileBundle\Service;
 
-use OHMedia\FileBundle\Entity\Image;
-use OHMedia\FileBundle\Entity\ImageResize;
-use OHMedia\FileBundle\Repository\ImageResizeRepository;
+use OHMedia\FileBundle\Entity\File;
+use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Util\FileUtil;
 use OHMedia\FileBundle\Util\MimeTypeUtil;
 
 class ImageManager
 {
     private $fileManager;
-    private $imageResizeRepository;
+    private $fileRepository;
 
     public function __construct(
         FileManager $fileManager,
-        ImageResizeRepository $imageResizeRepository
+        FileRepository $fileRepository
     ) {
         $this->fileManager = $fileManager;
-        $this->imageResizeRepository = $imageResizeRepository;
+        $this->fileRepository = $fileRepository;
     }
 
-    public function getImagePath(Image $image, int $width = null, int $height = null)
+    public function getImagePath(File $file, int $width = null, int $height = null)
     {
-        $resize = $this->getImageResize($image, $width, $height);
+        $resize = $this->getImageResize($file, $width, $height);
 
         $file = $resize
             ? $resize->getFile()
-            : $image->getFile();
+            : $file->getFile();
 
         return $file ? $this->fileManager->getWebPath($file) : '';
     }
 
-    public function render(Image $image, array $attributes = [])
+    public function render(File $file, array $attributes = [])
     {
-        $this->setImageTagAttributes($image, $attributes);
+        $this->setImageTagAttributes($file, $attributes);
 
         $attributesString = [];
         foreach ($attributes as $attribute => $value) {
@@ -50,11 +49,9 @@ class ImageManager
         return "<img $attributesString />";
     }
 
-    private function setImageTagAttributes(Image $image, array &$attributes): void
+    private function setImageTagAttributes(File $file, array &$attributes): void
     {
-        $attributes['alt'] = $image->getAlt();
-
-        $file = $image->getFile();
+        $attributes['alt'] = $file->getAlt();
 
         if (!$file) {
             $attributes['src'] = '';
@@ -62,7 +59,7 @@ class ImageManager
             return;
         }
 
-        if (MimeTypeUtil::SVG === $image->getFile()->getMimeType()) {
+        if (MimeTypeUtil::SVG === $file->getMimeType()) {
             $attributes['src'] = $this->fileManager->getWebPath($file);
 
             return;
@@ -71,32 +68,30 @@ class ImageManager
         $width = !empty($attributes['width']) ? $attributes['width'] : null;
         $height = !empty($attributes['height']) ? $attributes['height'] : null;
 
-        $resize = $this->getImageResize($image, $width, $height);
+        $resize = $this->getResize($file, $width, $height);
 
         if ($resize) {
-            $file = $resize->getFile();
-
             $attributes['width'] = $resize->getWidth();
             $attributes['height'] = $resize->getHeight();
+            $attributes['src'] = $this->fileManager->getWebPath($resize);
         } else {
-            $attributes['width'] = $image->getWidth();
-            $attributes['height'] = $image->getHeight();
+            $attributes['width'] = $file->getWidth();
+            $attributes['height'] = $file->getHeight();
+            $attributes['src'] = $this->fileManager->getWebPath($file);
         }
-
-        $attributes['src'] = $this->fileManager->getWebPath($file);
     }
 
-    private function getImageResize(
-        Image $image,
+    private function getResize(
+        File $file,
         int $width = null,
         int $height = null
-    ): ?ImageResize {
+    ): ?File {
         if (null === $width && null === $height) {
             return null;
         }
 
-        $origWidth = $image->getWidth();
-        $origHeight = $image->getHeight();
+        $origWidth = $file->getWidth();
+        $origHeight = $file->getHeight();
 
         if (!$origWidth || !$origHeight) {
             // something is not right, don't try to resize
@@ -117,27 +112,21 @@ class ImageManager
             );
         }
 
-        $name = sprintf('%sx%s', $width, $height);
-
-        $resize = $image->getResize($name);
+        $resize = $file->getResize($width, $height);
 
         if (!$resize) {
-            $copy = $this->fileManager->copy($image->getFile());
+            $resize = $this->fileManager->copy($file);
 
-            $copy
-                ->setName($copy->getName().'-'.$name)
-                ->setBrowser(false)
-            ;
+            $name = sprintf('%sx%s', $width, $height);
 
-            $resize = new ImageResize();
             $resize
-                ->setFile($copy)
-                ->setName($name)
+                ->setName($file->getName().'-'.$name)
+                ->setBrowser(false)
                 ->setWidth($width)
                 ->setHeight($height)
-                ->setImage($image);
+            ;
 
-            $this->imageResizeRepository->save($resize, true);
+            $this->fileRepository->save($resize, true);
         }
 
         return $resize;

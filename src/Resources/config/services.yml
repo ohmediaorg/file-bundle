@@ -44,14 +44,6 @@ services:
         autowire: true
         tags: ["doctrine.repository_service"]
 
-    OHMedia\FileBundle\Repository\ImageRepository:
-        autowire: true
-        tags: ["doctrine.repository_service"]
-
-    OHMedia\FileBundle\Repository\ImageResizeRepository:
-        autowire: true
-        tags: ["doctrine.repository_service"]
-
     OHMedia\FileBundle\Controller\FileController:
         tags: ["controller.service_arguments"]
         calls:
@@ -62,7 +54,4 @@ services:
         tags: ["security.voter"]
 
     OHMedia\FileBundle\Security\Voter\FileFolderVoter:
-        tags: ["security.voter"]
-
-    OHMedia\FileBundle\Security\Voter\ImageVoter:
         tags: ["security.voter"]

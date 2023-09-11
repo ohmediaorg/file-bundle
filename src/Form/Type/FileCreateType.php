@@ -14,12 +14,18 @@ class FileCreateType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $file = $options['data'];
+
         $mimes = [
             MimeTypeUtil::AUDIO,
             MimeTypeUtil::DOCUMENT,
             MimeTypeUtil::TEXT,
             MimeTypeUtil::VIDEO,
         ];
+
+        if ($file && $file->isImage()) {
+            $mimes = [MimeTypeUtil::IMAGE];
+        }
 
         $fileConstraint = MimeTypeUtil::getFileConstraint(...$mimes);
         $mimeTypes = MimeTypeUtil::getMimeTypes(...$mimes);

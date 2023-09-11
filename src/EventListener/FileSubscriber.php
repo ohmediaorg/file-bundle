@@ -8,7 +8,6 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Persistence\Proxy;
 use OHMedia\FileBundle\Entity\File as FileEntity;
 use OHMedia\FileBundle\Entity\FileFolder;
-use OHMedia\FileBundle\Entity\ImageResize;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Service\FileManager;
@@ -98,8 +97,6 @@ class FileSubscriber implements EventSubscriber
 
         if ($object instanceof FileEntity) {
             $this->postSaveFile($object);
-        } elseif ($object instanceof ImageResize) {
-            $this->postSaveImageResize($object);
         }
     }
 
@@ -120,8 +117,6 @@ class FileSubscriber implements EventSubscriber
 
         if ($object instanceof FileEntity) {
             $this->postSaveFile($object);
-        } elseif ($object instanceof ImageResize) {
-            $this->postSaveImageResize($object);
         }
     }
 
@@ -286,6 +281,8 @@ class FileSubscriber implements EventSubscriber
         }
 
         $file->clearFile();
+
+        $this->postSaveResize($file);
     }
 
     private function doImageProcessing(FileEntity $file)
@@ -321,15 +318,13 @@ class FileSubscriber implements EventSubscriber
         $folder->setName($slug);
     }
 
-    private function postSaveImageResize(ImageResize $resize)
+    private function postSaveResize(File $file)
     {
-        $sourceFile = $resize->getImage()->getFile();
-
         if (MimeTypeUtil::SVG === $sourceFile->getMimeType()) {
             return;
         }
 
-        $sourceFilepath = $this->fileManager->getAbsolutePath($sourceFile);
+        $filepath = $this->fileManager->getAbsolutePath($file);
 
         $imageResource = ImageResource::create($sourceFilepath);
 
@@ -337,14 +332,12 @@ class FileSubscriber implements EventSubscriber
             return;
         }
 
-        $width = $resize->getWidth();
-        $height = $resize->getHeight();
+        // TODO: check source vs entity width/height?
+
+        $width = $file->getWidth();
+        $height = $file->getHeight();
 
         $imageResource->resize($width, $height);
-
-        $file = $resize->getFile();
-
-        $filepath = $this->fileManager->getAbsolutePath($file);
 
         $imageResource->save($filepath);
     }
