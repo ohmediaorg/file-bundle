@@ -81,7 +81,7 @@ abstract class AbstractFileController extends AbstractController
         return $this->create($request, $fileRepository, $file);
     }
 
-    #[Route('/image/{id}/file/create', name: 'image_create_with_folder', methods: ['GET', 'POST'])]
+    #[Route('/folder/{id}/image/create', name: 'image_create_with_folder', methods: ['GET', 'POST'])]
     public function imageCreateWithFolder(
         Request $request,
         FileRepository $fileRepository,
