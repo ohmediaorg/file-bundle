@@ -2,6 +2,8 @@
 
 namespace OHMedia\FileBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\FileBundle\Repository\FileRepository;
@@ -70,6 +72,11 @@ class File
 
     private $cloned = false;
 
+    public function __construct()
+    {
+        $this->resizes = new ArrayCollection();
+    }
+
     public function __clone()
     {
         $this->id = null;
@@ -77,6 +84,15 @@ class File
         $this->browser = false;
         $this->locked = false;
         $this->folder = null;
+
+        $resizes = $this->resizes;
+        $this->resizes = new ArrayCollection();
+
+        foreach ($resizes as $resize) {
+            $clone = clone $resize;
+
+            $this->addResize($clone);
+        }
     }
 
     public function isCloned(): bool
@@ -280,6 +296,47 @@ class File
         $this->resize_parent = $resize_parent;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, File>
+     */
+    public function getResizes(): Collection
+    {
+        return $this->resizes;
+    }
+
+    public function addResize(File $resize): self
+    {
+        if (!$this->resizes->contains($resize)) {
+            $this->resizes->add($resize);
+            $resize->setImage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeResize(File $resize): self
+    {
+        if ($this->resizes->removeElement($resize)) {
+            // set the owning side to null (unless already changed)
+            if ($resize->getImage() === $this) {
+                $resize->setImage(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getResize(int $width, int $height)
+    {
+        foreach ($this->resizes as $resize) {
+            if ($width === $resize->getWidth() && $height === $resize->getHeight()) {
+                return $resize;
+            }
+        }
+
+        return null;
     }
 
     private $file;
