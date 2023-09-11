@@ -11,6 +11,8 @@
         {% else %}
             {{ form_row(form.file) }}
         {% endif %}
+
+        {{ form_row(form.alt) }}
     </div>
 
     {% if current_file %}
