@@ -124,6 +124,8 @@ class ImageManager
                 ->setBrowser(false)
                 ->setWidth($width)
                 ->setHeight($height)
+                ->setImage(true)
+                ->setResizeParent($file)
             ;
 
             $this->fileRepository->save($resize, true);
