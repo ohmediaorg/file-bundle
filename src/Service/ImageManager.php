@@ -22,7 +22,7 @@ class ImageManager
 
     public function getImagePath(File $file, int $width = null, int $height = null)
     {
-        $resize = $this->getImageResize($file, $width, $height);
+        $resize = $this->getResize($file, $width, $height);
 
         $file = $resize
             ? $resize->getFile()
