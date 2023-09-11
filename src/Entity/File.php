@@ -81,8 +81,8 @@ class File
     {
         $this->id = null;
         $this->cloned = true;
+        // don't want cloned items to appear in the File browser
         $this->browser = false;
-        $this->locked = false;
         $this->folder = null;
 
         $this->resizes = new ArrayCollection();
