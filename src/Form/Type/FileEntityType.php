@@ -37,7 +37,7 @@ class FileEntityType extends AbstractType
 
         $fileExists = $file && $file->getPath();
 
-        if ($file) {
+        if ($file && (null === $options['image'])) {
             $options['image'] = $file->isImage();
         }
 
@@ -153,7 +153,7 @@ class FileEntityType extends AbstractType
             'data_class' => File::class,
             'file_constraints' => [],
             'file_label' => false,
-            'image' => false,
+            'image' => null,
             'show_alt' => true,
         ]);
     }
