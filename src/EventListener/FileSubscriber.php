@@ -155,7 +155,9 @@ class FileSubscriber implements EventSubscriber
 
         $file->setToken($token);
 
-        $this->setFileDimensions($file, $httpFile);
+        if (!$file->getResizeParent()) {
+            $this->setFileDimensions($file, $httpFile);
+        }
 
         if ($httpFile instanceof UploadedFile) {
             $name = $httpFile->getClientOriginalName();
@@ -318,21 +320,23 @@ class FileSubscriber implements EventSubscriber
         $folder->setName($slug);
     }
 
-    private function postSaveResize(File $file)
+    private function postSaveResize(FileEntity $file)
     {
-        if (MimeTypeUtil::SVG === $sourceFile->getMimeType()) {
+        if (MimeTypeUtil::SVG === $file->getMimeType()) {
+            return;
+        }
+
+        if (!$file->getResizeParent()) {
             return;
         }
 
         $filepath = $this->fileManager->getAbsolutePath($file);
 
-        $imageResource = ImageResource::create($sourceFilepath);
+        $imageResource = ImageResource::create($filepath);
 
         if (!$imageResource) {
             return;
         }
-
-        // TODO: check source vs entity width/height?
 
         $width = $file->getWidth();
         $height = $file->getHeight();
