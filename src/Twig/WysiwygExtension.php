@@ -13,7 +13,6 @@ class WysiwygExtension extends AbstractWysiwygExtension
     private $fileManager;
     private $fileRepository;
     private $imageManager;
-    private $fileRepository;
 
     public function __construct(
         FileManager $fileManager,

@@ -35,12 +35,14 @@ class FileEntityType extends AbstractType
 
         $fileExists = $file && $file->getPath();
 
-        $isImage = $file && $file->isImage();
+        if ($file) {
+            $options['image'] = $file->isImage();
+        }
 
         $accept = [];
 
         if (empty($options['file_constraints'])) {
-            $options['file_constraints'] = $isImage
+            $options['file_constraints'] = $options['image']
                 ? MimeTypeUtil::getImageFileConstraint()
                 : MimeTypeUtil::getAllFileConstraint();
         }
@@ -92,7 +94,7 @@ class FileEntityType extends AbstractType
             ]);
         }
 
-        if ($isImage && $options['show_alt']) {
+        if ($options['image'] && $options['show_alt']) {
             $builder->add('alt', TextType::class, [
                 'label' => 'Screen Reader Text',
                 'required' => false,
@@ -144,6 +146,7 @@ class FileEntityType extends AbstractType
             'data_class' => File::class,
             'file_constraints' => [],
             'file_label' => false,
+            'image' => false,
             'show_alt' => true,
         ]);
     }

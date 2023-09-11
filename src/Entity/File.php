@@ -61,11 +61,11 @@ class File
     #[ORM\ManyToOne(inversedBy: 'files')]
     private ?FileFolder $folder = null;
 
-    #[ORM\ManyToOne(inversedBy: 'resizes')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(inversedBy: 'resizes', targetEntity: self::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?self $resize_parent = null;
 
-    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'resize_parent', targetEntity: self::class, orphanRemoval: true)]
     private Collection $resizes;
 
     private $cloned = false;
