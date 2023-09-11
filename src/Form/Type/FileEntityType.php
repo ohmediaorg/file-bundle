@@ -42,10 +42,10 @@ class FileEntityType extends AbstractType
 
         $accept = [];
 
-        if (empty($options['file_constraints'])) {
+        if (!$options['file_constraints']) {
             $options['file_constraints'] = $options['image']
-                ? MimeTypeUtil::getImageFileConstraint()
-                : MimeTypeUtil::getAllFileConstraint();
+                ? [MimeTypeUtil::getImageFileConstraint()]
+                : [MimeTypeUtil::getAllFileConstraint()];
         }
 
         foreach ($options['file_constraints'] as $constraint) {
