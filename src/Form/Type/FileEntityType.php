@@ -108,6 +108,11 @@ class FileEntityType extends AbstractType
             ]);
         }
 
+        $builder->add('image', HiddenType::class, [
+            'required' => false,
+            'data' => $options['image'],
+        ]);
+
         $builder->addEventListener(
             FormEvents::POST_SUBMIT,
             [$this, 'onPostSubmit']
