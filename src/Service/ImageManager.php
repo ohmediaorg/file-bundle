@@ -124,6 +124,7 @@ class ImageManager
                 ->setBrowser(false)
                 ->setWidth($width)
                 ->setHeight($height)
+                ->setAlt($alt)
                 ->setImage(true)
                 ->setResizeParent($file)
             ;

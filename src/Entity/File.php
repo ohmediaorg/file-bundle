@@ -252,6 +252,10 @@ class File
     {
         $this->alt = $alt;
 
+        foreach ($this->resizes as $resize) {
+            $resize->setAlt($alt);
+        }
+
         return $this;
     }
 
