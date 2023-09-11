@@ -74,7 +74,7 @@ Outputting a file or image path in a template:
 <a href="{{ file_path(file) }}">My File</a>
 
 {# OHMedia\FileBundle\Entity\File file #}
-<img src="{{ file_path(file) }}" title="My Image" />
+<img src="{{ image_path(file) }}" title="My Image" />
 ```
 
 You can also generate resized images on the fly by passing in width/height:
@@ -84,7 +84,7 @@ You can also generate resized images on the fly by passing in width/height:
 {% set height = 100 %}
 
 {# OHMedia\FileBundle\Entity\File file #}
-<img src="{{ file_path(file, width, height) }}" title="My Thumbnail" />
+<img src="{{ image_path(file, width, height) }}" title="My Thumbnail" />
 ```
 
 If one of width or height is `null` (default value),
