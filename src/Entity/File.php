@@ -85,14 +85,7 @@ class File
         $this->locked = false;
         $this->folder = null;
 
-        $resizes = $this->resizes;
         $this->resizes = new ArrayCollection();
-
-        foreach ($resizes as $resize) {
-            $clone = clone $resize;
-
-            $this->addResize($clone);
-        }
     }
 
     public function isCloned(): bool
