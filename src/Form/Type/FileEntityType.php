@@ -37,8 +37,8 @@ class FileEntityType extends AbstractType
 
         $fileExists = $file && $file->getPath();
 
-        if ($file && (null === $options['image'])) {
-            $options['image'] = $file->isImage();
+        if (null === $options['image']) {
+            $options['image'] = $file ? $file->isImage() : false;
         }
 
         $accept = [];
