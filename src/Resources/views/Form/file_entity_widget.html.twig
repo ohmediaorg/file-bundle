@@ -12,8 +12,7 @@
             {{ form_row(form.file) }}
         {% endif %}
 
-        {{ form_row(form.alt) }}
-        {{ form_row(form.image) }}
+        {{ form_rest(form) }}
     </div>
 
     {% if current_file %}
