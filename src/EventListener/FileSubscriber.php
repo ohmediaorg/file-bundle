@@ -344,6 +344,8 @@ class FileSubscriber implements EventSubscriber
         $imageResource->resize($width, $height);
 
         $imageResource->save($filepath);
+
+        $file->setSize(filesize($filepath));
     }
 
     private function removeFilepath(?string $filepath)
