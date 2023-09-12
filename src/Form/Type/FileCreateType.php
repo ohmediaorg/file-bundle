@@ -17,6 +17,8 @@ class FileCreateType extends AbstractType
     {
         $file = $options['data'];
 
+        $isImage = $file && $file->isImage();
+
         $mimes = [
             MimeTypeUtil::AUDIO,
             MimeTypeUtil::DOCUMENT,
@@ -24,7 +26,7 @@ class FileCreateType extends AbstractType
             MimeTypeUtil::VIDEO,
         ];
 
-        if ($file && $file->isImage()) {
+        if ($isImage) {
             $mimes = [MimeTypeUtil::IMAGE];
         }
 
@@ -45,7 +47,7 @@ class FileCreateType extends AbstractType
             ])
         ;
 
-        if ($file->isImage()) {
+        if ($isImage) {
             $builder->add('alt', TextType::class, [
                 'label' => 'Screen Reader Text',
                 'required' => false,
