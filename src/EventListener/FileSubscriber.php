@@ -3,6 +3,7 @@
 namespace OHMedia\FileBundle\EventListener;
 
 use Doctrine\Common\EventSubscriber;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Persistence\Proxy;
@@ -20,6 +21,7 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class FileSubscriber implements EventSubscriber
 {
+    private $connection;
     private $fileRepository;
     private $fileFolderRepository;
     private $fileManager;
@@ -27,10 +29,12 @@ class FileSubscriber implements EventSubscriber
     private $slugger;
 
     public function __construct(
+        Connection $connection,
         FileRepository $fileRepository,
         FileFolderRepository $fileFolderRepository,
         FileManager $fileManager
     ) {
+        $this->connection = $connection;
         $this->fileRepository = $fileRepository;
         $this->fileFolderRepository = $fileFolderRepository;
         $this->fileManager = $fileManager;
@@ -209,7 +213,6 @@ class FileSubscriber implements EventSubscriber
         $file
             ->setPath($path)
             ->setMimeType($mimeType)
-            ->setSize($size ?: null)
         ;
     }
 
@@ -285,6 +288,25 @@ class FileSubscriber implements EventSubscriber
         $file->clearFile();
 
         $this->postSaveResize($file);
+
+        $filepath = $this->fileManager->getAbsolutePath($file);
+
+        // make sure the file size is accurate post save using a raw query
+        // to avoid triggering more Doctrine life-cycles
+        if (file_exists($filepath)) {
+            $filesize = filesize($filepath);
+
+            $stmt = $this->connection->prepare('
+                UPDATE `file`
+                SET `size` = :size
+                WHERE `id` = :id'
+            );
+
+            $stmt->execute([
+                'size' => $filesize,
+                'id' => $file->getId(),
+            ]);
+        }
     }
 
     private function doImageProcessing(FileEntity $file)
@@ -344,8 +366,6 @@ class FileSubscriber implements EventSubscriber
         $imageResource->resize($width, $height);
 
         $imageResource->save($filepath);
-
-        $file->setSize(filesize($filepath));
     }
 
     private function removeFilepath(?string $filepath)
