@@ -115,12 +115,15 @@ class ImageManager
         $resize = $file->getResize($width, $height);
 
         if (!$resize) {
-            $resize = clone $file;
+            $resize = $this->fileManager->copy($file);
 
             $name = sprintf('%sx%s', $width, $height);
 
             $resize
                 ->setName($resize->getName().'-'.$name)
+                ->setBrowser(false)
+                ->setImage(true)
+                ->setAlt($file->getAlt())
                 ->setWidth($width)
                 ->setHeight($height)
                 ->setResizeParent($file)
