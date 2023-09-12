@@ -8,6 +8,8 @@ use OHMedia\FileBundle\Util\MimeTypeUtil;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -35,7 +37,17 @@ class FileEntityType extends AbstractType
 
         $fileExists = $file && $file->getPath();
 
+        if (null === $options['image']) {
+            $options['image'] = $file ? $file->isImage() : false;
+        }
+
         $accept = [];
+
+        if (!$options['file_constraints']) {
+            $options['file_constraints'] = $options['image']
+                ? [MimeTypeUtil::getImageFileConstraint()]
+                : [MimeTypeUtil::getAllFileConstraint()];
+        }
 
         foreach ($options['file_constraints'] as $constraint) {
             if (!($constraint instanceof FileConstraint)) {
@@ -84,6 +96,23 @@ class FileEntityType extends AbstractType
             ]);
         }
 
+        if ($options['image'] && $options['show_alt']) {
+            $builder->add('alt', TextType::class, [
+                'label' => 'Screen Reader Text',
+                'required' => false,
+            ]);
+        } else {
+            $builder->add('alt', HiddenType::class, [
+                'required' => false,
+                'data' => '',
+            ]);
+        }
+
+        $builder->add('image', HiddenType::class, [
+            'required' => false,
+            'data' => $options['image'],
+        ]);
+
         $builder->addEventListener(
             FormEvents::POST_SUBMIT,
             [$this, 'onPostSubmit']
@@ -122,10 +151,10 @@ class FileEntityType extends AbstractType
         $resolver->setDefaults([
             'row_attr' => ['class' => 'file-entity-type'],
             'data_class' => File::class,
-            'file_constraints' => [
-                MimeTypeUtil::getAllFileConstraint(),
-            ],
+            'file_constraints' => [],
             'file_label' => false,
+            'image' => null,
+            'show_alt' => true,
         ]);
     }
 }

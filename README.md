@@ -61,12 +61,9 @@ $ sudo chown -R www-data:www-data oh_media_files
 
 ## Entities
 
-There is a `OHMedia\FileBundle\Entity\File`
-and `OHMedia\FileBundle\Entity\Image` entity,
-with corresponding form types.
+There is a `OHMedia\FileBundle\Entity\File` entity with a corresponding form type.
 
-Use the maker command to add these to your entity,
-then utilize the form types in your entity's form.
+Use the maker command to add these to your entity, then utilize the form types in your entity's form.
 
 ## Templating
 
@@ -76,8 +73,8 @@ Outputting a file or image path in a template:
 {# OHMedia\FileBundle\Entity\File file #}
 <a href="{{ file_path(file) }}">My File</a>
 
-{# OHMedia\FileBundle\Entity\Image image #}
-<img src="{{ image_path(image) }}" title="My Image" />
+{# OHMedia\FileBundle\Entity\File file #}
+<img src="{{ image_path(file) }}" title="My Image" />
 ```
 
 You can also generate resized images on the fly by passing in width/height:
@@ -86,8 +83,8 @@ You can also generate resized images on the fly by passing in width/height:
 {% set width = 100 %}
 {% set height = 100 %}
 
-{# OHMedia\FileBundle\Entity\Image image #}
-<img src="{{ image_path(image, width, height) }}" title="My Thumbnail" />
+{# OHMedia\FileBundle\Entity\File file #}
+<img src="{{ image_path(file, width, height) }}" title="My Thumbnail" />
 ```
 
 If one of width or height is `null` (default value),
@@ -98,7 +95,7 @@ If both are `null`, you will get the original image.
 There's also a function to generate an entire `<img />` tag:
 
 ```twig
-{{ image_tag(image, {width: 600, height: 400}) }}
+{{ image_tag(file, {width: 600, height: 400}) }}
 ```
 
 The second parameter is for HTML attributes. The `width` and/or `height`

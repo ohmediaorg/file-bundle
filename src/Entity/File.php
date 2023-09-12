@@ -2,6 +2,8 @@
 
 namespace OHMedia\FileBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\FileBundle\Repository\FileRepository;
@@ -52,21 +54,38 @@ class File
     #[ORM\Column(type: Types::SMALLINT, nullable: true, options: ['unsigned' => true])]
     private ?int $height = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $alt = null;
+
+    #[ORM\Column(options: ['default' => false])]
+    private bool $image = false;
+
     #[ORM\ManyToOne(inversedBy: 'files')]
     private ?FileFolder $folder = null;
 
-    #[ORM\OneToOne(mappedBy: 'file', cascade: ['persist', 'remove'])]
-    private ?Image $image = null;
+    #[ORM\ManyToOne(inversedBy: 'resizes', targetEntity: self::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?self $resize_parent = null;
+
+    #[ORM\OneToMany(mappedBy: 'resize_parent', targetEntity: self::class, orphanRemoval: true)]
+    private Collection $resizes;
 
     private $cloned = false;
+
+    public function __construct()
+    {
+        $this->resizes = new ArrayCollection();
+    }
 
     public function __clone()
     {
         $this->id = null;
         $this->cloned = true;
+        // don't want cloned items to appear in the File browser
         $this->browser = false;
-        $this->locked = false;
         $this->folder = null;
+
+        $this->resizes = new ArrayCollection();
     }
 
     public function isCloned(): bool
@@ -224,6 +243,34 @@ class File
         return $this;
     }
 
+    public function getAlt(): ?string
+    {
+        return $this->alt;
+    }
+
+    public function setAlt(?string $alt): self
+    {
+        $this->alt = $alt;
+
+        foreach ($this->resizes as $resize) {
+            $resize->setAlt($alt);
+        }
+
+        return $this;
+    }
+
+    public function isImage(): bool
+    {
+        return $this->image;
+    }
+
+    public function setImage(bool $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
     public function getFolder(): ?FileFolder
     {
         return $this->folder;
@@ -236,26 +283,57 @@ class File
         return $this;
     }
 
-    public function getImage(): ?Image
+    public function getResizeParent(): ?self
     {
-        return $this->image;
+        return $this->resize_parent;
     }
 
-    public function setImage(?Image $image): self
+    public function setResizeParent(?self $resize_parent): self
     {
-        // unset the owning side of the relation if necessary
-        if (null === $image && null !== $this->image) {
-            $this->image->setFile(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if (null !== $image && $image->getFile() !== $this) {
-            $image->setFile($this);
-        }
-
-        $this->image = $image;
+        $this->resize_parent = $resize_parent;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, File>
+     */
+    public function getResizes(): Collection
+    {
+        return $this->resizes;
+    }
+
+    public function addResize(File $resize): self
+    {
+        if (!$this->resizes->contains($resize)) {
+            $this->resizes->add($resize);
+            $resize->setImage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeResize(File $resize): self
+    {
+        if ($this->resizes->removeElement($resize)) {
+            // set the owning side to null (unless already changed)
+            if ($resize->getImage() === $this) {
+                $resize->setImage(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getResize(int $width, int $height)
+    {
+        foreach ($this->resizes as $resize) {
+            if ($width === $resize->getWidth() && $height === $resize->getHeight()) {
+                return $resize;
+            }
+        }
+
+        return null;
     }
 
     private $file;
@@ -265,7 +343,7 @@ class File
     {
         $this->file = $file;
 
-        // check if we have an old image path
+        // check if we have an old file path
         if (isset($this->path) && (self::PATH_INITIAL !== $this->path)) {
             // store the old name to delete after the update
             $this->oldPath = $this->path;

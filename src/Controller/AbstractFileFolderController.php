@@ -4,7 +4,6 @@ namespace OHMedia\FileBundle\Controller;
 
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
-use OHMedia\FileBundle\Entity\Image;
 use OHMedia\FileBundle\Form\Type\FileFolderCreateType;
 use OHMedia\FileBundle\Form\Type\FileFolderEditType;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
@@ -19,7 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 abstract class AbstractFileFolderController extends AbstractController
 {
-    abstract protected function viewRender(FileFolder $folder, array $items, File $newFile, FileFolder $newFileFolder, Image $newImage): Response;
+    abstract protected function viewRender(FileFolder $folder, array $items, File $newFile, FileFolder $newFileFolder): Response;
 
     abstract protected function createRender(FormView $formView, FileFolder $folder): Response;
 
@@ -93,12 +92,9 @@ abstract class AbstractFileFolderController extends AbstractController
             ->setBrowser(true)
             ->setFolder($folder);
 
-        $newImage = (new Image())
-            ->setFile($newFile);
-
         $items = $fileListing->get($folder);
 
-        return $this->viewRender($folder, $items, $newFile, $newFolder, $newImage);
+        return $this->viewRender($folder, $items, $newFile, $newFolder);
     }
 
     #[Route('/folder/{id}/edit', name: 'file_folder_edit', methods: ['GET', 'POST'])]

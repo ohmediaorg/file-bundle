@@ -31,7 +31,6 @@ class MimeTypeUtil
 
     public const SVG = 'image/svg+xml';
 
-    // supported by Image entity
     public const IMAGE = [
         'image/gif' => 'gif',
         'image/jpeg' => 'jpeg',

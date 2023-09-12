@@ -12,6 +12,7 @@ class FileVoter extends AbstractEntityVoter
     public const CREATE = 'create';
     // NOTE: this is only for frontend; there is no backend file view
     public const VIEW = 'view';
+    public const EDIT = 'edit';
     public const LOCK = 'lock';
     public const UNLOCK = 'unlock';
     public const MOVE = 'move';
@@ -23,6 +24,7 @@ class FileVoter extends AbstractEntityVoter
             self::INDEX,
             self::CREATE,
             self::VIEW,
+            self::EDIT,
             self::LOCK,
             self::UNLOCK,
             self::MOVE,
@@ -48,6 +50,12 @@ class FileVoter extends AbstractEntityVoter
     protected function canView(File $file, User $loggedIn): bool
     {
         return true;
+    }
+
+    protected function canEdit(File $file, User $loggedIn): bool
+    {
+        // only for editing image alt text
+        return $file->isBrowser() && $file->isImage();
     }
 
     protected function canLock(File $file, User $loggedIn): bool

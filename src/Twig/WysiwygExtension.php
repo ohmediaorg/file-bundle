@@ -3,7 +3,6 @@
 namespace OHMedia\FileBundle\Twig;
 
 use OHMedia\FileBundle\Repository\FileRepository;
-use OHMedia\FileBundle\Repository\ImageRepository;
 use OHMedia\FileBundle\Service\FileManager;
 use OHMedia\FileBundle\Service\ImageManager;
 use OHMedia\WysiwygBundle\Twig\AbstractWysiwygExtension;
@@ -14,18 +13,15 @@ class WysiwygExtension extends AbstractWysiwygExtension
     private $fileManager;
     private $fileRepository;
     private $imageManager;
-    private $imageRepository;
 
     public function __construct(
         FileManager $fileManager,
         FileRepository $fileRepository,
-        ImageManager $imageManager,
-        ImageRepository $imageRepository
+        ImageManager $imageManager
     ) {
         $this->fileManager = $fileManager;
         $this->fileRepository = $fileRepository;
         $this->imageManager = $imageManager;
-        $this->imageRepository = $imageRepository;
     }
 
     public function getFunctions(): array
@@ -50,7 +46,10 @@ class WysiwygExtension extends AbstractWysiwygExtension
 
     public function image(int $id, int $width = null)
     {
-        $image = $this->imageRepository->find($id);
+        $image = $this->fileRepository->findOneBy([
+            'id' => $id,
+            'image' => true,
+        ]);
 
         if (!$image || !$image->isBrowser()) {
             return '';

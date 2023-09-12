@@ -53,7 +53,7 @@ class FileManager
             $path = $this->getAbsolutePath($file);
         }
 
-        if (null !== $path) {
+        if (null !== $path && file_exists($path)) {
             $contents = file_get_contents($path);
 
             $copy = $this->createFromContents($contents);

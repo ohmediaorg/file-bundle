@@ -4,8 +4,8 @@ namespace OHMedia\FileBundle\Controller;
 
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
-use OHMedia\FileBundle\Entity\Image;
 use OHMedia\FileBundle\Form\Type\FileCreateType;
+use OHMedia\FileBundle\Form\Type\FileEditType;
 use OHMedia\FileBundle\Form\Type\FileMoveType;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Repository\FileRepository;
@@ -20,9 +20,11 @@ use Symfony\Component\Routing\Annotation\Route;
 
 abstract class AbstractFileController extends AbstractController
 {
-    abstract protected function indexRender(array $items, File $newFile, FileFolder $newFileFolder, Image $newImage): Response;
+    abstract protected function indexRender(array $items, File $newFile, FileFolder $newFileFolder): Response;
 
     abstract protected function createRender(FormView $formView, File $file): Response;
+
+    abstract protected function editRender(FormView $formView, File $file): Response;
 
     abstract protected function moveRender(FormView $formView, File $file): Response;
 
@@ -34,7 +36,6 @@ abstract class AbstractFileController extends AbstractController
     ): Response {
         $newFile = (new File())->setBrowser(true);
         $newFolder = (new FileFolder())->setBrowser(true);
-        $newImage = (new Image())->setFile($newFile);
 
         $this->denyAccessUnlessGranted(
             FileVoter::INDEX,
@@ -44,11 +45,11 @@ abstract class AbstractFileController extends AbstractController
 
         $items = $fileListing->get();
 
-        return $this->indexRender($items, $newFile, $newFolder, $newImage);
+        return $this->indexRender($items, $newFile, $newFolder);
     }
 
     #[Route('/file/create', name: 'file_create_no_folder', methods: ['GET', 'POST'])]
-    public function createNoFolder(
+    public function fileCreateNoFolder(
         Request $request,
         FileRepository $fileRepository
     ): Response {
@@ -58,7 +59,7 @@ abstract class AbstractFileController extends AbstractController
     }
 
     #[Route('/folder/{id}/file/create', name: 'file_create_with_folder', methods: ['GET', 'POST'])]
-    public function createWithFolder(
+    public function fileCreateWithFolder(
         Request $request,
         FileRepository $fileRepository,
         FileFolder $folder
@@ -70,15 +71,40 @@ abstract class AbstractFileController extends AbstractController
         return $this->create($request, $fileRepository, $file);
     }
 
+    #[Route('/image/create', name: 'image_create_no_folder', methods: ['GET', 'POST'])]
+    public function imageCreateNoFolder(
+        Request $request,
+        FileRepository $fileRepository
+    ): Response {
+        $file = (new File())->setBrowser(true)->setImage(true);
+
+        return $this->create($request, $fileRepository, $file);
+    }
+
+    #[Route('/folder/{id}/image/create', name: 'image_create_with_folder', methods: ['GET', 'POST'])]
+    public function imageCreateWithFolder(
+        Request $request,
+        FileRepository $fileRepository,
+        FileFolder $folder
+    ): Response {
+        $file = (new File())->setBrowser(true)->setImage(true);
+
+        $folder->addFile($file);
+
+        return $this->create($request, $fileRepository, $file);
+    }
+
     private function create(
         Request $request,
         FileRepository $fileRepository,
         File $file
     ): Response {
+        $noun = $file->isImage() ? 'image' : 'file';
+
         $this->denyAccessUnlessGranted(
             FileVoter::CREATE,
             $file,
-            'You cannot create a new file.'
+            "You cannot create a new $noun."
         );
 
         $form = $this->createForm(FileCreateType::class, $file);
@@ -90,12 +116,41 @@ abstract class AbstractFileController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $fileRepository->save($file, true);
 
-            $this->addFlash('notice', 'The file was created successfully.');
+            $this->addFlash('notice', "The $noun was created successfully.");
 
             return $this->createRedirect($file);
         }
 
         return $this->createRender($form->createView(), $file);
+    }
+
+    #[Route('/file/{id}/edit', name: 'file_edit', methods: ['GET', 'POST'])]
+    public function edit(
+        Request $request,
+        FileRepository $fileRepository,
+        File $file
+    ): Response {
+        $this->denyAccessUnlessGranted(
+            FileVoter::CREATE,
+            $file,
+            'You cannot edit this image.'
+        );
+
+        $form = $this->createForm(FileEditType::class, $file);
+
+        $form->add('submit', SubmitType::class);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $fileRepository->save($file, true);
+
+            $this->addFlash('notice', 'The image was edited successfully.');
+
+            return $this->editRedirect($file);
+        }
+
+        return $this->editRender($form->createView(), $file);
     }
 
     #[Route('/file/{id}/move', name: 'file_move', methods: ['GET', 'POST'])]
@@ -104,10 +159,12 @@ abstract class AbstractFileController extends AbstractController
         File $file,
         FileRepository $fileRepository
     ): Response {
+        $noun = $file->isImage() ? 'image' : 'file';
+
         $this->denyAccessUnlessGranted(
             FileVoter::MOVE,
             $file,
-            'You cannot move this file.'
+            "You cannot move this $noun."
         );
 
         $form = $this->createForm(FileMoveType::class, $file);
@@ -119,7 +176,7 @@ abstract class AbstractFileController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $fileRepository->save($file, true);
 
-            $this->addFlash('notice', 'The file was moved successfully.');
+            $this->addFlash('notice', "The $noun was moved successfully.");
 
             return $this->moveRedirect($file);
         }
@@ -133,10 +190,12 @@ abstract class AbstractFileController extends AbstractController
         File $file,
         FileRepository $fileRepository
     ): Response {
+        $noun = $file->isImage() ? 'image' : 'file';
+
         $this->denyAccessUnlessGranted(
             FileVoter::LOCK,
             $file,
-            'You cannot lock this file.'
+            "You cannot lock this $noun."
         );
 
         $csrfTokenName = 'lock_file_'.$file->getId();
@@ -147,7 +206,7 @@ abstract class AbstractFileController extends AbstractController
 
             $fileRepository->save($file, true);
 
-            $this->addFlash('notice', 'The file was locked successfully.');
+            $this->addFlash('notice', "The $noun was locked successfully.");
         }
 
         return $this->lockRedirect($file);
@@ -159,10 +218,12 @@ abstract class AbstractFileController extends AbstractController
         File $file,
         FileRepository $fileRepository
     ): Response {
+        $noun = $file->isImage() ? 'image' : 'file';
+
         $this->denyAccessUnlessGranted(
             FileVoter::UNLOCK,
             $file,
-            'You cannot unlock this file.'
+            "You cannot unlock this $noun."
         );
 
         $csrfTokenName = 'unlock_file_'.$file->getId();
@@ -173,13 +234,18 @@ abstract class AbstractFileController extends AbstractController
 
             $fileRepository->save($file, true);
 
-            $this->addFlash('notice', 'The file was unlocked successfully.');
+            $this->addFlash('notice', "The $noun was unlocked successfully.");
         }
 
         return $this->unlockRedirect($file);
     }
 
     protected function createRedirect(File $file): Response
+    {
+        return $this->formRedirect($file);
+    }
+
+    protected function editRedirect(File $file): Response
     {
         return $this->formRedirect($file);
     }
@@ -216,10 +282,12 @@ abstract class AbstractFileController extends AbstractController
         File $file,
         FileRepository $fileRepository
     ): Response {
+        $noun = $file->isImage() ? 'image' : 'file';
+
         $this->denyAccessUnlessGranted(
             FileVoter::DELETE,
             $file,
-            'You cannot delete this file.'
+            "You cannot delete this $noun."
         );
 
         $csrfTokenName = 'delete_file_'.$file->getId();
@@ -228,7 +296,7 @@ abstract class AbstractFileController extends AbstractController
         if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
             $fileRepository->remove($file, true);
 
-            $this->addFlash('notice', 'The file was deleted successfully.');
+            $this->addFlash('notice', "The $noun was deleted successfully.");
         }
 
         return $this->deleteRedirect($file);
