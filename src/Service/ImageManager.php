@@ -24,11 +24,11 @@ class ImageManager
     {
         $resize = $this->getResize($file, $width, $height);
 
-        $file = $resize
-            ? $resize->getFile()
-            : $file->getFile();
+        if ($resize) {
+            return $this->fileManager->getWebPath($resize->getFile());
+        }
 
-        return $file ? $this->fileManager->getWebPath($file) : '';
+        return $this->fileManager->getWebPath($file);
     }
 
     public function render(File $file, array $attributes = [])
