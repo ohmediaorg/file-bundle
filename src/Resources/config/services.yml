@@ -11,7 +11,7 @@ services:
         autowire: true
 
     oh_media_file.file_folder_slugger:
-        alias: OHMedia\FileBundle\Service\FileManager
+        alias: OHMedia\FileBundle\Service\FileFolderSlugger
 
     OHMedia\FileBundle\Service\ImageManager:
         autowire: true
