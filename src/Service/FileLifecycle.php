@@ -32,7 +32,7 @@ class FileLifecycle
         $this->slugger = new AsciiSlugger();
     }
 
-    public function prePersist(File $file)
+    public function prePersist(FileEntity $file)
     {
         if ($file->isCloned()) {
             $copy = $this->fileManager->copy($file);
@@ -62,22 +62,22 @@ class FileLifecycle
         }
     }
 
-    public function postPersist(File $file)
+    public function postPersist(FileEntity $file)
     {
         $this->postSaveFile($file);
     }
 
-    public function preUpdate(File $file)
+    public function preUpdate(FileEntity $file)
     {
         $this->preSaveFile($file);
     }
 
-    public function postUpdate(File $file)
+    public function postUpdate(FileEntity $file)
     {
         $this->postSaveFile($file);
     }
 
-    public function postRemove(File $file)
+    public function postRemove(FileEntity $file)
     {
         $this->removeFilepath($file->getPath());
     }
