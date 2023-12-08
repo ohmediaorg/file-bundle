@@ -8,8 +8,6 @@ use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Persistence\Proxy;
 use OHMedia\FileBundle\Entity\File as FileEntity;
-use OHMedia\FileBundle\Entity\FileFolder;
-use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Service\FileManager;
 use OHMedia\FileBundle\Util\ImageResource;
@@ -23,7 +21,6 @@ class FileSubscriber implements EventSubscriber
 {
     private $connection;
     private $fileRepository;
-    private $fileFolderRepository;
     private $fileManager;
     private $fileSystem;
     private $slugger;
@@ -31,12 +28,10 @@ class FileSubscriber implements EventSubscriber
     public function __construct(
         Connection $connection,
         FileRepository $fileRepository,
-        FileFolderRepository $fileFolderRepository,
         FileManager $fileManager
     ) {
         $this->connection = $connection;
         $this->fileRepository = $fileRepository;
-        $this->fileFolderRepository = $fileFolderRepository;
         $this->fileManager = $fileManager;
         $this->fileSystem = new FileSystem();
         $this->slugger = new AsciiSlugger();
@@ -60,8 +55,6 @@ class FileSubscriber implements EventSubscriber
 
         if ($object instanceof FileEntity) {
             $this->prePersistFile($object);
-        } elseif ($object instanceof FileFolder) {
-            $this->preSaveFileFolder($object);
         }
     }
 
@@ -110,8 +103,6 @@ class FileSubscriber implements EventSubscriber
 
         if ($object instanceof FileEntity) {
             $this->preSaveFile($object);
-        } elseif ($object instanceof FileFolder) {
-            $this->preSaveFileFolder($object);
         }
     }
 
@@ -324,22 +315,6 @@ class FileSubscriber implements EventSubscriber
         }
 
         $imageResource->fixOrientation()->save();
-    }
-
-    private function preSaveFileFolder(FileFolder $folder)
-    {
-        $name = strtolower($folder->getName());
-
-        $slug = $this->slugger->slug($name);
-
-        $i = 1;
-        while ($this->fileFolderRepository->countByName($slug, $folder)) {
-            $slug = $this->slugger->slug($name.'-'.$i);
-
-            ++$i;
-        }
-
-        $folder->setName($slug);
     }
 
     private function postSaveResize(FileEntity $file)

@@ -7,6 +7,12 @@ services:
     oh_media_file.file_manager:
         alias: OHMedia\FileBundle\Service\FileManager
 
+    OHMedia\FileBundle\Service\FileFolderSlugger:
+        autowire: true
+
+    oh_media_file.file_folder_slugger:
+        alias: OHMedia\FileBundle\Service\FileManager
+
     OHMedia\FileBundle\Service\ImageManager:
         autowire: true
 
@@ -27,6 +33,22 @@ services:
     OHMedia\FileBundle\Twig\WysiwygExtension:
         autowire: true
         tags: ["twig.extension", "oh_media_wysiwyg.extension"]
+
+    OHMedia\FileBundle\EventListener\FileFolderPrePersist:
+        arguments: ["@oh_media_file.file_folder_slugger"]
+        tags:
+            -
+                name: 'doctrine.orm.entity_listener'
+                event: 'prePersist'
+                entity: 'OHMedia\FileBundle\Entity\FileFolder'
+
+    OHMedia\FileBundle\EventListener\FileFolderPreUpdate:
+        arguments: ["@oh_media_file.file_folder_slugger"]
+        tags:
+            -
+                name: 'doctrine.orm.entity_listener'
+                event: 'preUpdate'
+                entity: 'OHMedia\FileBundle\Entity\FileFolder'
 
     OHMedia\FileBundle\EventListener\FileSubscriber:
         autowire: true
