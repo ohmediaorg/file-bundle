@@ -31,7 +31,7 @@ class FileEntityType extends AbstractType
         $this->fileManager = $fileManager;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $file = isset($options['data']) ? $options['data'] : null;
 
@@ -146,7 +146,7 @@ class FileEntityType extends AbstractType
         }
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'row_attr' => ['class' => 'file-entity-type'],
