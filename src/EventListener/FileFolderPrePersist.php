@@ -3,6 +3,7 @@
 namespace OHMedia\FileBundle\EventListener;
 
 use Doctrine\ORM\Event\PrePersistEventArgs;
+use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Service\FileFolderSlugger;
 
 class FileFolderPrePersist

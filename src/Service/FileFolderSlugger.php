@@ -2,6 +2,7 @@
 
 namespace OHMedia\FileBundle\Service;
 
+use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
