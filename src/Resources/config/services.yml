@@ -45,10 +45,8 @@ services:
         tags: ["doctrine.repository_service"]
 
     OHMedia\FileBundle\Controller\FileController:
-        tags: ["controller.service_arguments"]
-        calls:
-            - method: setContainer
-              arguments: ["@service_container"]
+        tags: ["container.service_subscriber", "controller.service_arguments"]
+        autowire: true
 
     OHMedia\FileBundle\Security\Voter\FileVoter:
         tags: ["security.voter"]
