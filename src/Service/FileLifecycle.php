@@ -1,15 +1,10 @@
 <?php
 
-namespace OHMedia\FileBundle\EventListener;
+namespace OHMedia\FileBundle\Service;
 
-use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Connection;
-use Doctrine\ORM\Events;
-use Doctrine\Persistence\Event\LifecycleEventArgs;
-use Doctrine\Persistence\Proxy;
 use OHMedia\FileBundle\Entity\File as FileEntity;
 use OHMedia\FileBundle\Repository\FileRepository;
-use OHMedia\FileBundle\Service\FileManager;
 use OHMedia\FileBundle\Util\ImageResource;
 use OHMedia\FileBundle\Util\MimeTypeUtil;
 use Symfony\Component\Filesystem\Filesystem;
@@ -17,7 +12,7 @@ use Symfony\Component\HttpFoundation\File\File as HttpFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
-class FileSubscriber implements EventSubscriber
+class FileLifecycle
 {
     private $connection;
     private $fileRepository;
@@ -37,28 +32,7 @@ class FileSubscriber implements EventSubscriber
         $this->slugger = new AsciiSlugger();
     }
 
-    public function getSubscribedEvents(): array
-    {
-        return [
-            Events::prePersist,
-            Events::postPersist,
-            Events::preUpdate,
-            Events::postUpdate,
-            Events::preRemove,
-            Events::postRemove,
-        ];
-    }
-
-    public function prePersist(LifecycleEventArgs $args)
-    {
-        $object = $args->getObject();
-
-        if ($object instanceof FileEntity) {
-            $this->prePersistFile($object);
-        }
-    }
-
-    private function prePersistFile(FileEntity $file)
+    public function prePersist(File $file)
     {
         if ($file->isCloned()) {
             $copy = $this->fileManager->copy($file);
@@ -88,52 +62,24 @@ class FileSubscriber implements EventSubscriber
         }
     }
 
-    public function postPersist(LifecycleEventArgs $args)
+    public function postPersist(File $file)
     {
-        $object = $args->getObject();
-
-        if ($object instanceof FileEntity) {
-            $this->postSaveFile($object);
-        }
+        $this->postSaveFile($file);
     }
 
-    public function preUpdate(LifecycleEventArgs $args)
+    public function preUpdate(File $file)
     {
-        $object = $args->getObject();
-
-        if ($object instanceof FileEntity) {
-            $this->preSaveFile($object);
-        }
+        $this->preSaveFile($file);
     }
 
-    public function postUpdate(LifecycleEventArgs $args)
+    public function postUpdate(File $file)
     {
-        $object = $args->getObject();
-
-        if ($object instanceof FileEntity) {
-            $this->postSaveFile($object);
-        }
+        $this->postSaveFile($file);
     }
 
-    public function preRemove(LifecycleEventArgs $args)
+    public function postRemove(File $file)
     {
-        $object = $args->getObject();
-
-        if ($object instanceof FileEntity) {
-            if ($object instanceof Proxy) {
-                // force load the proxy
-                $object->__load();
-            }
-        }
-    }
-
-    public function postRemove(LifecycleEventArgs $args)
-    {
-        $object = $args->getObject();
-
-        if ($object instanceof FileEntity) {
-            $this->removeFilepath($object->getPath());
-        }
+        $this->removeFilepath($file->getPath());
     }
 
     private $newFiles = [];

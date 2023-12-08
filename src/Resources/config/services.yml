@@ -7,6 +7,12 @@ services:
     oh_media_file.file_manager:
         alias: OHMedia\FileBundle\Service\FileManager
 
+    OHMedia\FileBundle\Service\FileLifecycle:
+        autowire: true
+
+    oh_media_file.file_lifecycle:
+        alias: OHMedia\FileBundle\Service\FileLifecycle
+
     OHMedia\FileBundle\Service\FileFolderSlugger:
         autowire: true
 
@@ -50,9 +56,45 @@ services:
                 event: 'preUpdate'
                 entity: 'OHMedia\FileBundle\Entity\FileFolder'
 
-    OHMedia\FileBundle\EventListener\FileSubscriber:
-        autowire: true
-        tags: ["doctrine.event_subscriber"]
+    OHMedia\FileBundle\EventListener\FilePostPersist:
+        arguments: ["@oh_media_file.file_lifecycle"]
+        tags:
+            -
+                name: 'doctrine.orm.entity_listener'
+                event: 'postPersist'
+                entity: 'OHMedia\FileBundle\Entity\File'
+
+    OHMedia\FileBundle\EventListener\FilePostRemove:
+        arguments: ["@oh_media_file.file_lifecycle"]
+        tags:
+            -
+                name: 'doctrine.orm.entity_listener'
+                event: 'postRemove'
+                entity: 'OHMedia\FileBundle\Entity\File'
+
+    OHMedia\FileBundle\EventListener\FilePostUpdate:
+        arguments: ["@oh_media_file.file_lifecycle"]
+        tags:
+            -
+                name: 'doctrine.orm.entity_listener'
+                event: 'postUpdate'
+                entity: 'OHMedia\FileBundle\Entity\File'
+
+    OHMedia\FileBundle\EventListener\FilePrePersist:
+        arguments: ["@oh_media_file.file_lifecycle"]
+        tags:
+            -
+                name: 'doctrine.orm.entity_listener'
+                event: 'prePersist'
+                entity: 'OHMedia\FileBundle\Entity\File'
+
+    OHMedia\FileBundle\EventListener\FilePreUpdate:
+        arguments: ["@oh_media_file.file_lifecycle"]
+        tags:
+            -
+                name: 'doctrine.orm.entity_listener'
+                event: 'preUpdate'
+                entity: 'OHMedia\FileBundle\Entity\File'
 
     OHMedia\FileBundle\Form\Type\FileEntityType:
         arguments: ["@oh_media_file.file_manager"]
