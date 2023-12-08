@@ -46,7 +46,7 @@ class File
     private ?string $mime_type = null;
 
     #[ORM\Column(type: Types::BIGINT, nullable: true, options: ['unsigned' => true])]
-    private ?int $size = null;
+    private ?string $size = null;
 
     #[ORM\Column(type: Types::SMALLINT, nullable: true, options: ['unsigned' => true])]
     private ?int $width = null;
@@ -207,12 +207,12 @@ class File
         return $this;
     }
 
-    public function getSize(): ?int
+    public function getSize(): ?string
     {
         return $this->size;
     }
 
-    public function setSize(?int $size): self
+    public function setSize(?string $size): self
     {
         $this->size = $size;
 
