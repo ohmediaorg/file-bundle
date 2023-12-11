@@ -40,7 +40,7 @@ class ImageManager
             $attributesString[] = sprintf(
                 '%s="%s"',
                 $attribute,
-                htmlspecialchars($value)
+                htmlspecialchars($value ?? '')
             );
         }
 
