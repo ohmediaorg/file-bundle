@@ -239,10 +239,10 @@ class FileLifecycle
                 WHERE `id` = :id'
             );
 
-            $stmt->execute([
-                'size' => $filesize,
-                'id' => $file->getId(),
-            ]);
+            $stmt->bindValue('size', $filesize);
+            $stmt->bindValue('id', $file->getId());
+
+            $stmt->executeQuery();
         }
     }
 
