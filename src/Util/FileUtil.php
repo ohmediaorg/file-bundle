@@ -12,23 +12,23 @@ class FileUtil
     public static function getTargetWidth(int $origW, int $origH, int $targetH): int
     {
         return 0 !== $origH
-            ? ($origW / $origH) * $targetH
+            ? intval(($origW / $origH) * $targetH)
             : 0;
     }
 
     public static function getTargetHeight(int $origW, int $origH, int $targetW): int
     {
         return 0 !== $origW
-            ? ($origH / $origW) * $targetW
+            ? intval(($origH / $origW) * $targetW)
             : 0;
     }
 
-    public static function formatBytesBinary(int $bytes, int $precision)
+    public static function formatBytesBinary(int $bytes, int $precision): string
     {
         return self::formatBytes($bytes, $precision, true);
     }
 
-    public static function formatBytesDecimal(int $bytes, int $precision)
+    public static function formatBytesDecimal(int $bytes, int $precision): string
     {
         return self::formatBytes($bytes, $precision, false);
     }
