@@ -32,6 +32,10 @@ services:
         autowire: true
         tags: ["twig.extension"]
 
+    OHMedia\FileBundle\Twig\FileScriptExtension:
+        autowire: true
+        tags: ["twig.extension"]
+
     OHMedia\FileBundle\Twig\ImageExtension:
         autowire: true
         tags: ["twig.extension"]

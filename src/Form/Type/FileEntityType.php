@@ -24,6 +24,8 @@ class FileEntityType extends AbstractType
     public const ACTION_REPLACE = 'replace';
     public const ACTION_DELETE = 'delete';
 
+    public const DATA_ATTRIBUTE = 'data-ohmedia-file-widget';
+
     private $fileManager;
 
     public function __construct(FileManager $fileManager)
@@ -125,9 +127,7 @@ class FileEntityType extends AbstractType
 
         $view->vars['current_file'] = $file && $file->getPath() ? $file : null;
 
-        $view->vars['action_replace'] = self::ACTION_REPLACE;
-
-        $view->vars['file_required'] = $options['required'];
+        $view->vars['DATA_ATTRIBUTE'] = self::DATA_ATTRIBUTE;
     }
 
     public function onPostSubmit(FormEvent $event)
