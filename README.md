@@ -53,6 +53,12 @@ oh_media_file:
     type: annotation
 ```
 
+Make sure this Twig tag is on every page:
+
+```twig
+{{ file_script() }}
+```
+
 On your remote server, you may need to adjust the permissions of this folder:
 
 ```bash
