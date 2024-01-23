@@ -1,0 +1,58 @@
+<script>
+(function () {
+  const ACTION_REPLACE = {{ ACTION_REPLACE|json_encode|raw }};
+  const DATA_ATTRIBUTE = {{ DATA_ATTRIBUTE|json_encode|raw }};
+  const DATA_ATTRIBUTE_CAMEL = DATA_ATTRIBUTE.replace('data-', '').replace(/-./g, x=>x[1].toUpperCase());
+
+  async function initFiles(parent) {
+    const containers = parent.querySelectorAll(`[${DATA_ATTRIBUTE}]`);
+
+    for (const container of containers) {
+      initFile(container);
+    }
+  }
+
+  function initFile(container) {
+    delete container.dataset[DATA_ATTRIBUTE_CAMEL];
+
+    const file = container.querySelector('input[type=file]');
+
+    const form = file.closest('form');
+
+    const radioName = container.querySelector('input[type=radio]').name;
+
+    const radios = form.elements[radioName];
+
+    function toggleFile() {
+        const isReplace = radios.value === ACTION_REPLACE;
+
+        file.style.display = isReplace ? '' : 'none';
+
+        file.required = isReplace;
+    }
+
+    radios.forEach((radio) => {
+        radio.addEventListener('change', toggleFile);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    initFiles(document);
+
+    const observer = new MutationObserver(function(mutationList, observer) {
+      for (const mutation of mutationList) {
+        if ('childList' !== mutation.type) {
+          continue;
+        }
+
+        initFiles(mutation.target);
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+  });
+})();
+</script>
