@@ -149,7 +149,6 @@ class FileEntityType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'row_attr' => ['class' => 'file-entity-type'],
             'data_class' => File::class,
             'file_constraints' => [],
             'file_label' => false,
