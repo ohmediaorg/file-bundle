@@ -3,6 +3,7 @@
 namespace OHMedia\FileBundle\Form\Type;
 
 use OHMedia\FileBundle\Entity\File;
+use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Service\FileManager;
 use OHMedia\FileBundle\Util\MimeTypeUtil;
 use Symfony\Component\Form\AbstractType;
@@ -27,10 +28,14 @@ class FileEntityType extends AbstractType
     public const DATA_ATTRIBUTE = 'data-ohmedia-file-widget';
 
     private $fileManager;
+    private $fileRepository;
 
-    public function __construct(FileManager $fileManager)
-    {
+    public function __construct(
+        FileManager $fileManager,
+        FileRepository $fileRepository
+    ) {
         $this->fileManager = $fileManager;
+        $this->fileRepository = $fileRepository;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -143,6 +148,14 @@ class FileEntityType extends AbstractType
 
         if (self::ACTION_DELETE === $action) {
             $file->setFile(null);
+        }
+
+        if (in_array($action, [self::ACTION_REPLACE, self::ACTION_DELETE])) {
+            $resizes = $file->getResizes();
+
+            foreach ($resizes as $resize) {
+                $this->fileRepository->remove($resize);
+            }
         }
     }
 
