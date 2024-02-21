@@ -3,6 +3,8 @@
 namespace OHMedia\FileBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Query\Parameter;
 use Doctrine\Persistence\ManagerRegistry;
 use OHMedia\FileBundle\Entity\FileFolder;
 
@@ -40,7 +42,7 @@ class FileFolderRepository extends ServiceEntityRepository
     public function countByName(string $name, FileFolder $folder)
     {
         $params = [
-            'name' => $name,
+            new Parameter('name', $name),
         ];
 
         $qb = $this->createQueryBuilder('ff')
@@ -50,16 +52,16 @@ class FileFolderRepository extends ServiceEntityRepository
         if ($id = $folder->getId()) {
             $qb->andWhere('ff.id <> :id');
 
-            $params['id'] = $id;
+            $params[] = new Parameter('id', $id);
         }
 
         if ($parent = $folder->getFolder()) {
             $qb->andWhere('ff.folder = :parent');
 
-            $params['parent'] = $parent;
+            $params[] = new Parameter('parent', $parent);
         }
 
-        return $qb->setParameters($params)
+        return $qb->setParameters(new ArrayCollection($params))
             ->getQuery()
             ->getSingleScalarResult();
     }
