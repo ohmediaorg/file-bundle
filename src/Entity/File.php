@@ -134,7 +134,7 @@ class File
         return $this;
     }
 
-    public function getFilename(): string
+    public function getFilename(): ?string
     {
         if ($this->ext) {
             return $this->name.'.'.$this->ext;
