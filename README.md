@@ -50,7 +50,7 @@ Import the routes in `config/routes.yaml`:
 ```yaml
 oh_media_file:
     resource: '@OHMediaFileBundle/Controller/'
-    type: annotation
+    type: attribute
 ```
 
 Make sure this Twig tag is on every page:
