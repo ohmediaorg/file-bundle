@@ -51,6 +51,11 @@ Import the routes in `config/routes.yaml`:
 oh_media_file:
     resource: '@OHMediaFileBundle/Controller/'
     type: attribute
+
+oh_media_file_backend:
+    resource: '@OHMediaFileBundle/Controller/Backend'
+    type: attribute
+    prefix: admin
 ```
 
 Make sure this Twig tag is on every page:
