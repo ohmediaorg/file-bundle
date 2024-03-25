@@ -1,0 +1,67 @@
+{% extends '@OHMediaBackend/base.html.twig' %}
+
+{% block meta_title %}Files{% endblock %}
+
+{% block breadcrumbs %}
+{{ bootstrap_breadcrumbs(
+  bootstrap_breadcrumb('Files', 'file_index'),
+) }}
+{% endblock %}
+
+{% block actions %}
+{% set file_voter = 'OHMedia\\FileBundle\\Security\\Voter\\FileVoter' %}
+
+{% set file_folder_voter = 'OHMedia\\FileBundle\\Security\\Voter\\FileFolderVoter' %}
+
+{% set attributes = {
+  file: {
+    create: constant(file_voter ~ '::CREATE'),
+  },
+  folder: {
+    create: constant(file_folder_voter ~ '::CREATE'),
+  },
+} %}
+
+<div class="btn-group btn-group-sm" role="group">
+  <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="bi bi-plus"></i>
+    New
+  </button>
+  <ul class="dropdown-menu">
+    {% if is_granted(attributes.folder.create, new_folder) %}
+      <li>
+        <a href="{{ path('file_folder_create_no_folder') }}" class="dropdown-item">
+          <i class="bi bi-folder-fill"></i>
+          Folder
+        </a>
+      </li>
+    {% endif %}
+    {% if is_granted(attributes.file.create, new_file) %}
+    <li>
+      <a href="{{ path('file_create_no_folder') }}" class="dropdown-item">
+        <i class="bi bi-file-earmark-fill"></i>
+        File
+      </a>
+    </li>
+      <li>
+        <a href="{{ path('image_create_no_folder') }}" class="dropdown-item">
+          <i class="bi bi-file-earmark-image"></i>
+          Image
+        </a>
+      </li>
+    {% endif %}
+  </ul>
+</div>
+{% endblock %}
+
+{% block main %}
+<div class="card">
+  <div class="card-body">
+    <h1 class="card-title h3"><i class="bi bi-folder-check"></i> /</h1>
+
+    {% include '@OHMediaFile/file/_file_listing.html.twig' with {
+      items: items,
+    } only %}
+  </div>
+</div>
+{% endblock %}

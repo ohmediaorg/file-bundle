@@ -1,0 +1,206 @@
+{% set file_voter = 'OHMedia\\FileBundle\\Security\\Voter\\FileVoter' %}
+
+{% set file_folder_voter = 'OHMedia\\FileBundle\\Security\\Voter\\FileFolderVoter' %}
+
+{% set attributes = {
+  file: {
+    edit: constant(file_voter ~ '::EDIT'),
+    move: constant(file_voter ~ '::MOVE'),
+    lock: constant(file_voter ~ '::LOCK'),
+    unlock: constant(file_voter ~ '::UNLOCK'),
+    delete: constant(file_voter ~ '::DELETE'),
+  },
+  folder: {
+    edit: constant(file_folder_voter ~ '::EDIT'),
+    lock: constant(file_folder_voter ~ '::LOCK'),
+    unlock: constant(file_folder_voter ~ '::UNLOCK'),
+    delete: constant(file_folder_voter ~ '::DELETE'),
+  },
+} %}
+
+{% macro file_row(file, attributes) %}
+  <tr>
+    <td>
+      {% if file.locked %}
+        <i class="bi bi-file-earmark-lock2-fill text-secondary"></i>
+      {% elseif file.image %}
+        <i class="bi bi-file-earmark-image"></i>
+      {% else %}
+        <i class="bi bi-file-earmark-fill"></i>
+      {% endif %}
+    </td>
+    <td>
+      <a href="{{ file_path(file) }}" target="_blank">
+        {{ file.filename }}
+      </a>
+      {% if file.image and file.alt %}
+      <small class="text-muted d-block">{{ file.alt }}</small>
+      {% endif %}
+    </td>
+    <td>{{ file_size_binary(file, 2) }}</td>
+    <td>
+      <code>
+        {{ file.image ? '{{ image('~file.id~') }}' : '{{ file_href('~file.id~') }}' }}
+      </code>
+    </td>
+    <td>{{ file.updatedAt|datetime }}</td>
+    <td>
+      {% if is_granted(attributes.file.edit, file) %}
+      <a href="{{ path('file_edit', {id: file.id}) }}" class="btn btn-sm btn-primary btn-action" title="Edit">
+        <i class="bi bi-pen-fill"></i>
+        <span class="visually-hidden">Edit</span>
+      </a>
+      {% endif %}
+      {% if is_granted(attributes.file.move, file) %}
+      <a href="{{ path('file_move', {id: file.id}) }}" class="btn btn-sm btn-primary btn-action" title="Move">
+        <i class="bi bi-folder-fill"></i>
+        <span class="visually-hidden">Move</span>
+      </a>
+      {% endif %}
+      {% if is_granted(attributes.file.lock, file) %}
+      {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
+        {% block form_class %}btn-action{% endblock %}
+        {% block form_action %}{{ path('file_lock', {id: file.id}) }}{% endblock %}
+        {% block confirm_message %}Are you sure you want to lock this {{ file.image ? 'image' : 'file' }}?{% endblock %}
+        {% block csrf_name %}lock_file_{{ file.id }}{% endblock %}
+        {% block button_class %}btn btn-sm btn-secondary{% endblock %}
+        {% block button_title %}Lock{% endblock %}
+        {% block button_html %}
+          <i class="bi bi-lock-fill"></i>
+          <span class="visually-hidden">Lock</span>
+        {% endblock %}
+      {% endembed %}
+      {% endif %}
+      {% if is_granted(attributes.file.unlock, file) %}
+      {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
+        {% block form_class %}btn-action{% endblock %}
+        {% block form_action %}{{ path('file_unlock', {id: file.id}) }}{% endblock %}
+        {% block confirm_message %}Are you sure you want to unlock this {{ file.image ? 'image' : 'file' }}?{% endblock %}
+        {% block csrf_name %}unlock_file_{{ file.id }}{% endblock %}
+        {% block button_class %}btn btn-sm btn-success{% endblock %}
+        {% block button_title %}Unlock{% endblock %}
+        {% block button_html %}
+          <i class="bi bi-unlock-fill"></i>
+          <span class="visually-hidden">Unlock</span>
+        {% endblock %}
+      {% endembed %}
+      {% endif %}
+      {% if is_granted(attributes.file.delete, file) %}
+        {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
+          {% block form_class %}btn-action{% endblock %}
+          {% block form_action %}{{ path('file_delete', {id: file.id}) }}{% endblock %}
+          {% block confirm_message %}Are you sure you want to delete this {{ file.image ? 'image' : 'file' }}?{% endblock %}
+          {% block csrf_name %}delete_file_{{ file.id }}{% endblock %}
+          {% block button_class %}btn btn-sm btn-danger{% endblock %}
+          {% block button_title %}Delete{% endblock %}
+          {% block button_html %}
+            <i class="bi bi-trash-fill"></i>
+            <span class="visually-hidden">Delete</span>
+          {% endblock %}
+        {% endembed %}
+      {% endif %}
+    </td>
+  </tr>
+{% endmacro %}
+
+{% macro file_folder_row(folder, attributes) %}
+  <tr>
+    <td>
+      {% if folder.locked %}
+      <i class="bi bi-folder-x text-secondary"></i>
+      {% else %}
+      <i class="bi bi-folder-check"></i>
+      {% endif %}
+    </td>
+    <td>
+      <a href="{{ path('file_folder_view', {id: folder.id}) }}">
+        {{ folder.name }}/
+      </a>
+    </td>
+    <td>{{ format_bytes_binary(folder.size, 2) }}</td>
+    <td>&nbsp;</td>
+    <td>{{ folder.updatedAt|datetime }}</td>
+    <td>
+      {% if is_granted(attributes.folder.edit, folder) %}
+      <a href="{{ path('file_folder_edit', {id: folder.id}) }}" class="btn btn-sm btn-primary btn-action" title="Edit">
+        <i class="bi bi-pen-fill"></i>
+        <span class="visually-hidden">Edit</span>
+      </a>
+      {% endif %}
+      {% if is_granted(attributes.folder.lock, folder) %}
+      {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
+        {% block form_class %}btn-action{% endblock %}
+        {% block form_action %}{{ path('file_folder_lock', {id: folder.id}) }}{% endblock %}
+        {% block confirm_message %}Are you sure you want to lock this folder?{% endblock %}
+        {% block csrf_name %}lock_file_folder_{{ folder.id }}{% endblock %}
+        {% block button_class %}btn btn-sm btn-secondary{% endblock %}
+        {% block button_title %}Lock{% endblock %}
+        {% block button_html %}
+          <i class="bi bi-lock-fill"></i>
+          <span class="visually-hidden">Lock</span>
+        {% endblock %}
+      {% endembed %}
+      {% endif %}
+      {% if is_granted(attributes.folder.unlock, folder) %}
+      {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
+        {% block form_class %}btn-action{% endblock %}
+        {% block form_action %}{{ path('file_folder_unlock', {id: folder.id}) }}{% endblock %}
+        {% block confirm_message %}Are you sure you want to unlock this folder?{% endblock %}
+        {% block csrf_name %}unlock_file_folder_{{ folder.id }}{% endblock %}
+        {% block button_class %}btn btn-sm btn-success{% endblock %}
+        {% block button_title %}Unlock{% endblock %}
+        {% block button_html %}
+          <i class="bi bi-unlock-fill"></i>
+          <span class="visually-hidden">Unlock</span>
+        {% endblock %}
+      {% endembed %}
+      {% endif %}
+      {% if is_granted(attributes.folder.delete, folder) %}
+        {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
+          {% block form_class %}btn-action{% endblock %}
+          {% block form_action %}{{ path('file_folder_delete', {id: folder.id}) }}{% endblock %}
+          {% block confirm_message %}Are you sure you want to delete this folder?{% endblock %}
+          {% block csrf_name %}delete_file_folder_{{ folder.id }}{% endblock %}
+          {% block button_class %}btn btn-sm btn-danger{% endblock %}
+          {% block button_title %}Delete{% endblock %}
+          {% block button_html %}
+            <i class="bi bi-trash-fill"></i>
+            <span class="visually-hidden">Delete</span>
+          {% endblock %}
+        {% endembed %}
+      {% endif %}
+    </td>
+  </tr>
+{% endmacro %}
+
+<table class="table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>&nbsp;</th>
+      <th>Name</th>
+      <th>Size</th>
+      <th>Shortcode</th>
+      <th>Last Updated</th>
+      <th>&nbsp;</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% set total_size = 0 %}
+  {% for item in items %}
+    {% set total_size = total_size + item.size %}
+    {% if is_file_entity(item) %}
+      {{ _self.file_row(item, attributes) }}
+    {% elseif is_file_folder_entity(item) %}
+      {{ _self.file_folder_row(item, attributes) }}
+    {% endif %}
+  {% else %}
+  <tr><td colspan="100%" class="text-center">No files found.</td></tr>
+  {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="2">&nbsp;</td>
+      <td colspan="4"><b>{{ format_bytes_binary(total_size, 2) }}</b></td>
+    </tr>
+  </tfoot>
+</table>
