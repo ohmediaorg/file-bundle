@@ -115,6 +115,14 @@ services:
         autowire: true
         tags: ["doctrine.repository_service"]
 
+    OHMedia\FileBundle\Controller\Backend\FileController:
+        tags: ["container.service_subscriber", "controller.service_arguments"]
+        autowire: true
+
+    OHMedia\FileBundle\Controller\Backend\FileFolderController:
+        tags: ["container.service_subscriber", "controller.service_arguments"]
+        autowire: true
+
     OHMedia\FileBundle\Controller\FileController:
         tags: ["container.service_subscriber", "controller.service_arguments"]
         autowire: true

@@ -1,0 +1,136 @@
+{% extends '@OHMediaBackend/base.html.twig' %}
+
+{% block meta_title %}{{ folder.name }} | Files{% endblock %}
+
+{% block breadcrumbs %}
+{% include '@OHMediaBootstrap/breadcrumbs.html.twig' with {
+  breadcrumbs: breadcrumbs,
+} only %}
+{% endblock %}
+
+{% block actions %}
+{% set file_voter = 'OHMedia\\FileBundle\\Security\\Voter\\FileVoter' %}
+
+{% set file_folder_voter = 'OHMedia\\FileBundle\\Security\\Voter\\FileFolderVoter' %}
+
+{% set attributes = {
+  file: {
+    create: constant(file_voter ~ '::CREATE'),
+  },
+  folder: {
+    create: constant(file_folder_voter ~ '::CREATE'),
+    edit: constant(file_folder_voter ~ '::EDIT'),
+    lock: constant(file_folder_voter ~ '::LOCK'),
+    unlock: constant(file_folder_voter ~ '::UNLOCK'),
+    delete: constant(file_folder_voter ~ '::DELETE'),
+  },
+} %}
+
+<div class="btn-group btn-group-sm" role="group">
+  <div class="btn-group btn-group-sm" role="group">
+    <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-plus"></i>
+      New
+    </button>
+    <ul class="dropdown-menu">
+      {% if is_granted(attributes.folder.create, new_folder) %}
+        <li>
+          <a href="{{ path('file_folder_create_with_folder', {id: folder.id}) }}" class="dropdown-item">
+            <i class="bi bi-folder-fill"></i>
+            Folder
+          </a>
+        </li>
+      {% endif %}
+      {% if is_granted(attributes.file.create, new_file) %}
+      <li>
+        <a href="{{ path('file_create_with_folder', {id: folder.id}) }}" class="dropdown-item">
+          <i class="bi bi-file-earmark-fill"></i>
+          File
+        </a>
+      </li>
+        <li>
+          <a href="{{ path('image_create_with_folder', {id: folder.id}) }}" class="dropdown-item">
+            <i class="bi bi-file-earmark-image"></i>
+            Image
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+  <div class="btn-group btn-group-sm" role="group">
+    <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Folder Actions
+    </button>
+    <ul class="dropdown-menu">
+      {% if is_granted(attributes.folder.edit, folder) %}
+        <li>
+          <a href="{{ path('file_folder_edit', {id: folder.id}) }}" class="dropdown-item">
+            <i class="bi bi-pen-fill"></i> Edit
+          </a>
+        </li>
+      {% endif %}
+      {% if is_granted(attributes.folder.lock, folder) %}
+        <li>
+        {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
+          {% block form_action %}{{ path('file_folder_lock', {id: folder.id}) }}{% endblock %}
+          {% block confirm_message %}Are you sure you want to lock this folder?{% endblock %}
+          {% block csrf_name %}lock_file_folder_{{ folder.id }}{% endblock %}
+          {% block button_class %}dropdown-item text-bg-secondary{% endblock %}
+          {% block button_html %}
+            <i class="bi bi-lock-fill"></i>
+            Lock
+          {% endblock %}
+        {% endembed %}
+        </li>
+      {% endif %}
+      {% if is_granted(attributes.folder.unlock, folder) %}
+        <li>
+        {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
+          {% block form_action %}{{ path('file_folder_unlock', {id: folder.id}) }}{% endblock %}
+          {% block confirm_message %}Are you sure you want to unlock this folder?{% endblock %}
+          {% block csrf_name %}unlock_file_folder_{{ folder.id }}{% endblock %}
+          {% block button_class %}dropdown-item text-bg-success{% endblock %}
+          {% block button_html %}
+            <i class="bi bi-unlock-fill"></i>
+            Unlock
+          {% endblock %}
+        {% endembed %}
+        </li>
+      {% endif %}
+      {% if is_granted(attributes.folder.delete, folder) %}
+        <li>
+          {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
+            {% block form_action %}{{ path('file_folder_delete', {id: folder.id}) }}{% endblock %}
+            {% block confirm_message %}Are you sure you want to delete this folder?{% endblock %}
+            {% block csrf_name %}delete_file_folder_{{ folder.id }}{% endblock %}
+            {% block button_class %}dropdown-item text-bg-danger{% endblock %}
+            {% block button_html %}
+              <i class="bi bi-trash-fill"></i>
+              Delete
+            {% endblock %}
+          {% endembed %}
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+</div>
+{% endblock %}
+
+{% block main %}
+<div class="card">
+  <div class="card-body">
+    <h1 class="card-title h3">
+      {% if folder.locked %}
+      <i class="bi bi-folder-x text-secondary"></i>
+      {% else %}
+      <i class="bi bi-folder-check"></i>
+      {% endif %}
+      / {{ folder.name }}
+    </h1>
+
+    {% include '@OHMediaFile/file/_file_listing.html.twig' with {
+      items: items,
+    } only %}
+  </div>
+</div>
+{% endblock %}

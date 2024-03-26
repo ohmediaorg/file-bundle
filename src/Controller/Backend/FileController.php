@@ -1,6 +1,6 @@
 <?php
 
-namespace OHMedia\FileBundle\Controller;
+namespace OHMedia\FileBundle\Controller\Backend;
 
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
@@ -13,21 +13,12 @@ use OHMedia\FileBundle\Security\Voter\FileVoter;
 use OHMedia\FileBundle\Service\FileListing;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-abstract class AbstractFileController extends AbstractController
+class FileController extends AbstractController
 {
-    abstract protected function indexRender(array $items, File $newFile, FileFolder $newFileFolder): Response;
-
-    abstract protected function createRender(FormView $formView, File $file): Response;
-
-    abstract protected function editRender(FormView $formView, File $file): Response;
-
-    abstract protected function moveRender(FormView $formView, File $file): Response;
-
     #[Route('/files', name: 'file_index', methods: ['GET'])]
     public function index(
         FileListing $fileListing,
@@ -45,7 +36,11 @@ abstract class AbstractFileController extends AbstractController
 
         $items = $fileListing->get();
 
-        return $this->indexRender($items, $newFile, $newFolder);
+        return $this->render('@OHMediaFile/file/file_index.html.twig', [
+            'items' => $items,
+            'new_file' => $newFile,
+            'new_folder' => $newFolder,
+        ]);
     }
 
     #[Route('/file/create', name: 'file_create_no_folder', methods: ['GET', 'POST'])]
@@ -121,7 +116,11 @@ abstract class AbstractFileController extends AbstractController
             return $this->createRedirect($file);
         }
 
-        return $this->createRender($form->createView(), $file);
+        return $this->render('@OHMediaFile/file/file_form.html.twig', [
+            'form' => $form->createView(),
+            'file' => $file,
+            'form_title' => $file->isImage() ? 'Create Image' : 'Create File',
+        ]);
     }
 
     #[Route('/file/{id}/edit', name: 'file_edit', methods: ['GET', 'POST'])]
@@ -131,7 +130,7 @@ abstract class AbstractFileController extends AbstractController
         File $file
     ): Response {
         $this->denyAccessUnlessGranted(
-            FileVoter::CREATE,
+            FileVoter::EDIT,
             $file,
             'You cannot edit this image.'
         );
@@ -150,7 +149,11 @@ abstract class AbstractFileController extends AbstractController
             return $this->editRedirect($file);
         }
 
-        return $this->editRender($form->createView(), $file);
+        return $this->render('@OHMediaFile/file/file_form.html.twig', [
+            'form' => $form->createView(),
+            'file' => $file,
+            'form_title' => $file->isImage() ? 'Edit Image' : 'Edit File',
+        ]);
     }
 
     #[Route('/file/{id}/move', name: 'file_move', methods: ['GET', 'POST'])]
@@ -181,7 +184,11 @@ abstract class AbstractFileController extends AbstractController
             return $this->moveRedirect($file);
         }
 
-        return $this->moveRender($form->createView(), $file);
+        return $this->render('@OHMediaFile/file/file_move.html.twig', [
+            'form' => $form->createView(),
+            'file' => $file,
+            'form_title' => $file->isImage() ? 'Move Image' : 'Move File',
+        ]);
     }
 
     #[Route('/file/{id}/lock', name: 'file_lock', methods: ['POST'])]

@@ -1,7 +1,8 @@
 <?php
 
-namespace OHMedia\FileBundle\Controller;
+namespace OHMedia\FileBundle\Controller\Backend;
 
+use OHMedia\BootstrapBundle\Component\Breadcrumb;
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Form\Type\FileFolderCreateType;
@@ -11,18 +12,19 @@ use OHMedia\FileBundle\Security\Voter\FileFolderVoter;
 use OHMedia\FileBundle\Service\FileListing;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-abstract class AbstractFileFolderController extends AbstractController
+class FileFolderController extends AbstractController
 {
-    abstract protected function viewRender(FileFolder $folder, array $items, File $newFile, FileFolder $newFileFolder): Response;
+    private UrlGeneratorInterface $urlGenerator;
 
-    abstract protected function createRender(FormView $formView, FileFolder $folder): Response;
-
-    abstract protected function editRender(FormView $formView, FileFolder $folder): Response;
+    public function __construct(UrlGeneratorInterface $urlGenerator)
+    {
+        $this->urlGenerator = $urlGenerator;
+    }
 
     #[Route('/folder/create', name: 'file_folder_create_no_folder', methods: ['GET', 'POST'])]
     public function createNoFolder(
@@ -72,7 +74,16 @@ abstract class AbstractFileFolderController extends AbstractController
             return $this->createRedirect($folder);
         }
 
-        return $this->createRender($form->createView(), $folder);
+        $breadcrumbs = $this->getBreadcrumbs($folder);
+
+        $breadcrumbs[] = new Breadcrumb('Create', '');
+
+        return $this->render('@OHMediaFile/file_folder/file_folder_form.html.twig', [
+            'form' => $form->createView(),
+            'folder' => $folder,
+            'form_title' => 'Create Folder',
+            'breadcrumbs' => $breadcrumbs,
+        ]);
     }
 
     #[Route('/folder/{id}', name: 'file_folder_view', methods: ['GET'])]
@@ -94,7 +105,13 @@ abstract class AbstractFileFolderController extends AbstractController
 
         $items = $fileListing->get($folder);
 
-        return $this->viewRender($folder, $items, $newFile, $newFolder);
+        return $this->render('@OHMediaFile/file_folder/file_folder_view.html.twig', [
+            'breadcrumbs' => $this->getBreadcrumbs($folder),
+            'folder' => $folder,
+            'items' => $items,
+            'new_file' => $newFile,
+            'new_folder' => $newFolder,
+        ]);
     }
 
     #[Route('/folder/{id}/edit', name: 'file_folder_edit', methods: ['GET', 'POST'])]
@@ -123,7 +140,16 @@ abstract class AbstractFileFolderController extends AbstractController
             return $this->editRedirect($folder);
         }
 
-        return $this->editRender($form->createView(), $folder);
+        $breadcrumbs = $this->getBreadcrumbs($folder);
+
+        $breadcrumbs[] = new Breadcrumb('Edit', '');
+
+        return $this->render('@OHMediaFile/file_folder/file_folder_form.html.twig', [
+            'form' => $form->createView(),
+            'folder' => $folder,
+            'form_title' => 'Edit Folder',
+            'breadcrumbs' => $breadcrumbs,
+        ]);
     }
 
     #[Route('/folder/{id}/lock', name: 'file_folder_lock', methods: ['POST'])]
@@ -238,5 +264,36 @@ abstract class AbstractFileFolderController extends AbstractController
         }
 
         return $this->redirectToRoute('file_index');
+    }
+
+    private function getBreadcrumbs(FileFolder $folder): array
+    {
+        $breadcrumbs = [];
+
+        $loopFolder = $folder->getId() ? $folder : $folder->getFolder();
+
+        while ($loopFolder) {
+            $breadcrumbText = $loopFolder->getName();
+
+            $breadcrumbHref = $this->urlGenerator->generate('file_folder_view', [
+                'id' => $loopFolder->getId(),
+            ]);
+
+            $breadcrumb = new Breadcrumb($breadcrumbText, $breadcrumbHref);
+
+            array_unshift($breadcrumbs, $breadcrumb);
+
+            $loopFolder = $loopFolder->getFolder();
+        }
+
+        $indexText = 'Files';
+
+        $indexHref = $this->urlGenerator->generate('file_index');
+
+        $indexBreadcrumb = new Breadcrumb($indexText, $indexHref);
+
+        array_unshift($breadcrumbs, $indexBreadcrumb);
+
+        return $breadcrumbs;
     }
 }
