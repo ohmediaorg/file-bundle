@@ -12,6 +12,7 @@
   },
   folder: {
     edit: constant(file_folder_voter ~ '::EDIT'),
+    move: constant(file_folder_voter ~ '::MOVE'),
     lock: constant(file_folder_voter ~ '::LOCK'),
     unlock: constant(file_folder_voter ~ '::UNLOCK'),
     delete: constant(file_folder_voter ~ '::DELETE'),
@@ -125,6 +126,12 @@
       <a href="{{ path('file_folder_edit', {id: folder.id}) }}" class="btn btn-sm btn-primary btn-action" title="Edit">
         <i class="bi bi-pen-fill"></i>
         <span class="visually-hidden">Edit</span>
+      </a>
+      {% endif %}
+      {% if is_granted(attributes.folder.move, folder) %}
+      <a href="{{ path('file_folder_move', {id: folder.id}) }}" class="btn btn-sm btn-primary btn-action" title="Move">
+        <i class="bi bi-folder-fill"></i>
+        <span class="visually-hidden">Move</span>
       </a>
       {% endif %}
       {% if is_granted(attributes.folder.lock, folder) %}
