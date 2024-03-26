@@ -7,6 +7,7 @@ use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Form\Type\FileFolderCreateType;
 use OHMedia\FileBundle\Form\Type\FileFolderEditType;
+use OHMedia\FileBundle\Form\Type\FileFolderMoveType;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Security\Voter\FileFolderVoter;
 use OHMedia\FileBundle\Service\FileListing;
@@ -71,7 +72,7 @@ class FileFolderController extends AbstractController
 
             $this->addFlash('notice', 'The folder was created successfully.');
 
-            return $this->createRedirect($folder);
+            return $this->formRedirect($folder);
         }
 
         $breadcrumbs = $this->getBreadcrumbs($folder);
@@ -137,7 +138,7 @@ class FileFolderController extends AbstractController
 
             $this->addFlash('notice', 'Changes to the folder were saved successfully.');
 
-            return $this->editRedirect($folder);
+            return $this->formRedirect($folder);
         }
 
         $breadcrumbs = $this->getBreadcrumbs($folder);
@@ -148,6 +149,44 @@ class FileFolderController extends AbstractController
             'form' => $form->createView(),
             'folder' => $folder,
             'form_title' => 'Edit Folder',
+            'breadcrumbs' => $breadcrumbs,
+        ]);
+    }
+
+    #[Route('/folder/{id}/move', name: 'file_folder_move', methods: ['GET', 'POST'])]
+    public function move(
+        Request $request,
+        FileFolder $folder,
+        FileFolderRepository $fileFolderRepository
+    ): Response {
+        $this->denyAccessUnlessGranted(
+            FileFolderVoter::MOVE,
+            $folder,
+            'You cannot move this folder.'
+        );
+
+        $form = $this->createForm(FileFolderMoveType::class, $folder);
+
+        $form->add('submit', SubmitType::class);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $fileFolderRepository->save($folder, true);
+
+            $this->addFlash('notice', 'The folder was moved successfully.');
+
+            return $this->formRedirect($folder);
+        }
+
+        $breadcrumbs = $this->getBreadcrumbs($folder);
+
+        $breadcrumbs[] = new Breadcrumb('Move', '');
+
+        return $this->render('@OHMediaFile/file_folder/file_folder_form.html.twig', [
+            'form' => $form->createView(),
+            'folder' => $folder,
+            'form_title' => 'Move Folder',
             'breadcrumbs' => $breadcrumbs,
         ]);
     }
@@ -175,7 +214,7 @@ class FileFolderController extends AbstractController
             $this->addFlash('notice', 'The folder was locked successfully.');
         }
 
-        return $this->lockRedirect($folder);
+        return $this->formRedirect($folder);
     }
 
     #[Route('/folder/{id}/unlock', name: 'file_folder_unlock', methods: ['POST'])]
@@ -201,26 +240,6 @@ class FileFolderController extends AbstractController
             $this->addFlash('notice', 'The folder was unlocked successfully.');
         }
 
-        return $this->unlockRedirect($folder);
-    }
-
-    protected function createRedirect(FileFolder $folder): Response
-    {
-        return $this->formRedirect($folder);
-    }
-
-    protected function editRedirect(FileFolder $folder): Response
-    {
-        return $this->formRedirect($folder);
-    }
-
-    protected function lockRedirect(FileFolder $folder): Response
-    {
-        return $this->formRedirect($folder);
-    }
-
-    protected function unlockRedirect(FileFolder $folder): Response
-    {
         return $this->formRedirect($folder);
     }
 
@@ -258,9 +277,7 @@ class FileFolderController extends AbstractController
     protected function deleteRedirect(FileFolder $folder): Response
     {
         if ($parent = $folder->getFolder()) {
-            return $this->redirectToRoute('file_folder_view', [
-                'id' => $parent->getId(),
-            ]);
+            return $this->formRedirect($parent);
         }
 
         return $this->redirectToRoute('file_index');
