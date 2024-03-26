@@ -2,6 +2,7 @@
 
 namespace OHMedia\FileBundle\Controller\Backend;
 
+use OHMedia\BootstrapBundle\Component\Breadcrumb;
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Form\Type\FileCreateType;
@@ -16,9 +17,17 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class FileController extends AbstractController
 {
+    private UrlGeneratorInterface $urlGenerator;
+
+    public function __construct(UrlGeneratorInterface $urlGenerator)
+    {
+        $this->urlGenerator = $urlGenerator;
+    }
+
     #[Route('/files', name: 'file_index', methods: ['GET'])]
     public function index(
         FileListing $fileListing,
@@ -113,13 +122,18 @@ class FileController extends AbstractController
 
             $this->addFlash('notice', "The $noun was created successfully.");
 
-            return $this->createRedirect($file);
+            return $this->formRedirect($file);
         }
+
+        $breadcrumbs = $this->getBreadcrumbs($file);
+
+        $breadcrumbs[] = new Breadcrumb('Create', '');
 
         return $this->render('@OHMediaFile/file/file_form.html.twig', [
             'form' => $form->createView(),
             'file' => $file,
             'form_title' => $file->isImage() ? 'Create Image' : 'Create File',
+            'breadcrumbs' => $breadcrumbs,
         ]);
     }
 
@@ -146,13 +160,18 @@ class FileController extends AbstractController
 
             $this->addFlash('notice', 'The image was edited successfully.');
 
-            return $this->editRedirect($file);
+            return $this->formRedirect($file);
         }
+
+        $breadcrumbs = $this->getBreadcrumbs($file);
+
+        $breadcrumbs[] = new Breadcrumb('Edit', '');
 
         return $this->render('@OHMediaFile/file/file_form.html.twig', [
             'form' => $form->createView(),
             'file' => $file,
             'form_title' => $file->isImage() ? 'Edit Image' : 'Edit File',
+            'breadcrumbs' => $breadcrumbs,
         ]);
     }
 
@@ -181,13 +200,18 @@ class FileController extends AbstractController
 
             $this->addFlash('notice', "The $noun was moved successfully.");
 
-            return $this->moveRedirect($file);
+            return $this->formRedirect($file);
         }
 
-        return $this->render('@OHMediaFile/file/file_move.html.twig', [
+        $breadcrumbs = $this->getBreadcrumbs($file);
+
+        $breadcrumbs[] = new Breadcrumb('Move', '');
+
+        return $this->render('@OHMediaFile/file/file_form.html.twig', [
             'form' => $form->createView(),
             'file' => $file,
             'form_title' => $file->isImage() ? 'Move Image' : 'Move File',
+            'breadcrumbs' => $breadcrumbs,
         ]);
     }
 
@@ -216,7 +240,7 @@ class FileController extends AbstractController
             $this->addFlash('notice', "The $noun was locked successfully.");
         }
 
-        return $this->lockRedirect($file);
+        return $this->formRedirect($file);
     }
 
     #[Route('/file/{id}/unlock', name: 'file_unlock', methods: ['POST'])]
@@ -244,31 +268,6 @@ class FileController extends AbstractController
             $this->addFlash('notice', "The $noun was unlocked successfully.");
         }
 
-        return $this->unlockRedirect($file);
-    }
-
-    protected function createRedirect(File $file): Response
-    {
-        return $this->formRedirect($file);
-    }
-
-    protected function editRedirect(File $file): Response
-    {
-        return $this->formRedirect($file);
-    }
-
-    protected function moveRedirect(File $file): Response
-    {
-        return $this->formRedirect($file);
-    }
-
-    protected function lockRedirect(File $file): Response
-    {
-        return $this->formRedirect($file);
-    }
-
-    protected function unlockRedirect(File $file): Response
-    {
         return $this->formRedirect($file);
     }
 
@@ -318,5 +317,40 @@ class FileController extends AbstractController
         }
 
         return $this->redirectToRoute('file_index');
+    }
+
+    private function getBreadcrumbs(File $file): array
+    {
+        $breadcrumbs = [];
+
+        if ($file->getId()) {
+            $breadcrumbs[] = new Breadcrumb($file->getFilename(), '');
+        }
+
+        $loopFolder = $file->getFolder();
+
+        while ($loopFolder) {
+            $breadcrumbText = $loopFolder->getName();
+
+            $breadcrumbHref = $this->urlGenerator->generate('file_folder_view', [
+                'id' => $loopFolder->getId(),
+            ]);
+
+            $breadcrumb = new Breadcrumb($breadcrumbText, $breadcrumbHref);
+
+            array_unshift($breadcrumbs, $breadcrumb);
+
+            $loopFolder = $loopFolder->getFolder();
+        }
+
+        $indexText = 'Files';
+
+        $indexHref = $this->urlGenerator->generate('file_index');
+
+        $indexBreadcrumb = new Breadcrumb($indexText, $indexHref);
+
+        array_unshift($breadcrumbs, $indexBreadcrumb);
+
+        return $breadcrumbs;
     }
 }
