@@ -70,6 +70,15 @@ On your remote server, you may need to adjust the permissions of this folder:
 $ sudo chown -R www-data:www-data oh_media_files
 ```
 
+## Configuration
+
+Optionally, create `config/packages/oh_media_file.yml` with the following contents:
+
+```yaml
+oh_media_file:
+    enable_file_browser: true # default
+```
+
 ## Entities
 
 There is a `OHMedia\FileBundle\Entity\File` entity with a corresponding form type.
