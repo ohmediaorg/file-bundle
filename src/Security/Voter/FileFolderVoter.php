@@ -13,6 +13,7 @@ class FileFolderVoter extends AbstractEntityVoter
     public const EDIT = 'edit';
     public const LOCK = 'lock';
     public const UNLOCK = 'unlock';
+    public const MOVE = 'move';
     public const DELETE = 'delete';
 
     private bool $fileBrowserEnabled;
@@ -30,6 +31,7 @@ class FileFolderVoter extends AbstractEntityVoter
             self::EDIT,
             self::LOCK,
             self::UNLOCK,
+            self::MOVE,
             self::DELETE,
         ];
     }
@@ -76,6 +78,11 @@ class FileFolderVoter extends AbstractEntityVoter
         }
 
         return $folder->isLocked();
+    }
+
+    protected function canMove(FileFolder $folder, User $loggedIn): bool
+    {
+        return $folder->isBrowser() && $this->fileBrowserEnabled;
     }
 
     protected function canDelete(FileFolder $folder, User $loggedIn): bool
