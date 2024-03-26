@@ -132,3 +132,7 @@ services:
 
     OHMedia\FileBundle\Security\Voter\FileFolderVoter:
         tags: ["security.voter"]
+
+    OHMedia\FileBundle\Service\FileNavItemProvider:
+        autowire: true
+        tags: ["oh_media_backend.nav_item_provider"]
