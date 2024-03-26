@@ -16,6 +16,14 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder('oh_media_file');
 
+        $treeBuilder->getRootNode()
+            ->children()
+                ->booleanNode('enable_file_browser')
+                    ->defaultTrue()
+                ->end()
+            ->end()
+        ;
+
         return $treeBuilder;
     }
 }
