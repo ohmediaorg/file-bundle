@@ -128,9 +128,11 @@ services:
         autowire: true
 
     OHMedia\FileBundle\Security\Voter\FileVoter:
+        arguments: ["%oh_media_file.enable_file_browser%"]
         tags: ["security.voter"]
 
     OHMedia\FileBundle\Security\Voter\FileFolderVoter:
+        arguments: ["%oh_media_file.enable_file_browser%"]
         tags: ["security.voter"]
 
     OHMedia\FileBundle\Service\FileNavItemProvider:
