@@ -303,7 +303,7 @@ class FileFolderController extends AbstractController
             $loopFolder = $loopFolder->getFolder();
         }
 
-        $indexText = 'Files';
+        $indexText = '<i class="bi bi-folder-fill"></i> Files';
 
         $indexHref = $this->urlGenerator->generate('file_index');
 
