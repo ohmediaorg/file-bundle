@@ -17,6 +17,7 @@ class FileMoveType extends AbstractType
         $builder
             ->add('folder', EntityType::class, [
                 'class' => FileFolder::class,
+                'label' => 'Destination Folder',
                 'required' => false,
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('ff')
