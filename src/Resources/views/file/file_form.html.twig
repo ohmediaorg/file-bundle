@@ -1,8 +1,7 @@
 {% extends '@OHMediaBackend/form.html.twig' %}
 
 {% block breadcrumbs %}
-{{ bootstrap_breadcrumbs(
-  bootstrap_breadcrumb('Files', 'file_index'),
-  bootstrap_breadcrumb(file.id ? 'Edit' : 'Create'),
-) }}
+{% include '@OHMediaBootstrap/breadcrumbs.html.twig' with {
+  breadcrumbs: breadcrumbs,
+} only %}
 {% endblock %}
