@@ -15,6 +15,13 @@ class FileFolderVoter extends AbstractEntityVoter
     public const UNLOCK = 'unlock';
     public const DELETE = 'delete';
 
+    private bool $fileBrowserEnabled;
+
+    public function __construct(bool $fileBrowserEnabled)
+    {
+        $this->fileBrowserEnabled = $fileBrowserEnabled;
+    }
+
     protected function getAttributes(): array
     {
         return [
@@ -34,27 +41,31 @@ class FileFolderVoter extends AbstractEntityVoter
 
     protected function canCreate(FileFolder $folder, User $loggedIn): bool
     {
-        return $folder->isBrowser();
+        return $folder->isBrowser() && $this->fileBrowserEnabled;
     }
 
     protected function canView(FileFolder $folder, User $loggedIn): bool
     {
-        return $folder->isBrowser();
+        return $folder->isBrowser() && $this->fileBrowserEnabled;
     }
 
     protected function canEdit(FileFolder $folder, User $loggedIn): bool
     {
-        return $folder->isBrowser();
+        return $folder->isBrowser() && $this->fileBrowserEnabled;
     }
 
     protected function canLock(FileFolder $folder, User $loggedIn): bool
     {
-        return $folder->isBrowser() && !$folder->isLocked();
+        return $folder->isBrowser() && !$folder->isLocked() && $this->fileBrowserEnabled;
     }
 
     protected function canUnlock(FileFolder $folder, User $loggedIn): bool
     {
         if (!$folder->isBrowser()) {
+            return false;
+        }
+
+        if (!$this->fileBrowserEnabled) {
             return false;
         }
 
@@ -69,6 +80,6 @@ class FileFolderVoter extends AbstractEntityVoter
 
     protected function canDelete(FileFolder $folder, User $loggedIn): bool
     {
-        return $folder->isBrowser();
+        return $folder->isBrowser() && $this->fileBrowserEnabled;
     }
 }
