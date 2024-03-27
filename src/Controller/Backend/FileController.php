@@ -2,6 +2,7 @@
 
 namespace OHMedia\FileBundle\Controller\Backend;
 
+use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\BootstrapBundle\Component\Breadcrumb;
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
@@ -19,6 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+#[Admin]
 class FileController extends AbstractController
 {
     private UrlGeneratorInterface $urlGenerator;
