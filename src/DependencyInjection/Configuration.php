@@ -18,8 +18,16 @@ class Configuration implements ConfigurationInterface
 
         $treeBuilder->getRootNode()
             ->children()
-                ->booleanNode('enable_file_browser')
-                    ->defaultTrue()
+                ->arrayNode('file_browser')
+                  ->children()
+                    ->booleanNode('enabled')
+                        ->defaultTrue()
+                    ->end()
+                    ->floatNode('limit_gb')
+                        ->min(1)
+                        ->max(10)
+                        ->defaultValue(5)
+                    ->end()
                 ->end()
             ->end()
         ;
