@@ -22,9 +22,8 @@ class OHMediaFileExtension extends Extension
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
 
-        foreach ($config as $key => $value) {
-            $container->setParameter("oh_media_file.$key", $value);
-        }
+        $container->setParameter('oh_media_file.file_browser.enabled', $config['file_browser']['enabled']);
+        $container->setParameter('oh_media_file.file_browser.limit_gb', $config['file_browser']['limit_gb']);
 
         $this->registerWidget($container);
     }
