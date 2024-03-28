@@ -131,11 +131,11 @@ services:
         autowire: true
 
     OHMedia\FileBundle\Security\Voter\FileVoter:
-        arguments: ["%oh_media_file.file_browser.enabled%"]
+        arguments: ["@oh_media_wysiwyg.wysiwyg", "%oh_media_file.file_browser.enabled%"]
         tags: ["security.voter"]
 
     OHMedia\FileBundle\Security\Voter\FileFolderVoter:
-        arguments: ["%oh_media_file.file_browser.enabled%"]
+        arguments: ["@security.authorization_checker", "%oh_media_file.file_browser.enabled%"]
         tags: ["security.voter"]
 
     OHMedia\FileBundle\Service\FileNavItemProvider:
