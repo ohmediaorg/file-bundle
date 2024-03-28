@@ -15,11 +15,16 @@ class FileExtension extends AbstractExtension
 {
     private $fileManager;
     private $fileRepository;
+    private $limitGb;
 
-    public function __construct(FileManager $fileManager, FileRepository $fileRepository)
-    {
+    public function __construct(
+        FileManager $fileManager,
+        FileRepository $fileRepository,
+        float $limitGb
+    ) {
         $this->fileManager = $fileManager;
         $this->fileRepository = $fileRepository;
+        $this->limitGb = $limitGb;
     }
 
     public function getFunctions(): array
@@ -76,7 +81,7 @@ class FileExtension extends AbstractExtension
 
     public function fileLimit(Environment $twig)
     {
-        $limit = 2 * 1024 * 1024 * 1024; // 2GB
+        $limit = $this->limitGb * 1024 * 1024 * 1024;
 
         $usage = $this->fileRepository->createQueryBuilder('f')
             ->select('SUM(f.size)')
