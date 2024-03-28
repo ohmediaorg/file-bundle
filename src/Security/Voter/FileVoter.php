@@ -5,6 +5,7 @@ namespace OHMedia\FileBundle\Security\Voter;
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\SecurityBundle\Entity\User;
 use OHMedia\SecurityBundle\Security\Voter\AbstractEntityVoter;
+use OHMedia\WysiwygBundle\Service\Wysiwyg;
 
 class FileVoter extends AbstractEntityVoter
 {
@@ -18,10 +19,12 @@ class FileVoter extends AbstractEntityVoter
     public const MOVE = 'move';
     public const DELETE = 'delete';
 
+    private Wysiwyg $wysiwyg;
     private bool $fileBrowserEnabled;
 
-    public function __construct(bool $fileBrowserEnabled)
+    public function __construct(Wysiwyg $wysiwyg, bool $fileBrowserEnabled)
     {
+        $this->wysiwyg = $wysiwyg;
         $this->fileBrowserEnabled = $fileBrowserEnabled;
     }
 
@@ -96,6 +99,20 @@ class FileVoter extends AbstractEntityVoter
 
     protected function canDelete(File $file, User $loggedIn): bool
     {
-        return $file->isBrowser() && $this->fileBrowserEnabled;
+        if (!$file->isBrowser()) {
+            return false;
+        }
+
+        if (!$this->fileBrowserEnabled) {
+            return false;
+        }
+
+        $shortcodes = [
+            sprintf('{{ file_href(%d) }}', $file->getId()),
+            sprintf('{{ image(%d) }}', $file->getId()),
+            sprintf('{{ image(%d,', $file->getId()),
+        ];
+
+        return !$this->wysiwyg->shortcodesInUse(...$shortcodes);
     }
 }
