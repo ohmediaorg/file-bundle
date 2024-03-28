@@ -129,7 +129,7 @@ class FileController extends AbstractController
 
         $breadcrumbs = $this->getBreadcrumbs($file);
 
-        $breadcrumbs[] = new Breadcrumb('Create', '');
+        $breadcrumbs[] = new Breadcrumb('Create');
 
         return $this->render('@OHMediaFile/file/file_form.html.twig', [
             'form' => $form->createView(),
@@ -167,7 +167,7 @@ class FileController extends AbstractController
 
         $breadcrumbs = $this->getBreadcrumbs($file);
 
-        $breadcrumbs[] = new Breadcrumb('Edit', '');
+        $breadcrumbs[] = new Breadcrumb('Edit');
 
         return $this->render('@OHMediaFile/file/file_form.html.twig', [
             'form' => $form->createView(),
@@ -207,7 +207,7 @@ class FileController extends AbstractController
 
         $breadcrumbs = $this->getBreadcrumbs($file);
 
-        $breadcrumbs[] = new Breadcrumb('Move', '');
+        $breadcrumbs[] = new Breadcrumb('Move');
 
         return $this->render('@OHMediaFile/file/file_form.html.twig', [
             'form' => $form->createView(),
@@ -326,7 +326,7 @@ class FileController extends AbstractController
         $breadcrumbs = [];
 
         if ($file->getId()) {
-            $breadcrumbs[] = new Breadcrumb($file->getFilename(), '');
+            $breadcrumbs[] = new Breadcrumb($file->getFilename());
         }
 
         $loopFolder = $file->getFolder();
@@ -334,11 +334,9 @@ class FileController extends AbstractController
         while ($loopFolder) {
             $breadcrumbText = $loopFolder->getName();
 
-            $breadcrumbHref = $this->urlGenerator->generate('file_folder_view', [
+            $breadcrumb = new Breadcrumb($breadcrumbText, 'file_folder_view', [
                 'id' => $loopFolder->getId(),
             ]);
-
-            $breadcrumb = new Breadcrumb($breadcrumbText, $breadcrumbHref);
 
             array_unshift($breadcrumbs, $breadcrumb);
 
@@ -347,9 +345,7 @@ class FileController extends AbstractController
 
         $indexText = '<i class="bi bi-folder-fill"></i> Files';
 
-        $indexHref = $this->urlGenerator->generate('file_index');
-
-        $indexBreadcrumb = new Breadcrumb($indexText, $indexHref);
+        $indexBreadcrumb = new Breadcrumb($indexText, 'file_index');
 
         array_unshift($breadcrumbs, $indexBreadcrumb);
 
