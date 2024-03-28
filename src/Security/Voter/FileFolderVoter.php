@@ -5,6 +5,7 @@ namespace OHMedia\FileBundle\Security\Voter;
 use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\SecurityBundle\Entity\User;
 use OHMedia\SecurityBundle\Security\Voter\AbstractEntityVoter;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class FileFolderVoter extends AbstractEntityVoter
 {
@@ -16,10 +17,12 @@ class FileFolderVoter extends AbstractEntityVoter
     public const MOVE = 'move';
     public const DELETE = 'delete';
 
+    private AuthorizationCheckerInterface $authorizationChecker;
     private bool $fileBrowserEnabled;
 
-    public function __construct(bool $fileBrowserEnabled)
+    public function __construct(AuthorizationCheckerInterface $authorizationChecker, bool $fileBrowserEnabled)
     {
+        $this->authorizationChecker = $authorizationChecker;
         $this->fileBrowserEnabled = $fileBrowserEnabled;
     }
 
@@ -87,6 +90,26 @@ class FileFolderVoter extends AbstractEntityVoter
 
     protected function canDelete(FileFolder $folder, User $loggedIn): bool
     {
-        return $folder->isBrowser() && $this->fileBrowserEnabled;
+        if (!$folder->isBrowser()) {
+            return false;
+        }
+
+        if (!$this->fileBrowserEnabled) {
+            return false;
+        }
+
+        foreach ($folder->getFiles() as $file) {
+            if (!$this->authorizationChecker->isGranted(FileVoter::DELETE, $file)) {
+                return false;
+            }
+        }
+
+        foreach ($folder->getFolders() as $child) {
+            if (!$this->canDelete($child, $loggedIn)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
