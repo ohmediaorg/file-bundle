@@ -79,7 +79,7 @@ class FileFolderController extends AbstractController
 
         $breadcrumbs = $this->getBreadcrumbs($folder);
 
-        $breadcrumbs[] = new Breadcrumb('Create', '');
+        $breadcrumbs[] = new Breadcrumb('Create');
 
         return $this->render('@OHMediaFile/file_folder/file_folder_form.html.twig', [
             'form' => $form->createView(),
@@ -145,7 +145,7 @@ class FileFolderController extends AbstractController
 
         $breadcrumbs = $this->getBreadcrumbs($folder);
 
-        $breadcrumbs[] = new Breadcrumb('Edit', '');
+        $breadcrumbs[] = new Breadcrumb('Edit');
 
         return $this->render('@OHMediaFile/file_folder/file_folder_form.html.twig', [
             'form' => $form->createView(),
@@ -183,7 +183,7 @@ class FileFolderController extends AbstractController
 
         $breadcrumbs = $this->getBreadcrumbs($folder);
 
-        $breadcrumbs[] = new Breadcrumb('Move', '');
+        $breadcrumbs[] = new Breadcrumb('Move');
 
         return $this->render('@OHMediaFile/file_folder/file_folder_form.html.twig', [
             'form' => $form->createView(),
@@ -294,11 +294,9 @@ class FileFolderController extends AbstractController
         while ($loopFolder) {
             $breadcrumbText = $loopFolder->getName();
 
-            $breadcrumbHref = $this->urlGenerator->generate('file_folder_view', [
+            $breadcrumb = new Breadcrumb($breadcrumbText, 'file_folder_view', [
                 'id' => $loopFolder->getId(),
             ]);
-
-            $breadcrumb = new Breadcrumb($breadcrumbText, $breadcrumbHref);
 
             array_unshift($breadcrumbs, $breadcrumb);
 
@@ -307,9 +305,7 @@ class FileFolderController extends AbstractController
 
         $indexText = '<i class="bi bi-folder-fill"></i> Files';
 
-        $indexHref = $this->urlGenerator->generate('file_index');
-
-        $indexBreadcrumb = new Breadcrumb($indexText, $indexHref);
+        $indexBreadcrumb = new Breadcrumb($indexText, 'file_index');
 
         array_unshift($breadcrumbs, $indexBreadcrumb);
 
