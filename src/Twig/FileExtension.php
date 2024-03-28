@@ -4,18 +4,22 @@ namespace OHMedia\FileBundle\Twig;
 
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
+use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Service\FileManager;
 use OHMedia\FileBundle\Util\FileUtil;
+use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 class FileExtension extends AbstractExtension
 {
     private $fileManager;
+    private $fileRepository;
 
-    public function __construct(FileManager $fileManager)
+    public function __construct(FileManager $fileManager, FileRepository $fileRepository)
     {
         $this->fileManager = $fileManager;
+        $this->fileRepository = $fileRepository;
     }
 
     public function getFunctions(): array
@@ -28,6 +32,10 @@ class FileExtension extends AbstractExtension
             new TwigFunction('format_bytes', [$this, 'formatBytes']),
             new TwigFunction('format_bytes_binary', [$this, 'formatBytesBinary']),
             new TwigFunction('file_path', [$this, 'filePath']),
+            new TwigFunction('file_limit', [$this, 'fileLimit'], [
+                'is_safe' => ['html'],
+                'needs_environment' => 'true',
+            ]),
         ];
     }
 
@@ -64,5 +72,37 @@ class FileExtension extends AbstractExtension
     public function filePath(File $file): ?string
     {
         return $this->fileManager->getWebPath($file);
+    }
+
+    public function fileLimit(Environment $twig)
+    {
+        $limit = 2 * 1024 * 1024 * 1024; // 2GB
+
+        $usage = $this->fileRepository->createQueryBuilder('f')
+            ->select('SUM(f.size)')
+            ->where('f.browser = 1')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $percent = round(($usage / $limit) * 100);
+
+        if ($percent > 100) {
+            $percent = 100;
+        }
+
+        if ($percent > 90) {
+            $className = 'danger';
+        } elseif ($percent > 60) {
+            $className = 'warning';
+        } else {
+            $className = 'success';
+        }
+
+        return $twig->render('@OHMediaFile/file_limit.html.twig', [
+            'usage' => $usage,
+            'limit' => $limit,
+            'percent' => $percent,
+            'class_name' => $className,
+        ]);
     }
 }
