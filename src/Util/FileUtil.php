@@ -48,7 +48,7 @@ class FileUtil
 
         $bytes = abs($bytes);
 
-        while ($bytes > $base && $unit < $maxUnit) {
+        while ($bytes >= $base && $unit < $maxUnit) {
             $bytes /= $base;
             ++$unit;
         }
