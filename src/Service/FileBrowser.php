@@ -7,20 +7,45 @@ use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Repository\FileRepository;
 
-class FileListing
+class FileBrowser
 {
-    private $fileRepository;
-    private $fileFolderRepository;
+    private FileRepository $fileRepository;
+    private FileFolderRepository $fileFolderRepository;
+    private bool $enabled;
+    private float $limitBytes;
 
     public function __construct(
         FileRepository $fileRepository,
-        FileFolderRepository $fileFolderRepository
+        FileFolderRepository $fileFolderRepository,
+        bool $enabled,
+        float $limitMb
     ) {
         $this->fileRepository = $fileRepository;
         $this->fileFolderRepository = $fileFolderRepository;
+        $this->enabled = $enabled;
+        $this->limitBytes = $limitMb * 1024 * 1024;
     }
 
-    public function get(FileFolder $parent = null): array
+    public function isEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    public function getLimitBytes()
+    {
+        return $this->limitBytes;
+    }
+
+    public function getUsageBytes()
+    {
+        return $this->fileRepository->createQueryBuilder('f')
+            ->select('SUM(f.size)')
+            ->where('f.browser = 1')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function getListing(FileFolder $parent = null): array
     {
         $fileQueryBuilder = $this->fileRepository
             ->createQueryBuilder('f')
