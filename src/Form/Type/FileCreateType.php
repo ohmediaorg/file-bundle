@@ -3,6 +3,7 @@
 namespace OHMedia\FileBundle\Form\Type;
 
 use OHMedia\FileBundle\Entity\File;
+use OHMedia\FileBundle\Util\FileUtil;
 use OHMedia\FileBundle\Util\MimeTypeUtil;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -33,6 +34,13 @@ class FileCreateType extends AbstractType
 
         $fileConstraint = MimeTypeUtil::getFileConstraint(...$mimes);
         $mimeTypes = MimeTypeUtil::getMimeTypes(...$mimes);
+
+        $fileConstraint->maxSize = $options['max_size_bytes'];
+
+        $maxSize = FileUtil::formatBytesBinary($options['max_size_bytes'], 2);
+
+        $fileConstraint->maxSizeMessage = "The file is too large. Allowed maximum size is $maxSize.";
+        $fileConstraint->uploadIniSizeErrorMessage = $fileConstraint->maxSizeMessage;
 
         $builder
             ->add('file', FileType::class, [
@@ -65,6 +73,7 @@ class FileCreateType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => File::class,
+            'max_size_bytes' => null,
         ]);
     }
 }
