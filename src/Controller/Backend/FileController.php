@@ -12,7 +12,8 @@ use OHMedia\FileBundle\Form\Type\FileMoveType;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Security\Voter\FileVoter;
-use OHMedia\FileBundle\Service\FileListing;
+use OHMedia\FileBundle\Service\FileBrowser;
+use OHMedia\FileBundle\Util\FileUtil;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,16 +24,20 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 #[Admin]
 class FileController extends AbstractController
 {
+    private FileBrowser $fileBrowser;
     private UrlGeneratorInterface $urlGenerator;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator)
-    {
+    public function __construct(
+        FileBrowser $fileBrowser,
+        UrlGeneratorInterface $urlGenerator
+    ) {
+        $this->fileBrowser = $fileBrowser;
         $this->urlGenerator = $urlGenerator;
     }
 
     #[Route('/files', name: 'file_index', methods: ['GET'])]
     public function index(
-        FileListing $fileListing,
+        FileBrowser $fileBrowser,
         FileRepository $fileRepository,
         FileFolderRepository $fileFolderRepository
     ): Response {
@@ -45,7 +50,7 @@ class FileController extends AbstractController
             'You cannot access the list of files.'
         );
 
-        $items = $fileListing->get();
+        $items = $fileBrowser->getListing();
 
         return $this->render('@OHMediaFile/file/file_index.html.twig', [
             'items' => $items,
@@ -113,7 +118,23 @@ class FileController extends AbstractController
             "You cannot create a new $noun."
         );
 
-        $form = $this->createForm(FileCreateType::class, $file);
+        $usage = $this->fileBrowser->getUsageBytes();
+
+        $limit = $this->fileBrowser->getLimitBytes();
+
+        $remainingBytes = $limit - $usage;
+
+        $maxSize = ini_get('upload_max_filesize');
+
+        $maxSizeBytes = FileUtil::getBytes($maxSize);
+
+        if ($maxSizeBytes > $remainingBytes) {
+            $maxSizeBytes = $remainingBytes;
+        }
+
+        $form = $this->createForm(FileCreateType::class, $file, [
+            'max_size_bytes' => $maxSizeBytes,
+        ]);
 
         $form->add('submit', SubmitType::class);
 
