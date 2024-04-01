@@ -23,7 +23,7 @@ class OHMediaFileExtension extends Extension
         $loader->load('services.yml');
 
         $container->setParameter('oh_media_file.file_browser.enabled', $config['file_browser']['enabled']);
-        $container->setParameter('oh_media_file.file_browser.limit_gb', $config['file_browser']['limit_gb']);
+        $container->setParameter('oh_media_file.file_browser.limit_mb', $config['file_browser']['limit_mb']);
 
         $this->registerWidget($container);
     }
