@@ -11,7 +11,7 @@ use OHMedia\FileBundle\Form\Type\FileFolderEditType;
 use OHMedia\FileBundle\Form\Type\FileFolderMoveType;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Security\Voter\FileFolderVoter;
-use OHMedia\FileBundle\Service\FileListing;
+use OHMedia\FileBundle\Service\FileBrowser;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
@@ -90,7 +90,7 @@ class FileFolderController extends AbstractController
     }
 
     #[Route('/folder/{id}', name: 'file_folder_view', methods: ['GET'])]
-    public function view(FileFolder $folder, FileListing $fileListing): Response
+    public function view(FileFolder $folder, FileBrowser $fileBrowser): Response
     {
         $this->denyAccessUnlessGranted(
             FileFolderVoter::VIEW,
@@ -106,7 +106,7 @@ class FileFolderController extends AbstractController
             ->setBrowser(true)
             ->setFolder($folder);
 
-        $items = $fileListing->get($folder);
+        $items = $fileBrowser->getListing($folder);
 
         return $this->render('@OHMediaFile/file_folder/file_folder_view.html.twig', [
             'breadcrumbs' => $this->getBreadcrumbs($folder),
