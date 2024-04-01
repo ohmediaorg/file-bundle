@@ -3,6 +3,7 @@
 namespace OHMedia\FileBundle\Security\Voter;
 
 use OHMedia\FileBundle\Entity\FileFolder;
+use OHMedia\FileBundle\Service\FileBrowser;
 use OHMedia\SecurityBundle\Entity\User;
 use OHMedia\SecurityBundle\Security\Voter\AbstractEntityVoter;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -18,12 +19,12 @@ class FileFolderVoter extends AbstractEntityVoter
     public const DELETE = 'delete';
 
     private AuthorizationCheckerInterface $authorizationChecker;
-    private bool $fileBrowserEnabled;
+    private FileBrowser $fileBrowser;
 
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker, bool $fileBrowserEnabled)
+    public function __construct(AuthorizationCheckerInterface $authorizationChecker, FileBrowser $fileBrowser)
     {
         $this->authorizationChecker = $authorizationChecker;
-        $this->fileBrowserEnabled = $fileBrowserEnabled;
+        $this->fileBrowser = $fileBrowser;
     }
 
     protected function getAttributes(): array
@@ -46,22 +47,22 @@ class FileFolderVoter extends AbstractEntityVoter
 
     protected function canCreate(FileFolder $folder, User $loggedIn): bool
     {
-        return $folder->isBrowser() && $this->fileBrowserEnabled;
+        return $folder->isBrowser() && $this->fileBrowser->isEnabled();
     }
 
     protected function canView(FileFolder $folder, User $loggedIn): bool
     {
-        return $folder->isBrowser() && $this->fileBrowserEnabled;
+        return $folder->isBrowser() && $this->fileBrowser->isEnabled();
     }
 
     protected function canEdit(FileFolder $folder, User $loggedIn): bool
     {
-        return $folder->isBrowser() && $this->fileBrowserEnabled;
+        return $folder->isBrowser() && $this->fileBrowser->isEnabled();
     }
 
     protected function canLock(FileFolder $folder, User $loggedIn): bool
     {
-        return $folder->isBrowser() && !$folder->isLocked() && $this->fileBrowserEnabled;
+        return $folder->isBrowser() && !$folder->isLocked() && $this->fileBrowser->isEnabled();
     }
 
     protected function canUnlock(FileFolder $folder, User $loggedIn): bool
@@ -70,7 +71,7 @@ class FileFolderVoter extends AbstractEntityVoter
             return false;
         }
 
-        if (!$this->fileBrowserEnabled) {
+        if (!$this->fileBrowser->isEnabled()) {
             return false;
         }
 
@@ -85,7 +86,7 @@ class FileFolderVoter extends AbstractEntityVoter
 
     protected function canMove(FileFolder $folder, User $loggedIn): bool
     {
-        return $folder->isBrowser() && $this->fileBrowserEnabled;
+        return $folder->isBrowser() && $this->fileBrowser->isEnabled();
     }
 
     protected function canDelete(FileFolder $folder, User $loggedIn): bool
@@ -94,7 +95,7 @@ class FileFolderVoter extends AbstractEntityVoter
             return false;
         }
 
-        if (!$this->fileBrowserEnabled) {
+        if (!$this->fileBrowser->isEnabled()) {
             return false;
         }
 
