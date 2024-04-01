@@ -22,17 +22,18 @@ services:
     OHMedia\FileBundle\Service\ImageManager:
         autowire: true
 
-    OHMedia\FileBundle\Service\FileListing:
-        autowire: true
+    OHMedia\FileBundle\Service\FileBrowser:
+        arguments:
+            - "@oh_media_file.file_repository"
+            - "@oh_media_file.file_folder_repository"
+            - "%oh_media_file.file_browser.enabled%"
+            - "%oh_media_file.file_browser.limit_mb%"
 
     OHMedia\FileBundle\Service\FileResponse:
         autowire: true
 
     OHMedia\FileBundle\Twig\FileExtension:
-        arguments:
-            - "@oh_media_file.file_manager"
-            - "@oh_media_file.file_repository"
-            - "%oh_media_file.file_browser.limit_gb%"
+        autowire: true
         tags: ["twig.extension"]
 
     OHMedia\FileBundle\Twig\FileScriptExtension:
@@ -118,6 +119,9 @@ services:
         autowire: true
         tags: ["doctrine.repository_service"]
 
+    oh_media_file.file_folder_repository:
+        alias: OHMedia\FileBundle\Repository\FileFolderRepository
+
     OHMedia\FileBundle\Controller\Backend\FileController:
         tags: ["container.service_subscriber", "controller.service_arguments"]
         autowire: true
@@ -131,11 +135,11 @@ services:
         autowire: true
 
     OHMedia\FileBundle\Security\Voter\FileVoter:
-        arguments: ["@oh_media_wysiwyg.wysiwyg", "%oh_media_file.file_browser.enabled%"]
+        autowire: true
         tags: ["security.voter"]
 
     OHMedia\FileBundle\Security\Voter\FileFolderVoter:
-        arguments: ["@security.authorization_checker", "%oh_media_file.file_browser.enabled%"]
+        autowire: true
         tags: ["security.voter"]
 
     OHMedia\FileBundle\Service\FileNavItemProvider:
