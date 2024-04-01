@@ -4,7 +4,7 @@ namespace OHMedia\FileBundle\Twig;
 
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
-use OHMedia\FileBundle\Repository\FileRepository;
+use OHMedia\FileBundle\Service\FileBrowser;
 use OHMedia\FileBundle\Service\FileManager;
 use OHMedia\FileBundle\Util\FileUtil;
 use Twig\Environment;
@@ -13,18 +13,15 @@ use Twig\TwigFunction;
 
 class FileExtension extends AbstractExtension
 {
-    private $fileManager;
-    private $fileRepository;
-    private $limitGb;
+    private FileBrowser $fileBrowser;
+    private FileManager $fileManager;
 
     public function __construct(
-        FileManager $fileManager,
-        FileRepository $fileRepository,
-        float $limitGb
+        FileBrowser $fileBrowser,
+        FileManager $fileManager
     ) {
+        $this->fileBrowser = $fileBrowser;
         $this->fileManager = $fileManager;
-        $this->fileRepository = $fileRepository;
-        $this->limitGb = $limitGb;
     }
 
     public function getFunctions(): array
@@ -81,13 +78,9 @@ class FileExtension extends AbstractExtension
 
     public function fileLimit(Environment $twig)
     {
-        $limit = $this->limitGb * 1024 * 1024 * 1024;
+        $limit = $this->fileBrowser->getLimitBytes();
 
-        $usage = $this->fileRepository->createQueryBuilder('f')
-            ->select('SUM(f.size)')
-            ->where('f.browser = 1')
-            ->getQuery()
-            ->getSingleScalarResult();
+        $usage = $this->fileBrowser->getUsageBytes();
 
         $percent = round(($usage / $limit) * 100);
 
