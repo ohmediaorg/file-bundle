@@ -248,6 +248,10 @@ class FileLifecycle
 
     private function doImageProcessing(FileEntity $file)
     {
+        if (MimeTypeUtil::PDF === $file->getMimeType()) {
+            return;
+        }
+
         if (MimeTypeUtil::SVG === $file->getMimeType()) {
             return;
         }
@@ -265,6 +269,10 @@ class FileLifecycle
 
     private function postSaveResize(FileEntity $file)
     {
+        if (MimeTypeUtil::PDF === $file->getMimeType()) {
+            return;
+        }
+
         if (MimeTypeUtil::SVG === $file->getMimeType()) {
             return;
         }
