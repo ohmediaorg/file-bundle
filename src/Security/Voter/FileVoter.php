@@ -3,6 +3,7 @@
 namespace OHMedia\FileBundle\Security\Voter;
 
 use OHMedia\FileBundle\Entity\File;
+use OHMedia\FileBundle\Service\FileBrowser;
 use OHMedia\SecurityBundle\Entity\User;
 use OHMedia\SecurityBundle\Security\Voter\AbstractEntityVoter;
 use OHMedia\WysiwygBundle\Service\Wysiwyg;
@@ -19,13 +20,13 @@ class FileVoter extends AbstractEntityVoter
     public const MOVE = 'move';
     public const DELETE = 'delete';
 
+    private FileBrowser $fileBrowser;
     private Wysiwyg $wysiwyg;
-    private bool $fileBrowserEnabled;
 
-    public function __construct(Wysiwyg $wysiwyg, bool $fileBrowserEnabled)
+    public function __construct(FileBrowser $fileBrowser, Wysiwyg $wysiwyg)
     {
+        $this->fileBrowser = $fileBrowser;
         $this->wysiwyg = $wysiwyg;
-        $this->fileBrowserEnabled = $fileBrowserEnabled;
     }
 
     protected function getAttributes(): array
@@ -49,12 +50,20 @@ class FileVoter extends AbstractEntityVoter
 
     protected function canIndex(File $file, User $loggedIn): bool
     {
-        return $file->isBrowser() && $this->fileBrowserEnabled;
+        return $file->isBrowser() && $this->fileBrowser->isEnabled();
     }
 
     protected function canCreate(File $file, User $loggedIn): bool
     {
-        return $file->isBrowser() && $this->fileBrowserEnabled;
+        if (!$file->isBrowser()) {
+            return false;
+        }
+
+        if (!$this->fileBrowser->isEnabled()) {
+            return false;
+        }
+
+        return $this->fileBrowser->getLimitBytes() > $this->fileBrowser->getUsageBytes();
     }
 
     protected function canView(File $file, User $loggedIn): bool
@@ -65,12 +74,12 @@ class FileVoter extends AbstractEntityVoter
     protected function canEdit(File $file, User $loggedIn): bool
     {
         // only for editing image alt text
-        return $file->isBrowser() && $file->isImage() && $this->fileBrowserEnabled;
+        return $file->isBrowser() && $file->isImage() && $this->fileBrowser->isEnabled();
     }
 
     protected function canLock(File $file, User $loggedIn): bool
     {
-        return $file->isBrowser() && !$file->isLocked() && $this->fileBrowserEnabled;
+        return $file->isBrowser() && !$file->isLocked() && $this->fileBrowser->isEnabled();
     }
 
     protected function canUnlock(File $file, User $loggedIn): bool
@@ -79,7 +88,7 @@ class FileVoter extends AbstractEntityVoter
             return false;
         }
 
-        if (!$this->fileBrowserEnabled) {
+        if (!$this->fileBrowser->isEnabled()) {
             return false;
         }
 
@@ -94,7 +103,7 @@ class FileVoter extends AbstractEntityVoter
 
     protected function canMove(File $file, User $loggedIn): bool
     {
-        return $file->isBrowser() && $this->fileBrowserEnabled;
+        return $file->isBrowser() && $this->fileBrowser->isEnabled();
     }
 
     protected function canDelete(File $file, User $loggedIn): bool
@@ -103,7 +112,7 @@ class FileVoter extends AbstractEntityVoter
             return false;
         }
 
-        if (!$this->fileBrowserEnabled) {
+        if (!$this->fileBrowser->isEnabled()) {
             return false;
         }
 
