@@ -23,6 +23,32 @@ class FileUtil
             : 0;
     }
 
+    public static function getBytes(string $byteString)
+    {
+        $byteString = trim($byteString);
+
+        if (is_numeric($byteString)) {
+            return $byteString;
+        }
+
+        $last = strtolower($byteString[strlen($byteString) - 1]);
+        $byteString = rtrim($byteString, 'b');
+        $bytes = substr($byteString, 0, -1);
+
+        switch ($last) {
+            case 'g':
+                $bytes *= 1024;
+                // no break
+            case 'm':
+                $bytes *= 1024;
+                // no break
+            case 'k':
+                $bytes *= 1024;
+        }
+
+        return $bytes;
+    }
+
     public static function formatBytesBinary(int $bytes, int $precision): string
     {
         return self::formatBytes($bytes, $precision, true);
