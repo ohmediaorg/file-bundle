@@ -13,6 +13,8 @@ class MimeTypeUtil
         'audio/wav' => 'wav',
     ];
 
+    public const PDF = 'application/pdf';
+
     public const DOCUMENT = [
         'application/x-abiword' => 'abw',
         'application/msword' => 'doc',
@@ -21,7 +23,7 @@ class MimeTypeUtil
         'application/vnd.oasis.opendocument.presentation' => 'odp',
         'application/vnd.oasis.opendocument.spreadsheet' => 'ods',
         'application/vnd.oasis.opendocument.text' => 'odt',
-        'application/pdf' => 'pdf',
+        self::PDF => 'pdf',
         'application/vnd.ms-powerpoint' => 'ppt',
         'application/vnd.openxmlformats-officedocument.presentationml.presentation' => 'pptx',
         'application/rtf' => 'rtf',
