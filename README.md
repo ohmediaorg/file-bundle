@@ -73,7 +73,7 @@ Optionally, create `config/packages/oh_media_file.yml` with the following conten
 oh_media_file:
     file_browser:
         enabled: true # default
-        limit_gb: 5 # default, between [1-10]
+        limit_mb: 1024 # default, between [100-5120]
 ```
 
 ## Entities
