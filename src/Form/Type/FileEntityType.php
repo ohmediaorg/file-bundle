@@ -118,6 +118,7 @@ class FileEntityType extends AbstractType
         $builder->add('image', HiddenType::class, [
             'required' => false,
             'data' => $options['image'],
+            'empty_data' => false,
         ]);
 
         $builder->addEventListener(
