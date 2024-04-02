@@ -59,7 +59,7 @@ class ImageManager
             return;
         }
 
-        if (MimeTypeUtil::SVG === $file->getMimeType()) {
+        if (!MimeTypeUtil::isResizeEligible($file->getMimeType())) {
             $attributes['src'] = $this->fileManager->getWebPath($file);
 
             return;
