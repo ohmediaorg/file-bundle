@@ -13,8 +13,6 @@ class MimeTypeUtil
         'audio/wav' => 'wav',
     ];
 
-    public const PDF = 'application/pdf';
-
     public const DOCUMENT = [
         'application/x-abiword' => 'abw',
         'application/msword' => 'doc',
@@ -23,7 +21,7 @@ class MimeTypeUtil
         'application/vnd.oasis.opendocument.presentation' => 'odp',
         'application/vnd.oasis.opendocument.spreadsheet' => 'ods',
         'application/vnd.oasis.opendocument.text' => 'odt',
-        self::PDF => 'pdf',
+        'application/pdf' => 'pdf',
         'application/vnd.ms-powerpoint' => 'ppt',
         'application/vnd.openxmlformats-officedocument.presentationml.presentation' => 'pptx',
         'application/rtf' => 'rtf',
@@ -31,13 +29,14 @@ class MimeTypeUtil
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'xlsx',
     ];
 
-    public const SVG = 'image/svg+xml';
+    public const JPEG = 'image/jpeg';
+    public const PNG = 'image/png';
 
     public const IMAGE = [
         'image/gif' => 'gif',
-        'image/jpeg' => 'jpeg',
-        'image/png' => 'png',
-        self::SVG => 'svg',
+        self::JPEG => 'jpeg',
+        self::PNG => 'png',
+        'image/svg+xml' => 'svg',
     ];
 
     public const TEXT = [
@@ -53,6 +52,11 @@ class MimeTypeUtil
         'video/ogg' => 'ogv',
         'video/webm' => 'webm',
     ];
+
+    public static function isResizeEligible(string $mimeType)
+    {
+        return in_array($mimeType, [self::JPEG, self::PNG]);
+    }
 
     public static function getMimeTypes(array ...$consts): array
     {
