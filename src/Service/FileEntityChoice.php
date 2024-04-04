@@ -4,6 +4,7 @@ namespace OHMedia\FileBundle\Service;
 
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
+use OHMedia\SecurityBundle\Service\EntityChoiceInterface;
 
 class FileEntityChoice implements EntityChoiceInterface
 {
