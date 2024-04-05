@@ -12,13 +12,13 @@ class FileBrowser
     private FileRepository $fileRepository;
     private FileFolderRepository $fileFolderRepository;
     private bool $enabled;
-    private float $limitBytes;
+    private int $limitBytes;
 
     public function __construct(
         FileRepository $fileRepository,
         FileFolderRepository $fileFolderRepository,
         bool $enabled,
-        float $limitMb
+        int $limitMb
     ) {
         $this->fileRepository = $fileRepository;
         $this->fileFolderRepository = $fileFolderRepository;
@@ -31,14 +31,14 @@ class FileBrowser
         return $this->enabled;
     }
 
-    public function getLimitBytes()
+    public function getLimitBytes(): int
     {
         return $this->limitBytes;
     }
 
-    public function getUsageBytes()
+    public function getUsageBytes(): int
     {
-        return $this->fileRepository->createQueryBuilder('f')
+        return (int) $this->fileRepository->createQueryBuilder('f')
             ->select('SUM(f.size)')
             ->where('f.browser = 1')
             ->getQuery()
