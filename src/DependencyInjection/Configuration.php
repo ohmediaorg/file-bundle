@@ -23,7 +23,7 @@ class Configuration implements ConfigurationInterface
                     ->booleanNode('enabled')
                         ->defaultTrue()
                     ->end()
-                    ->floatNode('limit_mb')
+                    ->integerNode('limit_mb')
                         ->min(100)
                         ->max(5120)
                         ->defaultValue(1024)
