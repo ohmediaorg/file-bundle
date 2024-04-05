@@ -248,7 +248,9 @@ class FileLifecycle
 
     private function doImageProcessing(FileEntity $file)
     {
-        if (!MimeTypeUtil::isResizeEligible($file->getMimeType())) {
+        $mimeType = $file->getMimeType();
+
+        if ($mimeType && !MimeTypeUtil::isResizeEligible($mimeType)) {
             return;
         }
 
@@ -265,7 +267,9 @@ class FileLifecycle
 
     private function postSaveResize(FileEntity $file)
     {
-        if (!MimeTypeUtil::isResizeEligible($file->getMimeType())) {
+        $mimeType = $file->getMimeType();
+
+        if ($mimeType && !MimeTypeUtil::isResizeEligible($mimeType)) {
             return;
         }
 
