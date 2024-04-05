@@ -59,7 +59,9 @@ class ImageManager
             return;
         }
 
-        if (!MimeTypeUtil::isResizeEligible($file->getMimeType())) {
+        $mimeType = $file->getMimeType();
+
+        if ($mimeType && !MimeTypeUtil::isResizeEligible($mimeType)) {
             $attributes['src'] = $this->fileManager->getWebPath($file);
 
             return;
