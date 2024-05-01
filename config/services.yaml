@@ -4,20 +4,17 @@ services:
             - "@router.default"
             - "%kernel.project_dir%"
 
-    oh_media_file.file_manager:
-        alias: OHMedia\FileBundle\Service\FileManager
+    oh_media_file.file_manager: '@OHMedia\FileBundle\Service\FileManager'
 
     OHMedia\FileBundle\Service\FileLifecycle:
         autowire: true
 
-    oh_media_file.file_lifecycle:
-        alias: OHMedia\FileBundle\Service\FileLifecycle
+    oh_media_file.file_lifecycle: '@OHMedia\FileBundle\Service\FileLifecycle'
 
     OHMedia\FileBundle\Service\FileFolderSlugger:
         autowire: true
 
-    oh_media_file.file_folder_slugger:
-        alias: OHMedia\FileBundle\Service\FileFolderSlugger
+    oh_media_file.file_folder_slugger: '@OHMedia\FileBundle\Service\FileFolderSlugger'
 
     OHMedia\FileBundle\Service\ImageManager:
         autowire: true
@@ -112,15 +109,13 @@ services:
         autowire: true
         tags: ["doctrine.repository_service"]
 
-    oh_media_file.file_repository:
-        alias: OHMedia\FileBundle\Repository\FileRepository
+    oh_media_file.file_repository: '@OHMedia\FileBundle\Repository\FileRepository'
 
     OHMedia\FileBundle\Repository\FileFolderRepository:
         autowire: true
         tags: ["doctrine.repository_service"]
 
-    oh_media_file.file_folder_repository:
-        alias: OHMedia\FileBundle\Repository\FileFolderRepository
+    oh_media_file.file_folder_repository: '@OHMedia\FileBundle\Repository\FileFolderRepository'
 
     OHMedia\FileBundle\Controller\Backend\FileController:
         tags: ["container.service_subscriber", "controller.service_arguments"]

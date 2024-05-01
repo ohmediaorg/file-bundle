@@ -14,20 +14,14 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class FileLifecycle
 {
-    private $connection;
-    private $fileRepository;
-    private $fileManager;
-    private $fileSystem;
-    private $slugger;
+    private FileSystem $fileSystem;
+    private AsciiSlugger $slugger;
 
     public function __construct(
-        Connection $connection,
-        FileRepository $fileRepository,
-        FileManager $fileManager
+        private Connection $connection,
+        private FileRepository $fileRepository,
+        private FileManager $fileManager
     ) {
-        $this->connection = $connection;
-        $this->fileRepository = $fileRepository;
-        $this->fileManager = $fileManager;
         $this->fileSystem = new FileSystem();
         $this->slugger = new AsciiSlugger();
     }
@@ -82,7 +76,7 @@ class FileLifecycle
         $this->removeFilepath($file->getPath());
     }
 
-    private $newFiles = [];
+    private array $newFiles = [];
 
     private function preSaveFile(FileEntity $file)
     {

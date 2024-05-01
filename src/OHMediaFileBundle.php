@@ -2,8 +2,57 @@
 
 namespace OHMedia\FileBundle;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
-class OHMediaFileBundle extends Bundle
+class OHMediaFileBundle extends AbstractBundle
 {
+    public function configure(DefinitionConfigurator $definition): void
+    {
+        $definition->rootNode()
+            ->children()
+                ->arrayNode('file_browser')
+                  ->children()
+                    ->booleanNode('enabled')
+                        ->defaultTrue()
+                    ->end()
+                    ->integerNode('limit_mb')
+                        ->min(100)
+                        ->max(5120)
+                        ->defaultValue(1024)
+                    ->end()
+                ->end()
+            ->end()
+        ;
+    }
+
+    public function loadExtension(
+        array $config,
+        ContainerConfigurator $containerConfigurator,
+        ContainerBuilder $containerBuilder
+    ): void {
+        $containerConfigurator->import('../config/services.yaml');
+
+        $containerConfigurator->parameters()
+            ->set('oh_media_file.file_browser.enabled', $config['file_browser']['enabled'])
+        ;
+
+        $containerConfigurator->parameters()
+            ->set('oh_media_file.file_browser.limit_mb', $config['file_browser']['limit_mb'])
+        ;
+
+        $this->registerWidget($containerBuilder);
+    }
+
+    protected function registerWidget(ContainerBuilder $containerBuilder)
+    {
+        $resource = '@OHMediaFile/Form/file_entity_widget.html.twig';
+
+        $containerBuilder->setParameter('twig.form.resources', array_merge(
+            $containerBuilder->getParameter('twig.form.resources'),
+            [$resource]
+        ));
+    }
 }

@@ -22,11 +22,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 #[Admin]
 class FileFolderController extends AbstractController
 {
-    private UrlGeneratorInterface $urlGenerator;
-
-    public function __construct(UrlGeneratorInterface $urlGenerator)
+    public function __construct(private UrlGeneratorInterface $urlGenerator)
     {
-        $this->urlGenerator = $urlGenerator;
     }
 
     #[Route('/folder/create', name: 'file_folder_create_no_folder', methods: ['GET', 'POST'])]

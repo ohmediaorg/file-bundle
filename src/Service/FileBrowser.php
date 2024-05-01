@@ -9,20 +9,14 @@ use OHMedia\FileBundle\Repository\FileRepository;
 
 class FileBrowser
 {
-    private FileRepository $fileRepository;
-    private FileFolderRepository $fileFolderRepository;
-    private bool $enabled;
     private int $limitBytes;
 
     public function __construct(
-        FileRepository $fileRepository,
-        FileFolderRepository $fileFolderRepository,
-        bool $enabled,
+        private FileRepository $fileRepository,
+        private FileFolderRepository $fileFolderRepository,
+        private bool $enabled,
         int $limitMb
     ) {
-        $this->fileRepository = $fileRepository;
-        $this->fileFolderRepository = $fileFolderRepository;
-        $this->enabled = $enabled;
         $this->limitBytes = $limitMb * 1024 * 1024;
     }
 

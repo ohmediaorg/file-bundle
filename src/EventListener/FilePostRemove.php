@@ -8,11 +8,8 @@ use OHMedia\FileBundle\Service\FileLifecycle;
 
 class FilePostRemove
 {
-    private $fileLifecycle;
-
-    public function __construct(FileLifecycle $fileLifecycle)
+    public function __construct(private FileLifecycle $fileLifecycle)
     {
-        $this->fileLifecycle = $fileLifecycle;
     }
 
     public function postRemove(FileEntity $file, PostRemoveEventArgs $args)

@@ -8,11 +8,8 @@ use OHMedia\FileBundle\Service\FileFolderSlugger;
 
 class FileFolderPrePersist
 {
-    private $fileFolderSlugger;
-
-    public function __construct(FileFolderSlugger $fileFolderSlugger)
+    public function __construct(private FileFolderSlugger $fileFolderSlugger)
     {
-        $this->fileFolderSlugger = $fileFolderSlugger;
     }
 
     public function prePersist(FileFolder $folder, PrePersistEventArgs $args)

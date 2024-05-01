@@ -9,15 +9,10 @@ use OHMedia\FileBundle\Util\MimeTypeUtil;
 
 class ImageManager
 {
-    private $fileManager;
-    private $fileRepository;
-
     public function __construct(
-        FileManager $fileManager,
-        FileRepository $fileRepository
+        private FileManager $fileManager,
+        private FileRepository $fileRepository
     ) {
-        $this->fileManager = $fileManager;
-        $this->fileRepository = $fileRepository;
     }
 
     public function getImagePath(File $file, int $width = null, int $height = null)

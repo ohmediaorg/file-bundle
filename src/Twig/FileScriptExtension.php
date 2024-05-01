@@ -9,7 +9,7 @@ use Twig\TwigFunction;
 
 class FileScriptExtension extends AbstractExtension
 {
-    private $rendered = false;
+    private bool $rendered = false;
 
     public function getFunctions(): array
     {

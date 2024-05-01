@@ -11,15 +11,13 @@ class FileManager
 {
     public const FILE_DIR = 'oh_media_files';
 
-    private $absoluteUploadDir;
-    private $router;
+    private string $absoluteUploadDir;
 
     public function __construct(
-        UrlGeneratorInterface $router,
+        private UrlGeneratorInterface $router,
         string $projectDir
     ) {
         $this->absoluteUploadDir = $projectDir.'/'.static::FILE_DIR;
-        $this->router = $router;
     }
 
     public function getAbsoluteUploadDir(): string

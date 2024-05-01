@@ -9,11 +9,8 @@ use Twig\TwigFunction;
 
 class ImageExtension extends AbstractExtension
 {
-    private $imageManager;
-
-    public function __construct(ImageManager $imageManager)
+    public function __construct(private ImageManager $imageManager)
     {
-        $this->imageManager = $imageManager;
     }
 
     public function getFunctions(): array

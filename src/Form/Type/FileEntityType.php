@@ -27,15 +27,10 @@ class FileEntityType extends AbstractType
 
     public const DATA_ATTRIBUTE = 'data-ohmedia-file-widget';
 
-    private $fileManager;
-    private $fileRepository;
-
     public function __construct(
-        FileManager $fileManager,
-        FileRepository $fileRepository
+        private FileManager $fileManager,
+        private FileRepository $fileRepository
     ) {
-        $this->fileManager = $fileManager;
-        $this->fileRepository = $fileRepository;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void

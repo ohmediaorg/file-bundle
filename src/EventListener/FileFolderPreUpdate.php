@@ -8,11 +8,8 @@ use OHMedia\FileBundle\Service\FileFolderSlugger;
 
 class FileFolderPreUpdate
 {
-    private $fileFolderSlugger;
-
-    public function __construct(FileFolderSlugger $fileFolderSlugger)
+    public function __construct(private FileFolderSlugger $fileFolderSlugger)
     {
-        $this->fileFolderSlugger = $fileFolderSlugger;
     }
 
     public function preUpdate(FileFolder $folder, PreUpdateEventArgs $args)

@@ -10,18 +10,11 @@ use Twig\TwigFunction;
 
 class WysiwygExtension extends AbstractWysiwygExtension
 {
-    private $fileManager;
-    private $fileRepository;
-    private $imageManager;
-
     public function __construct(
-        FileManager $fileManager,
-        FileRepository $fileRepository,
-        ImageManager $imageManager
+        private FileManager $fileManager,
+        private FileRepository $fileRepository,
+        private ImageManager $imageManager
     ) {
-        $this->fileManager = $fileManager;
-        $this->fileRepository = $fileRepository;
-        $this->imageManager = $imageManager;
     }
 
     public function getFunctions(): array

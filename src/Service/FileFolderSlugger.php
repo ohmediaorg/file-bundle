@@ -8,12 +8,10 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class FileFolderSlugger
 {
-    private $fileFolderRepository;
-    private $slugger;
+    private AsciiSlugger $slugger;
 
-    public function __construct(FileFolderRepository $fileFolderRepository)
+    public function __construct(private FileFolderRepository $fileFolderRepository)
     {
-        $this->fileFolderRepository = $fileFolderRepository;
         $this->slugger = new AsciiSlugger();
     }
 

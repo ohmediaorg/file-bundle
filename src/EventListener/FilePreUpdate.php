@@ -8,11 +8,8 @@ use OHMedia\FileBundle\Service\FileLifecycle;
 
 class FilePreUpdate
 {
-    private $fileLifecycle;
-
-    public function __construct(FileLifecycle $fileLifecycle)
+    public function __construct(private FileLifecycle $fileLifecycle)
     {
-        $this->fileLifecycle = $fileLifecycle;
     }
 
     public function preUpdate(FileEntity $file, PreUpdateEventArgs $args)

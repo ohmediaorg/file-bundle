@@ -7,13 +7,13 @@ class ImageResource
     public const TYPE_IMAGICK = 'imagick';
     public const TYPE_GD = 'gd';
 
-    private $im;
-    private $width;
-    private $height;
-    private $filepath;
+    private ?int $width = null;
+    private ?int $height = null;
 
-    private function __construct($im, string $filepath)
-    {
+    private function __construct(
+        private \GdImage|\Imagick $im,
+        private string $filepath
+    ) {
         $this->im = $im;
 
         $this->setDimensions();

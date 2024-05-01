@@ -70,7 +70,7 @@ class File
     #[ORM\OneToMany(mappedBy: 'resize_parent', targetEntity: self::class, orphanRemoval: true)]
     private Collection $resizes;
 
-    private $cloned = false;
+    private bool $cloned = false;
 
     public function __construct()
     {
@@ -336,8 +336,8 @@ class File
         return null;
     }
 
-    private $file;
-    private $oldPath;
+    private ?HttpFile $file = null;
+    private ?string $oldPath = null;
 
     public function setFile(HttpFile $file = null): self
     {

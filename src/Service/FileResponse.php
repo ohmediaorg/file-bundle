@@ -7,11 +7,8 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class FileResponse
 {
-    private $fileManager;
-
-    public function __construct(FileManager $fileManager)
+    public function __construct(private FileManager $fileManager)
     {
-        $this->fileManager = $fileManager;
     }
 
     public function get(FileEntity $file): ?BinaryFileResponse

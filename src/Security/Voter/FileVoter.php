@@ -20,13 +20,10 @@ class FileVoter extends AbstractEntityVoter
     public const MOVE = 'move';
     public const DELETE = 'delete';
 
-    private FileBrowser $fileBrowser;
-    private Wysiwyg $wysiwyg;
-
-    public function __construct(FileBrowser $fileBrowser, Wysiwyg $wysiwyg)
-    {
-        $this->fileBrowser = $fileBrowser;
-        $this->wysiwyg = $wysiwyg;
+    public function __construct(
+        private FileBrowser $fileBrowser,
+        private Wysiwyg $wysiwyg
+    ) {
     }
 
     protected function getAttributes(): array

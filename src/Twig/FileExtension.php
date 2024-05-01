@@ -13,15 +13,10 @@ use Twig\TwigFunction;
 
 class FileExtension extends AbstractExtension
 {
-    private FileBrowser $fileBrowser;
-    private FileManager $fileManager;
-
     public function __construct(
-        FileBrowser $fileBrowser,
-        FileManager $fileManager
+        private FileBrowser $fileBrowser,
+        private FileManager $fileManager
     ) {
-        $this->fileBrowser = $fileBrowser;
-        $this->fileManager = $fileManager;
     }
 
     public function getFunctions(): array

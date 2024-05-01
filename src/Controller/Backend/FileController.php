@@ -24,15 +24,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 #[Admin]
 class FileController extends AbstractController
 {
-    private FileBrowser $fileBrowser;
-    private UrlGeneratorInterface $urlGenerator;
-
     public function __construct(
-        FileBrowser $fileBrowser,
-        UrlGeneratorInterface $urlGenerator
+        private FileBrowser $fileBrowser,
+        private UrlGeneratorInterface $urlGenerator
     ) {
-        $this->fileBrowser = $fileBrowser;
-        $this->urlGenerator = $urlGenerator;
     }
 
     #[Route('/files', name: 'file_index', methods: ['GET'])]

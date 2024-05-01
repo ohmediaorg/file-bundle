@@ -18,13 +18,10 @@ class FileFolderVoter extends AbstractEntityVoter
     public const MOVE = 'move';
     public const DELETE = 'delete';
 
-    private AuthorizationCheckerInterface $authorizationChecker;
-    private FileBrowser $fileBrowser;
-
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker, FileBrowser $fileBrowser)
-    {
-        $this->authorizationChecker = $authorizationChecker;
-        $this->fileBrowser = $fileBrowser;
+    public function __construct(
+        private AuthorizationCheckerInterface $authorizationChecker,
+        private FileBrowser $fileBrowser
+    ) {
     }
 
     protected function getAttributes(): array
