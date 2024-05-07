@@ -4,23 +4,25 @@ This bundle offers functionality for managing files.
 
 ## Installation
 
-First, make sure the OHMediaCleanupBundle and OHMediaSecurityBundle are installed.
+Update `composer.json` by adding this to the `repositories` array:
 
-Enable the bundle in `config/bundles.php`:
-
-```php
-return [
-    // ...
-    OHMedia\FileBundle\FileBundle() => ['all' => true],
-];
+```json
+{
+    "type": "vcs",
+    "url": "https://github.com/ohmediaorg/file-bundle"
+}
 ```
 
-Make and run the migration:
+Then run `composer require ohmediaorg/file-bundle:dev-main`.
 
-```bash
-$ php bin/console make:migration
-$ php bin/console doctrine:migrations:migrate
+Import the routes in `config/routes.yaml`:
+
+```yaml
+oh_media_file:
+    resource: '@OHMediaFileBundle/config/routes.yaml'
 ```
+
+Run `php bin/console make:migration` then run the subsequent migration.
 
 Create the non-public upload directory in the root of your project:
 
@@ -45,24 +47,16 @@ $ touch oh_media_files/.gitkeep
 $ git add -f oh_media_files/.gitkeep
 ```
 
-Import the routes in `config/routes.yaml`:
-
-```yaml
-oh_media_file:
-    resource: '@OHMediaFileBundle/Controller/'
-    type: attribute
-```
-
-Make sure this Twig tag is on every page:
-
-```twig
-{{ file_script() }}
-```
-
 On your remote server, you may need to adjust the permissions of this folder:
 
 ```bash
 $ sudo chown -R www-data:www-data oh_media_files
+```
+
+Make sure this Twig tag is on every backend page:
+
+```twig
+{{ file_script() }}
 ```
 
 ## Configuration
@@ -80,7 +74,8 @@ oh_media_file:
 
 There is a `OHMedia\FileBundle\Entity\File` entity with a corresponding form type.
 
-Use the maker command to add these to your entity, then utilize the form types in your entity's form.
+Use the maker command to add these to your entity, then utilize the form types
+in your entity's form.
 
 ## Templating
 
