@@ -29,20 +29,20 @@ class WysiwygExtension extends AbstractWysiwygExtension
 
     public function fileHref(int $id)
     {
-        $file = $this->fileRepository->findOneBy([
+        $file = $id ? $this->fileRepository->findOneBy([
             'id' => $id,
             'browser' => true,
-        ]);
+        ]) : null;
 
         return $file ? $this->fileManager->getWebPath($file) : '';
     }
 
     public function image(int $id, int $width = null)
     {
-        $image = $this->fileRepository->findOneBy([
+        $image = $id ? $this->fileRepository->findOneBy([
             'id' => $id,
             'image' => true,
-        ]);
+        ]) : null;
 
         if (!$image || !$image->isBrowser()) {
             return '';
