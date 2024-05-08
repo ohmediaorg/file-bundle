@@ -77,6 +77,11 @@ class File
         $this->resizes = new ArrayCollection();
     }
 
+    public function __toString(): string
+    {
+        return $this->getFilename();
+    }
+
     public function __clone()
     {
         $this->id = null;
