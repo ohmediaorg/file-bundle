@@ -26,6 +26,8 @@ services:
             - "%oh_media_file.file_browser.enabled%"
             - "%oh_media_file.file_browser.limit_mb%"
 
+    oh_media_file.file_browser: '@OHMedia\FileBundle\Service\FileBrowser'
+
     OHMedia\FileBundle\Service\FileResponse:
         autowire: true
 
