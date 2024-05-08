@@ -6,6 +6,7 @@ use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Service\FileManager;
 use OHMedia\FileBundle\Service\ImageManager;
 use OHMedia\WysiwygBundle\Twig\AbstractWysiwygExtension;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Twig\TwigFunction;
 
 class WysiwygExtension extends AbstractWysiwygExtension
@@ -13,7 +14,9 @@ class WysiwygExtension extends AbstractWysiwygExtension
     public function __construct(
         private FileManager $fileManager,
         private FileRepository $fileRepository,
-        private ImageManager $imageManager
+        private ImageManager $imageManager,
+        #[Autowire('%oh_media_file.file_browser.default_image_width%')]
+        private int $defaultImageWidth
     ) {
     }
 
@@ -48,11 +51,13 @@ class WysiwygExtension extends AbstractWysiwygExtension
             return '';
         }
 
-        $attributes = [];
-
-        if (null !== $width) {
-            $attributes['width'] = $width;
+        if (null === $width) {
+            $width = $this->defaultImageWidth;
         }
+
+        $attributes = [
+            'width' => $width,
+        ];
 
         return $this->imageManager->render($image, $attributes);
     }
