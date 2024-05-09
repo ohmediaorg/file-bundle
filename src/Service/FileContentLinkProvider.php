@@ -51,9 +51,10 @@ class FileContentLinkProvider extends AbstractContentLinkProvider
             } else {
                 $id = $item->getId();
 
-                $title = sprintf('%s (ID:%s)', $item, $id);
-
-                $contentLink = new ContentLink($title);
+                $contentLink = new ContentLink(
+                    sprintf('%s (ID:%s)', $item, $id),
+                    (string) $item
+                );
                 $contentLink->setShortcode('file_href('.$id.')');
 
                 $contentLinks[] = $contentLink;
