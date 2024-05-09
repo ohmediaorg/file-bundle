@@ -37,21 +37,23 @@ class FileContentLinkProvider extends AbstractContentLinkProvider
         $contentLinks = [];
 
         foreach ($items as $item) {
-            $id = $item->getId();
-
-            $title = (string) $item;
-
-            $contentLink = new ContentLink($title);
-
             if ($item instanceof FileFolder) {
                 $children = $this->createContentLinks($item);
 
+                if (!$children) {
+                    continue;
+                }
+
+                $contentLink = new ContentLink((string) $item);
                 $contentLink->setChildren(...$children);
 
-                if ($children) {
-                    $contentLinks[] = $contentLink;
-                }
+                $contentLinks[] = $contentLink;
             } else {
+                $id = $item->getId();
+
+                $title = sprintf('%s (ID:%s)', $item, $id);
+
+                $contentLink = new ContentLink($title);
                 $contentLink->setShortcode('file_href('.$id.')');
 
                 $contentLinks[] = $contentLink;
