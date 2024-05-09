@@ -145,3 +145,7 @@ services:
 
     OHMedia\FileBundle\Service\FileEntityChoice:
         tags: ["oh_media_security.entity_choice"]
+
+    OHMedia\FileBundle\Service\FileContentLinkProvider:
+        autowire: true
+        tags: ["oh_media_backend.content_link_provider"]
