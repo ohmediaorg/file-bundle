@@ -21,11 +21,15 @@
 
 {% macro file_row(file, attributes) %}
   <tr>
-    <td>
-      {% if file.locked %}
+    <td style="font-size:1.5rem;text-align:center">
+      {% if file.image %}
+        {{ image_tag(file, {
+          width: 55,
+          height: 55,
+          'class': 'd-block',
+        }) }}
+      {% elseif file.locked %}
         <i class="bi bi-file-earmark-lock2-fill text-secondary"></i>
-      {% elseif file.image %}
-        <i class="bi bi-file-earmark-image"></i>
       {% else %}
         <i class="bi bi-file-earmark-fill"></i>
       {% endif %}
@@ -106,7 +110,7 @@
 
 {% macro file_folder_row(folder, attributes) %}
   <tr>
-    <td>
+    <td style="font-size:1.5rem;text-align:center">
       {% if folder.locked %}
       <i class="bi bi-folder-x text-secondary"></i>
       {% else %}
@@ -183,7 +187,7 @@
 <table class="table table-sm table-striped">
   <thead>
     <tr>
-      <th style="width:1rem">&nbsp;</th>
+      <th style="width:55px">&nbsp;</th>
       <th>Name</th>
       <th>Size</th>
       <th>Shortcode</th>
