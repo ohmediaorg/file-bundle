@@ -34,7 +34,6 @@ class FileBrowser
     {
         return (int) $this->fileRepository->createQueryBuilder('f')
             ->select('SUM(f.size)')
-            ->where('f.browser = 1')
             ->getQuery()
             ->getSingleScalarResult();
     }
