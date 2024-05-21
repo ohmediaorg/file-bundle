@@ -132,6 +132,8 @@
 
     {% include '@OHMediaFile/file/_file_listing.html.twig' with {
       items: items,
+      back: true,
+      parent: folder.folder,
     } only %}
   </div>
 </div>

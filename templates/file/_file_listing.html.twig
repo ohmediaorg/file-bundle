@@ -196,6 +196,20 @@
     </tr>
   </thead>
   <tbody>
+  {% if back %}
+  {% set back_path = parent
+    ? path('file_folder_view', {id: parent.id})
+    : path('file_index')
+  %}
+  <tr>
+    <td style="font-size:1.5rem;text-align:center">
+      <i class="bi bi-arrow-up-left-square"></i>
+    </td>
+    <td colspan="5">
+      <a href="{{ back_path }}">Back</a>
+    </td>
+  </tr>
+  {% endif %}
   {% set total_size = 0 %}
   {% for item in items %}
     {% set total_size = total_size + item.size %}
