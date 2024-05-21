@@ -76,7 +76,7 @@ class FileBrowser
 
         // TODO: potential user preferences?
         $filesFirst = false;
-        $foldersFirst = true;
+        $foldersFirst = false;
 
         if ($filesFirst) {
             $items = array_merge($files, $folders);
