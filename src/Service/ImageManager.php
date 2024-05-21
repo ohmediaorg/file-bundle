@@ -20,7 +20,7 @@ class ImageManager
         $resize = $this->getResize($file, $width, $height);
 
         if ($resize) {
-            return $this->fileManager->getWebPath($resize->getFile());
+            return $this->fileManager->getWebPath($resize);
         }
 
         return $this->fileManager->getWebPath($file);
