@@ -38,6 +38,9 @@
       <a href="{{ file_path(file) }}" target="_blank">
         {{ file.filename }}
       </a>
+      {% if file.image and file.locked %}
+      <i class="bi bi-lock-fill text-secondary"></i>
+      {% endif %}
       {% if file.image and file.alt %}
       <small class="text-muted d-block">{{ file.alt }}</small>
       {% endif %}
