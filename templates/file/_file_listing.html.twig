@@ -29,9 +29,9 @@
           'class': 'd-block',
         }) }}
       {% elseif file.locked %}
-        <i class="bi bi-file-earmark-lock2-fill text-secondary"></i>
+        {{ bootstrap_icon('file-earmark-lock2-fill text-secondary') }}
       {% else %}
-        <i class="bi bi-file-earmark-fill"></i>
+        {{ bootstrap_icon('file-earmark-fill') }}
       {% endif %}
     </td>
     <td>
@@ -39,7 +39,7 @@
         {{ file.filename }}
       </a>
       {% if file.image and file.locked %}
-      <i class="bi bi-lock-fill text-secondary"></i>
+      {{ bootstrap_icon('lock-fill text-secondary') }}
       {% endif %}
       {% if file.image and file.alt %}
       <small class="text-muted d-block">{{ file.alt }}</small>
@@ -55,13 +55,13 @@
     <td>
       {% if is_granted(attributes.file.edit, file) %}
       <a href="{{ path('file_edit', {id: file.id}) }}" class="btn btn-sm btn-primary btn-action" title="Edit">
-        <i class="bi bi-pen-fill"></i>
+        {{ bootstrap_icon('pen-fill') }}
         <span class="visually-hidden">Edit</span>
       </a>
       {% endif %}
       {% if is_granted(attributes.file.move, file) %}
       <a href="{{ path('file_move', {id: file.id}) }}" class="btn btn-sm btn-primary btn-action" title="Move">
-        <i class="bi bi-folder-fill"></i>
+        {{ bootstrap_icon('folder-fill') }}
         <span class="visually-hidden">Move</span>
       </a>
       {% endif %}
@@ -74,7 +74,7 @@
         {% block button_class %}btn btn-sm btn-secondary{% endblock %}
         {% block button_title %}Lock{% endblock %}
         {% block button_html %}
-          <i class="bi bi-lock-fill"></i>
+          {{ bootstrap_icon('lock-fill') }}
           <span class="visually-hidden">Lock</span>
         {% endblock %}
       {% endembed %}
@@ -88,7 +88,7 @@
         {% block button_class %}btn btn-sm btn-success{% endblock %}
         {% block button_title %}Unlock{% endblock %}
         {% block button_html %}
-          <i class="bi bi-unlock-fill"></i>
+          {{ bootstrap_icon('unlock-fill') }}
           <span class="visually-hidden">Unlock</span>
         {% endblock %}
       {% endembed %}
@@ -102,7 +102,7 @@
           {% block button_class %}btn btn-sm btn-danger{% endblock %}
           {% block button_title %}Delete{% endblock %}
           {% block button_html %}
-            <i class="bi bi-trash-fill"></i>
+            {{ bootstrap_icon('trash-fill') }}
             <span class="visually-hidden">Delete</span>
           {% endblock %}
         {% endembed %}
@@ -115,9 +115,9 @@
   <tr>
     <td style="font-size:1.5rem;text-align:center">
       {% if folder.locked %}
-      <i class="bi bi-folder-x text-secondary"></i>
+      {{ bootstrap_icon('folder-x text-secondary') }}
       {% else %}
-      <i class="bi bi-folder-check"></i>
+      {{ bootstrap_icon('folder-check') }}
       {% endif %}
     </td>
     <td>
@@ -131,13 +131,13 @@
     <td>
       {% if is_granted(attributes.folder.edit, folder) %}
       <a href="{{ path('file_folder_edit', {id: folder.id}) }}" class="btn btn-sm btn-primary btn-action" title="Edit">
-        <i class="bi bi-pen-fill"></i>
+        {{ bootstrap_icon('pen-fill') }}
         <span class="visually-hidden">Edit</span>
       </a>
       {% endif %}
       {% if is_granted(attributes.folder.move, folder) %}
       <a href="{{ path('file_folder_move', {id: folder.id}) }}" class="btn btn-sm btn-primary btn-action" title="Move">
-        <i class="bi bi-folder-fill"></i>
+        {{ bootstrap_icon('folder-fill') }}
         <span class="visually-hidden">Move</span>
       </a>
       {% endif %}
@@ -150,7 +150,7 @@
         {% block button_class %}btn btn-sm btn-secondary{% endblock %}
         {% block button_title %}Lock{% endblock %}
         {% block button_html %}
-          <i class="bi bi-lock-fill"></i>
+          {{ bootstrap_icon('lock-fill') }}
           <span class="visually-hidden">Lock</span>
         {% endblock %}
       {% endembed %}
@@ -164,7 +164,7 @@
         {% block button_class %}btn btn-sm btn-success{% endblock %}
         {% block button_title %}Unlock{% endblock %}
         {% block button_html %}
-          <i class="bi bi-unlock-fill"></i>
+          {{ bootstrap_icon('unlock-fill') }}
           <span class="visually-hidden">Unlock</span>
         {% endblock %}
       {% endembed %}
@@ -178,7 +178,7 @@
           {% block button_class %}btn btn-sm btn-danger{% endblock %}
           {% block button_title %}Delete{% endblock %}
           {% block button_html %}
-            <i class="bi bi-trash-fill"></i>
+            {{ bootstrap_icon('trash-fill') }}
             <span class="visually-hidden">Delete</span>
           {% endblock %}
         {% endembed %}
@@ -206,7 +206,7 @@
   %}
   <tr>
     <td style="font-size:1.5rem;text-align:center">
-      <i class="bi bi-arrow-up-left-square"></i>
+      {{ bootstrap_icon('arrow-up-left-square') }}
     </td>
     <td colspan="5">
       <a href="{{ back_path }}">Back</a>

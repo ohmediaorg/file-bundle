@@ -29,14 +29,14 @@
 <div class="btn-group btn-group-sm" role="group">
   <div class="btn-group btn-group-sm" role="group">
     <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-      <i class="bi bi-plus"></i>
+      {{ bootstrap_icon('plus') }}
       New
     </button>
     <ul class="dropdown-menu">
       {% if is_granted(attributes.folder.create, new_folder) %}
         <li>
           <a href="{{ path('file_folder_create_with_folder', {id: folder.id}) }}" class="dropdown-item">
-            <i class="bi bi-folder-fill"></i>
+            {{ bootstrap_icon('folder-fill') }}
             Folder
           </a>
         </li>
@@ -44,13 +44,13 @@
       {% if is_granted(attributes.file.create, new_file) %}
       <li>
         <a href="{{ path('file_create_with_folder', {id: folder.id}) }}" class="dropdown-item">
-          <i class="bi bi-file-earmark-fill"></i>
+          {{ bootstrap_icon('file-earmark-fill') }}
           File
         </a>
       </li>
         <li>
           <a href="{{ path('image_create_with_folder', {id: folder.id}) }}" class="dropdown-item">
-            <i class="bi bi-file-earmark-image"></i>
+            {{ bootstrap_icon('file-earmark-image') }}
             Image
           </a>
         </li>
@@ -65,7 +65,7 @@
       {% if is_granted(attributes.folder.edit, folder) %}
         <li>
           <a href="{{ path('file_folder_edit', {id: folder.id}) }}" class="dropdown-item">
-            <i class="bi bi-pen-fill"></i> Edit
+            {{ bootstrap_icon('pen-fill') }} Edit
           </a>
         </li>
       {% endif %}
@@ -77,7 +77,7 @@
           {% block csrf_name %}lock_file_folder_{{ folder.id }}{% endblock %}
           {% block button_class %}dropdown-item text-bg-secondary{% endblock %}
           {% block button_html %}
-            <i class="bi bi-lock-fill"></i>
+            {{ bootstrap_icon('lock-fill') }}
             Lock
           {% endblock %}
         {% endembed %}
@@ -91,7 +91,7 @@
           {% block csrf_name %}unlock_file_folder_{{ folder.id }}{% endblock %}
           {% block button_class %}dropdown-item text-bg-success{% endblock %}
           {% block button_html %}
-            <i class="bi bi-unlock-fill"></i>
+            {{ bootstrap_icon('unlock-fill') }}
             Unlock
           {% endblock %}
         {% endembed %}
@@ -105,7 +105,7 @@
             {% block csrf_name %}delete_file_folder_{{ folder.id }}{% endblock %}
             {% block button_class %}dropdown-item text-bg-danger{% endblock %}
             {% block button_html %}
-              <i class="bi bi-trash-fill"></i>
+              {{ bootstrap_icon('trash-fill') }}
               Delete
             {% endblock %}
           {% endembed %}
@@ -123,9 +123,9 @@
   <div class="card-body">
     <h1 class="card-title h3">
       {% if folder.locked %}
-      <i class="bi bi-folder-x text-secondary"></i>
+      {{ bootstrap_icon('folder-x text-secondary') }}
       {% else %}
-      <i class="bi bi-folder-check"></i>
+      {{ bootstrap_icon('folder-check') }}
       {% endif %}
       / {{ folder.name }}
     </h1>

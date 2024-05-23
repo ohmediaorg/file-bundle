@@ -24,14 +24,14 @@
 
 <div class="btn-group btn-group-sm" role="group">
   <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-    <i class="bi bi-plus"></i>
+    {{ bootstrap_icon('plus') }}
     New
   </button>
   <ul class="dropdown-menu">
     {% if is_granted(attributes.folder.create, new_folder) %}
       <li>
         <a href="{{ path('file_folder_create_no_folder') }}" class="dropdown-item">
-          <i class="bi bi-folder-fill"></i>
+          {{ bootstrap_icon('folder-fill') }}
           Folder
         </a>
       </li>
@@ -39,13 +39,13 @@
     {% if is_granted(attributes.file.create, new_file) %}
     <li>
       <a href="{{ path('file_create_no_folder') }}" class="dropdown-item">
-        <i class="bi bi-file-earmark-fill"></i>
+        {{ bootstrap_icon('file-earmark-fill') }}
         File
       </a>
     </li>
       <li>
         <a href="{{ path('image_create_no_folder') }}" class="dropdown-item">
-          <i class="bi bi-file-earmark-image"></i>
+          {{ bootstrap_icon('file-earmark-image') }}
           Image
         </a>
       </li>
@@ -59,7 +59,7 @@
 
 <div class="card">
   <div class="card-body">
-    <h1 class="card-title h3"><i class="bi bi-folder-check"></i> /</h1>
+    <h1 class="card-title h3">{{ bootstrap_icon('folder-check') }} /</h1>
 
     {% include '@OHMediaFile/file/_file_listing.html.twig' with {
       items: items,
