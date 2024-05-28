@@ -22,36 +22,34 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 #[Admin]
 class FileFolderController extends AbstractController
 {
-    public function __construct(private UrlGeneratorInterface $urlGenerator)
-    {
+    public function __construct(
+        private FileFolderRepository $fileFolderRepository,
+        private UrlGeneratorInterface $urlGenerator
+    ) {
     }
 
     #[Route('/folder/create', name: 'file_folder_create_no_folder', methods: ['GET', 'POST'])]
-    public function createNoFolder(
-        Request $request,
-        FileFolderRepository $fileFolderRepository
-    ): Response {
+    public function createNoFolder(Request $request): Response
+    {
         $folder = (new FileFolder())->setBrowser(true);
 
-        return $this->create($request, $fileFolderRepository, $folder);
+        return $this->create($request, $folder);
     }
 
     #[Route('/folder/{id}/folder/create', name: 'file_folder_create_with_folder', methods: ['GET', 'POST'])]
     public function createWithFolder(
         Request $request,
-        FileFolderRepository $fileFolderRepository,
         FileFolder $parent
     ): Response {
         $folder = (new FileFolder())->setBrowser(true);
 
         $parent->addFolder($folder);
 
-        return $this->create($request, $fileFolderRepository, $folder);
+        return $this->create($request, $folder);
     }
 
     private function create(
         Request $request,
-        FileFolderRepository $fileFolderRepository,
         FileFolder $folder
     ): Response {
         $this->denyAccessUnlessGranted(
@@ -67,7 +65,7 @@ class FileFolderController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $fileFolderRepository->save($folder, true);
+            $this->fileFolderRepository->save($folder, true);
 
             $this->addFlash('notice', 'The folder was created successfully.');
 
@@ -118,7 +116,6 @@ class FileFolderController extends AbstractController
     public function edit(
         Request $request,
         FileFolder $folder,
-        FileFolderRepository $folderRepository
     ): Response {
         $this->denyAccessUnlessGranted(
             FileFolderVoter::EDIT,
@@ -133,7 +130,7 @@ class FileFolderController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $folderRepository->save($folder, true);
+            $this->fileFolderRepository->save($folder, true);
 
             $this->addFlash('notice', 'Changes to the folder were saved successfully.');
 
@@ -156,7 +153,6 @@ class FileFolderController extends AbstractController
     public function move(
         Request $request,
         FileFolder $folder,
-        FileFolderRepository $fileFolderRepository
     ): Response {
         $this->denyAccessUnlessGranted(
             FileFolderVoter::MOVE,
@@ -171,7 +167,7 @@ class FileFolderController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $fileFolderRepository->save($folder, true);
+            $this->fileFolderRepository->save($folder, true);
 
             $this->addFlash('notice', 'The folder was moved successfully.');
 
@@ -194,7 +190,6 @@ class FileFolderController extends AbstractController
     public function lock(
         Request $request,
         FileFolder $folder,
-        FileFolderRepository $fileFolderRepository
     ): Response {
         $this->denyAccessUnlessGranted(
             FileFolderVoter::LOCK,
@@ -208,7 +203,7 @@ class FileFolderController extends AbstractController
         if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
             $folder->setLocked(true);
 
-            $fileFolderRepository->save($folder, true);
+            $this->fileFolderRepository->save($folder, true);
 
             $this->addFlash('notice', 'The folder was locked successfully.');
         }
@@ -220,7 +215,6 @@ class FileFolderController extends AbstractController
     public function unlock(
         Request $request,
         FileFolder $folder,
-        FileFolderRepository $fileFolderRepository
     ): Response {
         $this->denyAccessUnlessGranted(
             FileFolderVoter::UNLOCK,
@@ -234,7 +228,7 @@ class FileFolderController extends AbstractController
         if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
             $folder->setLocked(false);
 
-            $fileFolderRepository->save($folder, true);
+            $this->fileFolderRepository->save($folder, true);
 
             $this->addFlash('notice', 'The folder was unlocked successfully.');
         }
@@ -253,7 +247,6 @@ class FileFolderController extends AbstractController
     public function delete(
         Request $request,
         FileFolder $folder,
-        FileFolderRepository $fileFolderRepository
     ): Response {
         $this->denyAccessUnlessGranted(
             FileFolderVoter::DELETE,
@@ -265,7 +258,7 @@ class FileFolderController extends AbstractController
         $csrfTokenValue = $request->request->get($csrfTokenName);
 
         if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
-            $fileFolderRepository->remove($folder, true);
+            $this->fileFolderRepository->remove($folder, true);
 
             $this->addFlash('notice', 'The folder was deleted successfully.');
         }

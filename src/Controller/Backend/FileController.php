@@ -9,7 +9,6 @@ use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Form\Type\FileCreateType;
 use OHMedia\FileBundle\Form\Type\FileEditType;
 use OHMedia\FileBundle\Form\Type\FileMoveType;
-use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Security\Voter\FileVoter;
 use OHMedia\FileBundle\Service\FileBrowser;
@@ -26,16 +25,14 @@ class FileController extends AbstractController
 {
     public function __construct(
         private FileBrowser $fileBrowser,
+        private FileRepository $fileRepository,
         private UrlGeneratorInterface $urlGenerator
     ) {
     }
 
     #[Route('/files', name: 'file_index', methods: ['GET'])]
-    public function index(
-        FileBrowser $fileBrowser,
-        FileRepository $fileRepository,
-        FileFolderRepository $fileFolderRepository
-    ): Response {
+    public function index(FileBrowser $fileBrowser): Response
+    {
         $newFile = (new File())->setBrowser(true);
         $newFolder = (new FileFolder())->setBrowser(true);
 
@@ -55,54 +52,47 @@ class FileController extends AbstractController
     }
 
     #[Route('/file/create', name: 'file_create_no_folder', methods: ['GET', 'POST'])]
-    public function fileCreateNoFolder(
-        Request $request,
-        FileRepository $fileRepository
-    ): Response {
+    public function fileCreateNoFolder(Request $request): Response
+    {
         $file = (new File())->setBrowser(true);
 
-        return $this->create($request, $fileRepository, $file);
+        return $this->create($request, $file);
     }
 
     #[Route('/folder/{id}/file/create', name: 'file_create_with_folder', methods: ['GET', 'POST'])]
     public function fileCreateWithFolder(
         Request $request,
-        FileRepository $fileRepository,
         FileFolder $folder
     ): Response {
         $file = (new File())->setBrowser(true);
 
         $folder->addFile($file);
 
-        return $this->create($request, $fileRepository, $file);
+        return $this->create($request, $file);
     }
 
     #[Route('/image/create', name: 'image_create_no_folder', methods: ['GET', 'POST'])]
-    public function imageCreateNoFolder(
-        Request $request,
-        FileRepository $fileRepository
-    ): Response {
+    public function imageCreateNoFolder(Request $request): Response
+    {
         $file = (new File())->setBrowser(true)->setImage(true);
 
-        return $this->create($request, $fileRepository, $file);
+        return $this->create($request, $file);
     }
 
     #[Route('/folder/{id}/image/create', name: 'image_create_with_folder', methods: ['GET', 'POST'])]
     public function imageCreateWithFolder(
         Request $request,
-        FileRepository $fileRepository,
         FileFolder $folder
     ): Response {
         $file = (new File())->setBrowser(true)->setImage(true);
 
         $folder->addFile($file);
 
-        return $this->create($request, $fileRepository, $file);
+        return $this->create($request, $file);
     }
 
     private function create(
         Request $request,
-        FileRepository $fileRepository,
         File $file
     ): Response {
         $noun = $file->isImage() ? 'image' : 'file';
@@ -136,7 +126,7 @@ class FileController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $fileRepository->save($file, true);
+            $this->fileRepository->save($file, true);
 
             $this->addFlash('notice', "The $noun was created successfully.");
 
@@ -158,7 +148,6 @@ class FileController extends AbstractController
     #[Route('/file/{id}/edit', name: 'file_edit', methods: ['GET', 'POST'])]
     public function edit(
         Request $request,
-        FileRepository $fileRepository,
         File $file
     ): Response {
         $this->denyAccessUnlessGranted(
@@ -174,7 +163,7 @@ class FileController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $fileRepository->save($file, true);
+            $this->fileRepository->save($file, true);
 
             $this->addFlash('notice', 'The image was edited successfully.');
 
@@ -197,7 +186,6 @@ class FileController extends AbstractController
     public function move(
         Request $request,
         File $file,
-        FileRepository $fileRepository
     ): Response {
         $noun = $file->isImage() ? 'image' : 'file';
 
@@ -214,7 +202,7 @@ class FileController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $fileRepository->save($file, true);
+            $this->fileRepository->save($file, true);
 
             $this->addFlash('notice', "The $noun was moved successfully.");
 
@@ -237,7 +225,6 @@ class FileController extends AbstractController
     public function lock(
         Request $request,
         File $file,
-        FileRepository $fileRepository
     ): Response {
         $noun = $file->isImage() ? 'image' : 'file';
 
@@ -253,7 +240,7 @@ class FileController extends AbstractController
         if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
             $file->setLocked(true);
 
-            $fileRepository->save($file, true);
+            $this->fileRepository->save($file, true);
 
             $this->addFlash('notice', "The $noun was locked successfully.");
         }
@@ -265,7 +252,6 @@ class FileController extends AbstractController
     public function unlock(
         Request $request,
         File $file,
-        FileRepository $fileRepository
     ): Response {
         $noun = $file->isImage() ? 'image' : 'file';
 
@@ -281,7 +267,7 @@ class FileController extends AbstractController
         if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
             $file->setLocked(false);
 
-            $fileRepository->save($file, true);
+            $this->fileRepository->save($file, true);
 
             $this->addFlash('notice', "The $noun was unlocked successfully.");
         }
@@ -304,7 +290,6 @@ class FileController extends AbstractController
     public function delete(
         Request $request,
         File $file,
-        FileRepository $fileRepository
     ): Response {
         $noun = $file->isImage() ? 'image' : 'file';
 
@@ -318,7 +303,7 @@ class FileController extends AbstractController
         $csrfTokenValue = $request->request->get($csrfTokenName);
 
         if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
-            $fileRepository->remove($file, true);
+            $this->fileRepository->remove($file, true);
 
             $this->addFlash('notice', "The $noun was deleted successfully.");
         }
