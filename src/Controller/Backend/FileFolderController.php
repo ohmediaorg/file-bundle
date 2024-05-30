@@ -64,12 +64,16 @@ class FileFolderController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->fileFolderRepository->save($folder, true);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->fileFolderRepository->save($folder, true);
 
-            $this->addFlash('notice', 'The folder was created successfully.');
+                $this->addFlash('notice', 'The folder was created successfully.');
 
-            return $this->formRedirect($folder);
+                return $this->formRedirect($folder);
+            }
+
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         $breadcrumbs = $this->getBreadcrumbs($folder);
@@ -129,12 +133,16 @@ class FileFolderController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->fileFolderRepository->save($folder, true);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->fileFolderRepository->save($folder, true);
 
-            $this->addFlash('notice', 'Changes to the folder were saved successfully.');
+                $this->addFlash('notice', 'Changes to the folder were saved successfully.');
 
-            return $this->formRedirect($folder);
+                return $this->formRedirect($folder);
+            }
+
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         $breadcrumbs = $this->getBreadcrumbs($folder);
@@ -166,12 +174,16 @@ class FileFolderController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->fileFolderRepository->save($folder, true);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->fileFolderRepository->save($folder, true);
 
-            $this->addFlash('notice', 'The folder was moved successfully.');
+                $this->addFlash('notice', 'The folder was moved successfully.');
 
-            return $this->formRedirect($folder);
+                return $this->formRedirect($folder);
+            }
+
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         $breadcrumbs = $this->getBreadcrumbs($folder);

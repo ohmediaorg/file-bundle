@@ -125,12 +125,16 @@ class FileController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->fileRepository->save($file, true);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->fileRepository->save($file, true);
 
-            $this->addFlash('notice', "The $noun was created successfully.");
+                $this->addFlash('notice', "The $noun was created successfully.");
 
-            return $this->formRedirect($file);
+                return $this->formRedirect($file);
+            }
+
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         $breadcrumbs = $this->getBreadcrumbs($file);
@@ -162,12 +166,16 @@ class FileController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->fileRepository->save($file, true);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->fileRepository->save($file, true);
 
-            $this->addFlash('notice', 'The image was edited successfully.');
+                $this->addFlash('notice', 'The image was edited successfully.');
 
-            return $this->formRedirect($file);
+                return $this->formRedirect($file);
+            }
+
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         $breadcrumbs = $this->getBreadcrumbs($file);
@@ -201,12 +209,16 @@ class FileController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->fileRepository->save($file, true);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->fileRepository->save($file, true);
 
-            $this->addFlash('notice', "The $noun was moved successfully.");
+                $this->addFlash('notice', "The $noun was moved successfully.");
 
-            return $this->formRedirect($file);
+                return $this->formRedirect($file);
+            }
+
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         $breadcrumbs = $this->getBreadcrumbs($file);
