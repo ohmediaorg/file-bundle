@@ -140,6 +140,8 @@ class FileEntityType extends AbstractType
         $view->vars['DATA_ATTRIBUTE'] = self::DATA_ATTRIBUTE;
     }
 
+    private ?File $fileToRemove = null;
+
     public function onSubmit(FormEvent $event)
     {
         $file = $event->getData();
@@ -147,7 +149,9 @@ class FileEntityType extends AbstractType
 
         $removeFile = $this->shouldRemoveFile($form, $file);
 
-        if ($this->isMapped && $removeFile) {
+        if ($removeFile) {
+            $this->fileToRemove = $file->getId() ? $file : null;
+
             $parentData = $form->getParent()->getData();
 
             $name = $form->getName();
@@ -156,10 +160,11 @@ class FileEntityType extends AbstractType
 
             if (is_object($parentData) && method_exists($parentData, $method)) {
                 call_user_func_array([$parentData, $method], [null]);
+            } elseif (is_array($parentData) && isset($parentData[$name])) {
+                unset($parentData[$name]);
             }
-        }
 
-        if ($removeFile) {
+            $event->setData(null);
             $form->getParent()->remove($form->getName());
         }
     }
@@ -169,10 +174,8 @@ class FileEntityType extends AbstractType
         $file = $event->getData();
         $form = $event->getForm();
 
-        $removeFile = $this->shouldRemoveFile($form, $file);
-
-        if ($removeFile) {
-            $this->fileRepository->remove($file, true);
+        if ($this->fileToRemove) {
+            $this->fileRepository->remove($this->fileToRemove, true);
 
             return;
         }
