@@ -79,7 +79,7 @@ class File
 
     public function __toString(): string
     {
-        return $this->getFilename();
+        return (string) $this->getFilename();
     }
 
     public function __clone()
