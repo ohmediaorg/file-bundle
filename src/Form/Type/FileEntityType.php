@@ -165,13 +165,12 @@ class FileEntityType extends AbstractType
             }
 
             $event->setData(null);
-            $form->getParent()->remove($form->getName());
+            $form->setData(null);
         }
     }
 
     public function onPostSubmit(FormEvent $event)
     {
-        $file = $event->getData();
         $form = $event->getForm();
 
         if ($this->fileToRemove) {
@@ -185,6 +184,8 @@ class FileEntityType extends AbstractType
         }
 
         if (self::ACTION_REPLACE === $form->get('action')->getData()) {
+            $file = $event->getData();
+
             $resizes = $file->getResizes();
 
             foreach ($resizes as $resize) {
