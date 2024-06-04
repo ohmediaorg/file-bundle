@@ -41,8 +41,6 @@ class FileEntityType extends AbstractType
     {
         $file = isset($options['data']) ? $options['data'] : null;
 
-        $fileExists = $file && $file->getPath();
-
         if (null === $options['image']) {
             $options['image'] = $file ? $file->isImage() : false;
         }
@@ -68,7 +66,7 @@ class FileEntityType extends AbstractType
         $builder
             ->add('file', FileType::class, [
                 'label' => $options['file_label'],
-                'required' => $fileExists ? false : $options['required'],
+                'required' => $file ? false : $options['required'],
                 'constraints' => $options['file_constraints'],
                 'attr' => [
                     'accept' => implode(',', $accept),
@@ -76,7 +74,7 @@ class FileEntityType extends AbstractType
             ])
         ;
 
-        if ($fileExists) {
+        if ($file) {
             $keepLabel = sprintf(
                 'Keep the current file <a target="_blank" href="%s">%s</a>',
                 $this->fileManager->getWebPath($file),
@@ -137,7 +135,7 @@ class FileEntityType extends AbstractType
     {
         $file = isset($options['data']) ? $options['data'] : null;
 
-        $view->vars['current_file'] = $file && $file->getPath() ? $file : null;
+        $view->vars['current_file'] = $file;
 
         $view->vars['DATA_ATTRIBUTE'] = self::DATA_ATTRIBUTE;
     }
