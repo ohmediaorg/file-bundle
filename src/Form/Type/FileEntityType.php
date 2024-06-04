@@ -19,6 +19,8 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File as FileConstraint;
 
+use function Symfony\Component\String\u;
+
 class FileEntityType extends AbstractType
 {
     public const ACTION_KEEP = 'keep';
@@ -26,6 +28,8 @@ class FileEntityType extends AbstractType
     public const ACTION_DELETE = 'delete';
 
     public const DATA_ATTRIBUTE = 'data-ohmedia-file-widget';
+
+    private bool $isMapped = false;
 
     public function __construct(
         private FileManager $fileManager,
@@ -116,6 +120,13 @@ class FileEntityType extends AbstractType
             'empty_data' => false,
         ]);
 
+        $this->isMapped = $builder->getMapped();
+
+        $builder->addEventListener(
+            FormEvents::SUBMIT,
+            [$this, 'onSubmit']
+        );
+
         $builder->addEventListener(
             FormEvents::POST_SUBMIT,
             [$this, 'onPostSubmit']
@@ -131,26 +142,52 @@ class FileEntityType extends AbstractType
         $view->vars['DATA_ATTRIBUTE'] = self::DATA_ATTRIBUTE;
     }
 
+    public function onSubmit(FormEvent $event)
+    {
+        $file = $event->getData();
+        $form = $event->getForm();
+
+        $removeFile = $this->shouldRemoveFile($form, $file);
+
+        if ($this->isMapped && $removeFile) {
+            $parentData = $form->getParent()->getData();
+
+            $name = $form->getName();
+
+            $method = 'set'.u($name)->camel()->title();
+
+            if (is_object($parentData) && method_exists($parentData, $method)) {
+                call_user_func_array([$parentData, $method], [null]);
+            }
+        }
+
+        if ($removeFile) {
+            $form->getParent()->remove($form->getName());
+        }
+    }
+
     public function onPostSubmit(FormEvent $event)
     {
         $file = $event->getData();
         $form = $event->getForm();
 
+        $removeFile = $this->shouldRemoveFile($form, $file);
+
+        if ($removeFile) {
+            $this->fileRepository->remove($file, true);
+
+            return;
+        }
+
         if (!$form->has('action')) {
             return;
         }
 
-        $action = $form->get('action')->getData();
-
-        if (self::ACTION_DELETE === $action) {
-            $file->setFile(null);
-        }
-
-        if (in_array($action, [self::ACTION_REPLACE, self::ACTION_DELETE])) {
+        if (self::ACTION_REPLACE === $form->get('action')->getData()) {
             $resizes = $file->getResizes();
 
             foreach ($resizes as $resize) {
-                $this->fileRepository->remove($resize);
+                $this->fileRepository->remove($resize, true);
             }
         }
     }
@@ -164,5 +201,19 @@ class FileEntityType extends AbstractType
             'image' => null,
             'show_alt' => true,
         ]);
+    }
+
+    private function shouldRemoveFile(FormInterface $form, File $file): bool
+    {
+        if (!$form->getData() && !$file->getFile()) {
+            // no previous data and no file selected
+            return true;
+        }
+
+        if (!$form->has('action')) {
+            return false;
+        }
+
+        return self::ACTION_DELETE === $form->get('action')->getData();
     }
 }
