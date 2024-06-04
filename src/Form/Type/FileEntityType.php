@@ -158,7 +158,7 @@ class FileEntityType extends AbstractType
 
             $method = 'set'.u($name)->camel()->title();
 
-            if (is_object($parentData) && method_exists($parentData, $method)) {
+            if (is_object($parentData) && method_exists($parentData, $method) && $this->isMapped) {
                 call_user_func_array([$parentData, $method], [null]);
             } elseif (is_array($parentData) && isset($parentData[$name])) {
                 unset($parentData[$name]);
