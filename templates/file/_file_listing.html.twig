@@ -48,7 +48,7 @@
     <td>{{ file_size_binary(file, 2) }}</td>
     <td>
       <code>
-        {{ file.image ? '{{ image('~file.id~') }}' : '{{ file_href('~file.id~') }}' }}
+        {{ file.image ? '{{ image('~file.id~') }}' : '{{ file_href('~file.id~')}}' }}
       </code>
     </td>
     <td>{{ file.updatedAt|datetime }}</td>
