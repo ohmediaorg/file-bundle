@@ -165,7 +165,6 @@ class FileEntityType extends AbstractType
             }
 
             $event->setData(null);
-            $form->setData(null);
         }
     }
 
