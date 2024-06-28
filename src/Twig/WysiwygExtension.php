@@ -40,7 +40,7 @@ class WysiwygExtension extends AbstractWysiwygExtension
         return $file ? $this->fileManager->getWebPath($file) : '';
     }
 
-    public function image(int $id, int $width = null)
+    public function image(int $id)
     {
         $image = $id ? $this->fileRepository->findOneBy([
             'id' => $id,
@@ -51,13 +51,11 @@ class WysiwygExtension extends AbstractWysiwygExtension
             return '';
         }
 
-        if (null === $width) {
-            $width = $this->defaultImageWidth;
-        }
+        $attributes = [];
 
-        $attributes = [
-            'width' => $width,
-        ];
+        if ($image->getWidth() > $this->defaultImageWidth) {
+            $attributes['width'] = $this->defaultImageWidth;
+        }
 
         return $this->imageManager->render($image, $attributes);
     }

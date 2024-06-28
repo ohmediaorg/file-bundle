@@ -114,9 +114,8 @@ class FileVoter extends AbstractEntityVoter
         }
 
         $shortcodes = [
-            sprintf('{{ file_href(%d) }}', $file->getId()),
-            sprintf('{{ image(%d) }}', $file->getId()),
-            sprintf('{{ image(%d,', $file->getId()),
+            sprintf('file_href(%d)', $file->getId()),
+            sprintf('image(%d)', $file->getId()),
         ];
 
         return !$this->wysiwyg->shortcodesInUse(...$shortcodes);
