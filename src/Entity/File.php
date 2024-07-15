@@ -7,14 +7,14 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\FileBundle\Repository\FileRepository;
-use OHMedia\SecurityBundle\Entity\Traits\BlameableTrait;
+use OHMedia\UtilityBundle\Entity\BlameableEntityTrait;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
 
 #[ORM\Entity(repositoryClass: FileRepository::class)]
 #[ORM\Index(columns: ['token'])]
 class File
 {
-    use BlameableTrait;
+    use BlameableEntityTrait;
 
     public const PATH_INITIAL = 'initial';
     public const TOKEN_LENGTH = 30;
