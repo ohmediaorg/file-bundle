@@ -1,7 +1,7 @@
 <script>
 (function () {
-  const ACTION_REPLACE = {{ ACTION_REPLACE|json_encode|raw }};
-  const DATA_ATTRIBUTE = {{ DATA_ATTRIBUTE|json_encode|raw }};
+  const ACTION_REPLACE = {{ ACTION_REPLACE|js }};
+  const DATA_ATTRIBUTE = {{ DATA_ATTRIBUTE|js }};
   const DATA_ATTRIBUTE_CAMEL = DATA_ATTRIBUTE.replace('data-', '').replace(/-./g, x=>x[1].toUpperCase());
 
   async function initFiles(parent) {
