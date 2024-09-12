@@ -12,8 +12,6 @@ class FileVoter extends AbstractEntityVoter
 {
     public const INDEX = 'index';
     public const CREATE = 'create';
-    // NOTE: this is only for frontend; there is no backend file view
-    public const VIEW = 'view';
     public const EDIT = 'edit';
     public const LOCK = 'lock';
     public const UNLOCK = 'unlock';
@@ -31,7 +29,6 @@ class FileVoter extends AbstractEntityVoter
         return [
             self::INDEX,
             self::CREATE,
-            self::VIEW,
             self::EDIT,
             self::LOCK,
             self::UNLOCK,
@@ -61,11 +58,6 @@ class FileVoter extends AbstractEntityVoter
         }
 
         return $this->fileBrowser->getLimitBytes() > $this->fileBrowser->getUsageBytes();
-    }
-
-    protected function canView(File $file, User $loggedIn): bool
-    {
-        return true;
     }
 
     protected function canEdit(File $file, User $loggedIn): bool

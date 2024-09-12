@@ -3,7 +3,6 @@
 namespace OHMedia\FileBundle\Controller;
 
 use OHMedia\FileBundle\Repository\FileRepository;
-use OHMedia\FileBundle\Security\Voter\FileVoter;
 use OHMedia\FileBundle\Service\FileResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,8 +31,8 @@ class FileController extends AbstractController
 
         if ($file->isLocked()) {
             $this->denyAccessUnlessGranted(
-                FileVoter::VIEW,
-                $file,
+                'IS_AUTHENTICATED_FULLY',
+                null,
                 'You cannot view this file.'
             );
         }
