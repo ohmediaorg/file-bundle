@@ -173,7 +173,7 @@ class FileEntityType extends AbstractType
         $form = $event->getForm();
 
         if ($this->fileToRemove) {
-            $this->fileRepository->remove($this->fileToRemove, true);
+            $this->fileRepository->remove($this->fileToRemove, false);
 
             return;
         }
@@ -188,7 +188,7 @@ class FileEntityType extends AbstractType
             $resizes = $file->getResizes();
 
             foreach ($resizes as $resize) {
-                $this->fileRepository->remove($resize, true);
+                $this->fileRepository->remove($resize, false);
             }
         }
     }
