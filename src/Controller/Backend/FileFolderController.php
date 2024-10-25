@@ -12,6 +12,7 @@ use OHMedia\FileBundle\Form\Type\FileFolderMoveType;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Security\Voter\FileFolderVoter;
 use OHMedia\FileBundle\Service\FileBrowser;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,7 +40,7 @@ class FileFolderController extends AbstractController
     #[Route('/folder/{id}/folder/create', name: 'file_folder_create_with_folder', methods: ['GET', 'POST'])]
     public function createWithFolder(
         Request $request,
-        FileFolder $parent
+        #[MapEntity(id: 'id')] FileFolder $parent,
     ): Response {
         $folder = (new FileFolder())->setBrowser(true);
 
@@ -89,8 +90,10 @@ class FileFolderController extends AbstractController
     }
 
     #[Route('/folder/{id}', name: 'file_folder_view', methods: ['GET'])]
-    public function view(FileFolder $folder, FileBrowser $fileBrowser): Response
-    {
+    public function view(
+        #[MapEntity(id: 'id')] FileFolder $folder,
+        FileBrowser $fileBrowser,
+    ): Response {
         $this->denyAccessUnlessGranted(
             FileFolderVoter::VIEW,
             $folder,
@@ -119,7 +122,7 @@ class FileFolderController extends AbstractController
     #[Route('/folder/{id}/edit', name: 'file_folder_edit', methods: ['GET', 'POST'])]
     public function edit(
         Request $request,
-        FileFolder $folder,
+        #[MapEntity(id: 'id')] FileFolder $folder,
     ): Response {
         $this->denyAccessUnlessGranted(
             FileFolderVoter::EDIT,
@@ -160,7 +163,7 @@ class FileFolderController extends AbstractController
     #[Route('/folder/{id}/move', name: 'file_folder_move', methods: ['GET', 'POST'])]
     public function move(
         Request $request,
-        FileFolder $folder,
+        #[MapEntity(id: 'id')] FileFolder $folder,
     ): Response {
         $this->denyAccessUnlessGranted(
             FileFolderVoter::MOVE,
@@ -201,7 +204,7 @@ class FileFolderController extends AbstractController
     #[Route('/folder/{id}/lock', name: 'file_folder_lock', methods: ['POST'])]
     public function lock(
         Request $request,
-        FileFolder $folder,
+        #[MapEntity(id: 'id')] FileFolder $folder,
     ): Response {
         $this->denyAccessUnlessGranted(
             FileFolderVoter::LOCK,
@@ -226,7 +229,7 @@ class FileFolderController extends AbstractController
     #[Route('/folder/{id}/unlock', name: 'file_folder_unlock', methods: ['POST'])]
     public function unlock(
         Request $request,
-        FileFolder $folder,
+        #[MapEntity(id: 'id')] FileFolder $folder,
     ): Response {
         $this->denyAccessUnlessGranted(
             FileFolderVoter::UNLOCK,
@@ -258,7 +261,7 @@ class FileFolderController extends AbstractController
     #[Route('/folder/{id}/delete', name: 'file_folder_delete', methods: ['POST'])]
     public function delete(
         Request $request,
-        FileFolder $folder,
+        #[MapEntity(id: 'id')] FileFolder $folder,
     ): Response {
         $this->denyAccessUnlessGranted(
             FileFolderVoter::DELETE,

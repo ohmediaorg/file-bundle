@@ -13,6 +13,7 @@ use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Security\Voter\FileVoter;
 use OHMedia\FileBundle\Service\FileBrowser;
 use OHMedia\FileBundle\Util\FileUtil;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
@@ -62,7 +63,7 @@ class FileController extends AbstractController
     #[Route('/folder/{id}/file/create', name: 'file_create_with_folder', methods: ['GET', 'POST'])]
     public function fileCreateWithFolder(
         Request $request,
-        FileFolder $folder
+        #[MapEntity(id: 'id')] FileFolder $folder,
     ): Response {
         $file = (new File())->setBrowser(true);
 
@@ -82,7 +83,7 @@ class FileController extends AbstractController
     #[Route('/folder/{id}/image/create', name: 'image_create_with_folder', methods: ['GET', 'POST'])]
     public function imageCreateWithFolder(
         Request $request,
-        FileFolder $folder
+        #[MapEntity(id: 'id')] FileFolder $folder,
     ): Response {
         $file = (new File())->setBrowser(true)->setImage(true);
 
@@ -152,7 +153,7 @@ class FileController extends AbstractController
     #[Route('/file/{id}/edit', name: 'file_edit', methods: ['GET', 'POST'])]
     public function edit(
         Request $request,
-        File $file
+        #[MapEntity(id: 'id')] File $file,
     ): Response {
         $this->denyAccessUnlessGranted(
             FileVoter::EDIT,
@@ -193,7 +194,7 @@ class FileController extends AbstractController
     #[Route('/file/{id}/move', name: 'file_move', methods: ['GET', 'POST'])]
     public function move(
         Request $request,
-        File $file,
+        #[MapEntity(id: 'id')] File $file,
     ): Response {
         $noun = $file->isImage() ? 'image' : 'file';
 
@@ -236,7 +237,7 @@ class FileController extends AbstractController
     #[Route('/file/{id}/lock', name: 'file_lock', methods: ['POST'])]
     public function lock(
         Request $request,
-        File $file,
+        #[MapEntity(id: 'id')] File $file,
     ): Response {
         $noun = $file->isImage() ? 'image' : 'file';
 
@@ -263,7 +264,7 @@ class FileController extends AbstractController
     #[Route('/file/{id}/unlock', name: 'file_unlock', methods: ['POST'])]
     public function unlock(
         Request $request,
-        File $file,
+        #[MapEntity(id: 'id')] File $file,
     ): Response {
         $noun = $file->isImage() ? 'image' : 'file';
 
@@ -301,7 +302,7 @@ class FileController extends AbstractController
     #[Route('/file/{id}/delete', name: 'file_delete', methods: ['POST'])]
     public function delete(
         Request $request,
-        File $file,
+        #[MapEntity(id: 'id')] File $file,
     ): Response {
         $noun = $file->isImage() ? 'image' : 'file';
 
