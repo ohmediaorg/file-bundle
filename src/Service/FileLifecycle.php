@@ -14,7 +14,7 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class FileLifecycle
 {
-    private FileSystem $fileSystem;
+    private Filesystem $fileSystem;
     private AsciiSlugger $slugger;
 
     public function __construct(
@@ -22,7 +22,7 @@ class FileLifecycle
         private FileRepository $fileRepository,
         private FileManager $fileManager
     ) {
-        $this->fileSystem = new FileSystem();
+        $this->fileSystem = new Filesystem();
         $this->slugger = new AsciiSlugger();
     }
 
@@ -73,6 +73,10 @@ class FileLifecycle
 
     public function postRemove(FileEntity $file)
     {
+        if ($file->isCloned()) {
+            return;
+        }
+
         $this->removeFilepath($file->getPath());
     }
 
