@@ -344,7 +344,7 @@ class File
     private ?HttpFile $file = null;
     private ?string $oldPath = null;
 
-    public function setFile(HttpFile $file = null): self
+    public function setFile(?HttpFile $file = null): self
     {
         $this->file = $file;
 
@@ -358,6 +358,15 @@ class File
         } else {
             // set it to something not null
             $this->path = self::PATH_INITIAL;
+        }
+
+        // For the case when the File entity is cloned
+        // but a new $file is set before saving.
+        // $oldPath will be pointing to the cloned file
+        // which should not get removed!
+        if ($this->cloned) {
+            $this->cloned = false;
+            $this->oldPath = null;
         }
 
         return $this;
