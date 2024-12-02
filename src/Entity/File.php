@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Persistence\Proxy;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\UtilityBundle\Entity\BlameableEntityTrait;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
@@ -84,13 +85,20 @@ class File
 
     public function __clone()
     {
-        $this->id = null;
-        $this->cloned = true;
-        // don't want cloned items to appear in the File browser
-        $this->browser = false;
-        $this->folder = null;
+        if ($this->id) {
+            if ($this instanceof Proxy && !$this->__isInitialized()) {
+                // Initialize the proxy to load all properties
+                $this->__load();
+            }
 
-        $this->resizes = new ArrayCollection();
+            $this->id = null;
+            $this->cloned = true;
+            // don't want cloned items to appear in the File browser
+            $this->browser = false;
+            $this->folder = null;
+
+            $this->resizes = new ArrayCollection();
+        }
     }
 
     public function isCloned(): bool
