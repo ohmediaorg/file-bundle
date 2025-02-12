@@ -15,7 +15,7 @@ class ImageManager
     ) {
     }
 
-    public function getImagePath(File $file, int $width = null, int $height = null)
+    public function getImagePath(File $file, ?int $width = null, ?int $height = null)
     {
         $resize = $this->getResize($file, $width, $height);
 
@@ -46,6 +46,10 @@ class ImageManager
 
     private function setImageTagAttributes(File $file, array &$attributes): void
     {
+        if (!isset($attributes['loading'])) {
+            $attributes['loading'] = 'lazy';
+        }
+
         $attributes['alt'] = $file->getAlt();
 
         if (!$file) {
@@ -80,8 +84,8 @@ class ImageManager
 
     private function getResize(
         File $file,
-        int $width = null,
-        int $height = null
+        ?int $width = null,
+        ?int $height = null
     ): ?File {
         if (null === $width && null === $height) {
             return null;
