@@ -16,6 +16,7 @@ use OHMedia\FileBundle\Util\FileUtil;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -364,5 +365,12 @@ class FileController extends AbstractController
         array_unshift($breadcrumbs, $indexBreadcrumb);
 
         return $breadcrumbs;
+    }
+
+    #[Route('/file/{id}/can-delete', name: 'file_can_delete', methods: ['GET'])]
+    public function canDelete(
+        #[MapEntity(id: 'id')] File $file,
+    ): Response {
+        return new JsonResponse($this->isGranted(FileVoter::DELETE, $file));
     }
 }
