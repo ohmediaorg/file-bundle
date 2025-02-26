@@ -181,6 +181,8 @@ class FileLifecycle
         if ($imageSize) {
             $width = $imageSize[0];
             $height = $imageSize[1];
+
+            $file->setImage(true);
         }
 
         $file
