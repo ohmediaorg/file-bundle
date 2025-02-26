@@ -216,4 +216,15 @@ class FileFolder
 
         return $size;
     }
+
+    public function getChildCount(): int
+    {
+        $count = $this->files->count();
+
+        foreach ($this->folders as $folder) {
+            $count += $folder->getChildCount();
+        }
+
+        return $count;
+    }
 }
