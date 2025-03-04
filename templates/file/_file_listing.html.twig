@@ -21,6 +21,9 @@
 
 {% macro file_row(file, attributes) %}
   <tr>
+    <td>
+      <input type="checkbox" name="file_ids[]" value="{{ file.id }}" class="form-check-input" multiple form="file_multiselect" />
+    </td>
     <td style="font-size:1.5rem;text-align:center">
       {% if file.image %}
         {{ image_tag(file, {
@@ -120,6 +123,9 @@
 
 {% macro file_folder_row(folder, attributes) %}
   <tr>
+    <td>
+      <input type="checkbox" name="folder_ids[]" value="{{ folder.id }}" class="form-check-input" multiple form="file_multiselect" />
+    </td>
     <td style="font-size:1.5rem;text-align:center">
       {% if folder.locked %}
         {{ bootstrap_icon('folder-x text-secondary') }}
@@ -204,6 +210,7 @@
 <table class="table table-sm table-striped">
   <thead>
     <tr>
+      <th>&nbsp;</th>
       <th style="width:55px">&nbsp;</th>
       <th>Name</th>
       <th>Size</th>
@@ -247,6 +254,8 @@
   </tfoot>
 </table>
 
+<form id="file_multiselect" action="{{ path('file_multiselect') }}"></form>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const intersectionObserver = new IntersectionObserver((entries) => {
@@ -272,5 +281,37 @@ document.addEventListener('DOMContentLoaded', function() {
   deleteIcons.forEach(function(deleteIcon) {
     intersectionObserver.observe(deleteIcon);
   });
+
+  const form = document.getElementById('file_multiselect');
+
+  console.dir(form);
+
+  const fileIds = form.elements['file_ids[]'];
+  const folderIds = form.elements['folder_ids[]'];
+
+  function getFileIds() {
+    return fileIds instanceof RadioNodeList ? fileIds.value : [fileIds.value];
+  }
+
+  function getFolderIds() {
+    return folderIds instanceof RadioNodeList ? folderIds.value : [folderIds.value];
+  }
+
+  function multiselect() {
+    fetch(form.action, {
+      method: 'POST',
+      body: {
+        file_ids: getFileIds(),
+        folder_ids: getFolderIds(),
+        // TODO:
+        // action:
+        // folder: (action === 'move')
+      }
+    })
+      .then(r => r.json())
+      .then(r => {
+        // refresh the page
+      });
+  }
 });
 </script>

@@ -9,6 +9,7 @@ use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Form\Type\FileCreateType;
 use OHMedia\FileBundle\Form\Type\FileEditType;
 use OHMedia\FileBundle\Form\Type\FileMoveType;
+use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Security\Voter\FileVoter;
 use OHMedia\FileBundle\Service\FileBrowser;
@@ -51,6 +52,57 @@ class FileController extends AbstractController
             'new_file' => $newFile,
             'new_folder' => $newFolder,
         ]);
+    }
+
+    #[Route('/files/multiselect', name: 'file_multiselect', methods: ['POST'])]
+    public function multiselect(
+        FileFolderRepository $fileFolderRepository,
+        Request $request,
+    ): Response {
+        $action = $request->request->get('action');
+
+        $fileIds = $request->request->all('files');
+        $folderIds = $request->request->all('folders');
+
+        if ('move' === $action) {
+            $parent = $fileFolderRepository->find($request->request->get('folder'));
+
+            foreach ($fileIds as $fileId) {
+                $file = $this->fileRepository->find($fileId);
+
+                if ($file && $this->isGranted(FileVoter::MOVE, $file)) {
+                    $file->setFolder($parent);
+                    $this->fileRepository->save($file, true);
+                }
+            }
+
+            foreach ($folderIds as $folderId) {
+                $folder = $fileFolderRepository->find($folderId);
+
+                if ($folder && $this->isGranted(FileFolderVoter::MOVE, $folder)) {
+                    $folder->setFolder($parent);
+                    $fileFolderRepository->save($folder, true);
+                }
+            }
+        } elseif ('delete' === $action) {
+            foreach ($fileIds as $fileId) {
+                $file = $this->fileRepository->find($fileId);
+
+                if ($file && $this->isGranted(FileVoter::DELETE, $file)) {
+                    $fileRepository->remove($file, true);
+                }
+            }
+
+            foreach ($folderIds as $folderId) {
+                $folder = $fileFolderRepository->find($folderId);
+
+                if ($folder && $this->isGranted(FileFolderVoter::DELETE, $folder)) {
+                    $fileFolderRepository->remove($folder, true);
+                }
+            }
+        }
+
+        return new JsonResponse();
     }
 
     #[Route('/file/create', name: 'file_create_no_folder', methods: ['GET', 'POST'])]
