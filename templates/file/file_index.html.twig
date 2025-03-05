@@ -23,34 +23,57 @@
 } %}
 
 <div class="btn-group btn-group-sm" role="group">
-  <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-    {{ bootstrap_icon('plus') }}
-    New
-  </button>
-  <ul class="dropdown-menu">
-    {% if is_granted(attributes.folder.create, new_folder) %}
+  <div class="btn-group btn-group-sm" role="group">
+    <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled>
+      {{ bootstrap_icon('ui-checks') }}
+      Multiselect
+    </button>
+    <ul class="dropdown-menu">
       <li>
-        <a href="{{ path('file_folder_create_no_folder') }}" class="dropdown-item">
+        <a href="javascript:;" class="dropdown-item" id="multiselect_move">
           {{ bootstrap_icon('folder-fill') }}
-          Folder
+          Move
         </a>
       </li>
-    {% endif %}
-    {% if is_granted(attributes.file.create, new_file) %}
-    <li>
-      <a href="{{ path('file_create_no_folder') }}" class="dropdown-item">
-        {{ bootstrap_icon('file-earmark-fill') }}
-        File
-      </a>
-    </li>
       <li>
-        <a href="{{ path('image_create_no_folder') }}" class="dropdown-item">
-          {{ bootstrap_icon('file-earmark-image') }}
-          Image
+        <a href="javascript:;" class="dropdown-item text-bg-danger" id="multiselect_delete">
+          {{ bootstrap_icon('trash-fill') }}
+          Delete
         </a>
       </li>
-    {% endif %}
-  </ul>
+    </ul>
+  </div>
+
+  <div class="btn-group btn-group-sm" role="group">
+    <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      {{ bootstrap_icon('plus') }}
+      New
+    </button>
+    <ul class="dropdown-menu">
+      {% if is_granted(attributes.folder.create, new_folder) %}
+        <li>
+          <a href="{{ path('file_folder_create_no_folder') }}" class="dropdown-item">
+            {{ bootstrap_icon('folder-fill') }}
+            Folder
+          </a>
+        </li>
+      {% endif %}
+      {% if is_granted(attributes.file.create, new_file) %}
+      <li>
+        <a href="{{ path('file_create_no_folder') }}" class="dropdown-item">
+          {{ bootstrap_icon('file-earmark-fill') }}
+          File
+        </a>
+      </li>
+        <li>
+          <a href="{{ path('image_create_no_folder') }}" class="dropdown-item">
+            {{ bootstrap_icon('file-earmark-image') }}
+            Image
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
 </div>
 {% endblock %}
 

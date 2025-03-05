@@ -123,9 +123,7 @@
 
 {% macro file_folder_row(folder, attributes) %}
   <tr>
-    <td>
-      <input type="checkbox" name="folder_ids[]" value="{{ folder.id }}" class="form-check-input" multiple form="file_multiselect" />
-    </td>
+    <td>&nbsp;</td>
     <td style="font-size:1.5rem;text-align:center">
       {% if folder.locked %}
         {{ bootstrap_icon('folder-x text-secondary') }}
@@ -255,7 +253,9 @@
   </tfoot>
 </table>
 
-<form id="file_multiselect" action="{{ path('file_multiselect') }}"></form>
+<form id="file_multiselect" action="{{ path('file_multiselect') }}">
+  <input type="hidden" name="redirect" value="{{ app.request.requestUri }}">
+</form>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -285,34 +285,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const form = document.getElementById('file_multiselect');
 
-  console.dir(form);
+  // TODO: need a button for Move that opens a popup
+  // the popup will show a selection of folders
+  // submitting the popup will submit the form
 
-  const fileIds = form.elements['file_ids[]'];
-  const folderIds = form.elements['folder_ids[]'];
-
-  function getFileIds() {
-    return fileIds instanceof RadioNodeList ? fileIds.value : [fileIds.value];
-  }
-
-  function getFolderIds() {
-    return folderIds instanceof RadioNodeList ? folderIds.value : [folderIds.value];
-  }
-
-  function multiselect() {
-    fetch(form.action, {
-      method: 'POST',
-      body: {
-        file_ids: getFileIds(),
-        folder_ids: getFolderIds(),
-        // TODO:
-        // action:
-        // folder: (action === 'move')
-      }
-    })
-      .then(r => r.json())
-      .then(r => {
-        // refresh the page
-      });
-  }
+  // TODO: need a button for Delete that opens a confirmation popup
+  // confirming will submit the form
 });
 </script>
