@@ -212,7 +212,7 @@
 <table class="table table-sm table-striped">
   <thead>
     <tr>
-      <th>&nbsp;</th>
+      <th><input type="checkbox" class="form-check-input" id="multiselect_checkall" /></th>
       <th style="width:55px">&nbsp;</th>
       <th>Name</th>
       <th>Size</th>
@@ -334,8 +334,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const form = document.getElementById('{{ multiselect_form_id }}');
 
-  const dropdown = document.getElementById('multiselect_dropdown');
-
   let fileCheckboxes = form.elements['{{ multiselect_form.files.vars.full_name }}[]'];
 
   if (!fileCheckboxes) {
@@ -344,16 +342,27 @@ document.addEventListener('DOMContentLoaded', function() {
     fileCheckboxes = [fileCheckboxes];
   }
 
-  function toggleDropdown() {
-    for (let i = 0; i < fileCheckboxes.length; i++) {
-      if (fileCheckboxes[i].checked) {
-        dropdown.disabled = false;
+  const checkall = document.getElementById('multiselect_checkall');
 
-        return;
-      }
+  checkall.addEventListener('change', function() {
+    fileCheckboxes.forEach(function(checkbox) {
+      checkbox.checked = checkall.checked;
+    });
+  });
+
+  const dropdown = document.getElementById('multiselect_dropdown');
+
+  function toggleDropdown() {
+    let anyChecked = true;
+    let allChecked = true;
+
+    for (let i = 0; i < fileCheckboxes.length; i++) {
+      anyChecked |= fileCheckboxes[i].checked;
+      allChecked &= fileCheckboxes[i].checked;
     }
 
-    dropdown.disabled = true;
+    dropdown.disabled = !anyChecked;
+    checkall.checked = allChecked;
   }
 
   if (fileCheckboxes) {
