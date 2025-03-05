@@ -348,12 +348,14 @@ document.addEventListener('DOMContentLoaded', function() {
     fileCheckboxes.forEach(function(checkbox) {
       checkbox.checked = checkall.checked;
     });
+
+    dropdown.disabled = !checkall.checked;
   });
 
   const dropdown = document.getElementById('multiselect_dropdown');
 
   function toggleDropdown() {
-    let anyChecked = true;
+    let anyChecked = false;
     let allChecked = true;
 
     for (let i = 0; i < fileCheckboxes.length; i++) {
