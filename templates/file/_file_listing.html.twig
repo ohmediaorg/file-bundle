@@ -19,12 +19,14 @@
   },
 } %}
 
-{% macro file_row(file, attributes, multiselect_form) %}
+{% set multiselect_form_id = 'multiselect_form' %}
+
+{% macro file_row(file, attributes, multiselect_form, multiselect_form_id) %}
   {% set checkbox = multiselect_form.files.children[file.id] %}
 
   <tr>
     <td>
-      <input type="checkbox" name="{{ checkbox.vars.full_name }}" value="{{ file.id }}" class="form-check-input" multiple form="multiselect_form" />
+      <input type="checkbox" name="{{ checkbox.vars.full_name }}" value="{{ file.id }}" class="form-check-input" multiple form="{{ multiselect_form_id }}" />
     </td>
     <td style="font-size:1.5rem;text-align:center">
       {% if file.image %}
@@ -239,7 +241,7 @@
   {% for item in items %}
     {% set total_size = total_size + item.size %}
     {% if is_file_entity(item) %}
-      {{ _self.file_row(item, attributes, multiselect_form) }}
+      {{ _self.file_row(item, attributes, multiselect_form, multiselect_form_id) }}
     {% elseif is_file_folder_entity(item) %}
       {{ _self.file_folder_row(item, attributes) }}
     {% endif %}
@@ -258,9 +260,45 @@
 {# files checkboxes are rendered inside of file_row macro #}
 {% do multiselect_form.files.setRendered %}
 
+{# buttons are rendered inside of modals #}
+{% do multiselect_form.move.setRendered %}
+{% do multiselect_form.delete.setRendered %}
+
+<div id="multiselect_modal_move" class="modal fade" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Multiselect Move</h5>
+      </div>
+      <div class="modal-body">
+        {{ form_row(multiselect_form.folder) }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="{{ multiselect_form.move.vars.id }}" name="{{ multiselect_form.move.vars.full_name }}" form="{{ multiselect_form_id }}">Move</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="multiselect_modal_delete" class="modal fade" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Multiselect Delete</h5>
+      </div>
+      <div class="modal-body">Are you sure you want to delete the selected files? Only files that have been</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="{{ multiselect_form.delete.vars.id }}" name="{{ multiselect_form.delete.vars.full_name }}" form="{{ multiselect_form_id }}">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 {{ form(multiselect_form, {
   attr: {
-    id: 'multiselect_form',
+    id: multiselect_form_id,
   },
 }) }}
 
@@ -290,13 +328,58 @@ document.addEventListener('DOMContentLoaded', function() {
     intersectionObserver.observe(deleteIcon);
   });
 
-  const form = document.getElementById('file_multiselect');
+  const form = document.getElementById('{{ multiselect_form_id }}');
 
-  // TODO: need a button for Move that opens a popup
-  // the popup will show a selection of folders
-  // submitting the popup will submit the form
+  const dropdown = document.getElementById('multiselect_dropdown');
 
-  // TODO: need a button for Delete that opens a confirmation popup
-  // confirming will submit the form
+  const fileCheckboxes = form.elements['{{ multiselect_form.files.vars.full_name }}[]'];
+
+  function toggleDropdown() {
+    for (let i = 0; i < fileCheckboxes.length; i++) {
+      if (fileCheckboxes.item(i).checked) {
+        dropdown.disabled = false;
+
+        return;
+      }
+    }
+
+    dropdown.disabled = true;
+  }
+
+  if (fileCheckboxes) {
+    fileCheckboxes.forEach(function(checkbox) {
+      checkbox.addEventListener('change', toggleDropdown);
+    });
+  }
+
+  const dropdownMove = document.getElementById('multiselect_dropdown_move');
+
+  const dropdownDelete = document.getElementById('multiselect_dropdown_delete');
+
+  const moveModalEl = document.getElementById('multiselect_modal_move');
+
+  const moveModal = new window.Bootstrap.Modal(moveModalEl, {
+    keyboard: false,
+    backdrop: 'static',
+  });
+
+  dropdownMove.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    moveModal.show();
+  });
+
+  const deleteModalEl = document.getElementById('multiselect_modal_delete');
+
+  const deleteModal = new window.Bootstrap.Modal(deleteModalEl, {
+    keyboard: false,
+    backdrop: 'static',
+  });
+
+  dropdownDelete.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    deleteModal.show();
+  });
 });
 </script>

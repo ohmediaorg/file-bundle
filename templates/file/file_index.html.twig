@@ -23,26 +23,7 @@
 } %}
 
 <div class="btn-group btn-group-sm" role="group">
-  <div class="btn-group btn-group-sm" role="group">
-    <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled>
-      {{ bootstrap_icon('ui-checks') }}
-      Multiselect
-    </button>
-    <ul class="dropdown-menu">
-      <li>
-        <a href="javascript:;" class="dropdown-item" id="multiselect_move">
-          {{ bootstrap_icon('folder-fill') }}
-          Move
-        </a>
-      </li>
-      <li>
-        <a href="javascript:;" class="dropdown-item text-bg-danger" id="multiselect_delete">
-          {{ bootstrap_icon('trash-fill') }}
-          Delete
-        </a>
-      </li>
-    </ul>
-  </div>
+  {% include '@OHMediaFile/file/_file_multiselect.html.twig' %}
 
   <div class="btn-group btn-group-sm" role="group">
     <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">

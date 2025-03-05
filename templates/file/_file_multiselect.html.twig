@@ -1,0 +1,20 @@
+<div class="btn-group btn-group-sm" role="group">
+  <button id="multiselect_dropdown" class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled>
+    {{ bootstrap_icon('ui-checks') }}
+    Multiselect
+  </button>
+  <ul class="dropdown-menu">
+    <li>
+      <a href="javascript:;" class="dropdown-item" id="multiselect_dropdown_move">
+        {{ bootstrap_icon('folder-fill') }}
+        Move
+      </a>
+    </li>
+    <li>
+      <a href="javascript:;" class="dropdown-item text-bg-danger" id="multiselect_dropdown_delete" form="multiselect_form">
+        {{ bootstrap_icon('trash-fill') }}
+        Delete
+      </a>
+    </li>
+  </ul>
+</div>
