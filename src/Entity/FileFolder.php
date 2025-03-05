@@ -227,4 +227,17 @@ class FileFolder
 
         return $count;
     }
+
+    public function getSubFolders(): array
+    {
+        $subfolders = [];
+
+        foreach ($this->folders as $folder) {
+            $subfolders[] = $folder;
+
+            $subfolders = array_merge($subfolders, $folder->getSubFolders());
+        }
+
+        return $subfolders;
+    }
 }

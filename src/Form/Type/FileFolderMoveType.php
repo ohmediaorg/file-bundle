@@ -21,10 +21,18 @@ class FileFolderMoveType extends AbstractType
                 'label' => 'Destination Folder',
                 'required' => false,
                 'query_builder' => function (EntityRepository $er) use ($folder) {
+                    $subfolders = $folder->getSubfolders();
+
+                    $ids = array_map(function($folder) {
+                        return $folder->getId();
+                    }, $subfolders);
+
+                    $ids[] = $folder->getId();
+
                     return $er->createQueryBuilder('ff')
                         ->where('ff.browser = 1')
-                        ->andWhere('ff.id <> :id')
-                        ->setParameter('id', $folder->getId())
+                        ->andWhere('ff.id NOT IN (:ids)')
+                        ->setParameter('ids', $ids)
                         ->orderBy('LOWER(ff.name)', 'ASC');
                 },
                 'placeholder' => '/',
