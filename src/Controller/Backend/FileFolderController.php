@@ -6,6 +6,7 @@ use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\BootstrapBundle\Component\Breadcrumb;
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
+use OHMedia\FileBundle\Form\Type\MultiselectType;
 use OHMedia\FileBundle\Form\Type\FileFolderCreateType;
 use OHMedia\FileBundle\Form\Type\FileFolderEditType;
 use OHMedia\FileBundle\Form\Type\FileFolderMoveType;
@@ -111,12 +112,17 @@ class FileFolderController extends AbstractController
 
         $items = $fileBrowser->getListing($folder);
 
+        $multiselectForm = $this->createForm(MultiselectType::class, null, [
+            'folder' => $folder,
+        ]);
+
         return $this->render('@OHMediaFile/file_folder/file_folder_view.html.twig', [
             'breadcrumbs' => $this->getBreadcrumbs($folder),
             'folder' => $folder,
             'items' => $items,
             'new_file' => $newFile,
             'new_folder' => $newFolder,
+            'multiselect_form' => $multiselectForm,
         ]);
     }
 

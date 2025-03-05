@@ -9,6 +9,7 @@ use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Form\Type\FileCreateType;
 use OHMedia\FileBundle\Form\Type\FileEditType;
 use OHMedia\FileBundle\Form\Type\FileMoveType;
+use OHMedia\FileBundle\Form\Type\MultiselectType;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Security\Voter\FileVoter;
@@ -47,57 +48,43 @@ class FileController extends AbstractController
 
         $items = $fileBrowser->getListing();
 
+        $multiselectForm = $this->createForm(MultiselectType::class);
+
         return $this->render('@OHMediaFile/file/file_index.html.twig', [
             'items' => $items,
             'new_file' => $newFile,
             'new_folder' => $newFolder,
+            'multiselect_form' => $multiselectForm,
         ]);
     }
 
     #[Route('/files/multiselect', name: 'file_multiselect', methods: ['POST'])]
+    #[Route('/files/multiselect/{id}', name: 'file_multiselect_with_folder', methods: ['POST'])]
     public function multiselect(
-        FileFolderRepository $fileFolderRepository,
+        #[MapEntity(id: 'id')] ?FileFolder $fileFolder,
         Request $request,
     ): Response {
-        $action = $request->request->get('action');
+        $form = $this->createForm(MultiselectType::class, null, [
+            'folder' => $fileFolder,
+        ]);
 
-        $fileIds = $request->request->all('files');
-        $folderIds = $request->request->all('folders');
+        $form->handleRequest($request);
 
-        if ('move' === $action) {
-            $parent = $fileFolderRepository->find($request->request->get('folder'));
+        $files = $form->get('files')->getData();
 
-            foreach ($fileIds as $fileId) {
-                $file = $this->fileRepository->find($fileId);
+        if ($form->get('move')->isClicked()) {
+            $parent = $form->get('folder')->getData();
 
-                if ($file && $this->isGranted(FileVoter::MOVE, $file)) {
+            foreach ($files as $file) {
+                if ($this->isGranted(FileVoter::MOVE, $file)) {
                     $file->setFolder($parent);
                     $this->fileRepository->save($file, true);
                 }
             }
-
-            foreach ($folderIds as $folderId) {
-                $folder = $fileFolderRepository->find($folderId);
-
-                if ($folder && $this->isGranted(FileFolderVoter::MOVE, $folder)) {
-                    $folder->setFolder($parent);
-                    $fileFolderRepository->save($folder, true);
-                }
-            }
-        } elseif ('delete' === $action) {
-            foreach ($fileIds as $fileId) {
-                $file = $this->fileRepository->find($fileId);
-
-                if ($file && $this->isGranted(FileVoter::DELETE, $file)) {
+        } elseif ($form->get('delete')->isClicked()) {
+            foreach ($files as $files) {
+                if ($this->isGranted(FileVoter::DELETE, $file)) {
                     $fileRepository->remove($file, true);
-                }
-            }
-
-            foreach ($folderIds as $folderId) {
-                $folder = $fileFolderRepository->find($folderId);
-
-                if ($folder && $this->isGranted(FileFolderVoter::DELETE, $folder)) {
-                    $fileFolderRepository->remove($folder, true);
                 }
             }
         }

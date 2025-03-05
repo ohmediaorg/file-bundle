@@ -253,6 +253,8 @@
   </tfoot>
 </table>
 
+{{ form(multiselect_form) }}
+
 <form id="file_multiselect" action="{{ path('file_multiselect') }}">
   <input type="hidden" name="redirect" value="{{ app.request.requestUri }}">
 </form>
