@@ -20,6 +20,7 @@ class MultiselectType extends AbstractType
         $builder->add('files', EntityType::class, [
             'class' => File::class,
             'multiple' => true,
+            'expanded' => true,
             'query_builder' => function (EntityRepository $er) use ($folder) {
                 $qb = $er->createQueryBuilder('f')
                     ->where('f.browser = 1')

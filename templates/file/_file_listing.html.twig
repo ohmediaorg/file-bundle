@@ -19,10 +19,12 @@
   },
 } %}
 
-{% macro file_row(file, attributes) %}
+{% macro file_row(file, attributes, multiselect_form) %}
+  {% set checkbox = multiselect_form.files.children[file.id] %}
+
   <tr>
     <td>
-      <input type="checkbox" name="file_ids[]" value="{{ file.id }}" class="form-check-input" multiple form="file_multiselect" />
+      <input type="checkbox" name="{{ checkbox.vars.full_name }}" value="{{ file.id }}" class="form-check-input" multiple form="{{ multiselect_form.vars.id }}" />
     </td>
     <td style="font-size:1.5rem;text-align:center">
       {% if file.image %}
@@ -237,7 +239,7 @@
   {% for item in items %}
     {% set total_size = total_size + item.size %}
     {% if is_file_entity(item) %}
-      {{ _self.file_row(item, attributes) }}
+      {{ _self.file_row(item, attributes, multiselect_form) }}
     {% elseif is_file_folder_entity(item) %}
       {{ _self.file_folder_row(item, attributes) }}
     {% endif %}
@@ -253,11 +255,10 @@
   </tfoot>
 </table>
 
-{{ form(multiselect_form) }}
+{# files checkboxes are rendered inside of file_row macro #}
+{% do multiselect_form.files.setRendered %}
 
-<form id="file_multiselect" action="{{ path('file_multiselect') }}">
-  <input type="hidden" name="redirect" value="{{ app.request.requestUri }}">
-</form>
+{{ form(multiselect_form) }}
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
