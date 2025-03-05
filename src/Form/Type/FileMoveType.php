@@ -2,9 +2,9 @@
 
 namespace OHMedia\FileBundle\Form\Type;
 
-use Doctrine\ORM\EntityRepository;
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
+use OHMedia\FileBundle\Service\FileBrowser;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -12,6 +12,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class FileMoveType extends AbstractType
 {
+    public function __construct(private FileBrowser $fileBrowser)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -19,11 +23,7 @@ class FileMoveType extends AbstractType
                 'class' => FileFolder::class,
                 'label' => 'Destination Folder',
                 'required' => false,
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('ff')
-                        ->where('ff.browser = 1')
-                        ->orderBy('LOWER(ff.name)', 'ASC');
-                },
+                'choices' => $this->fileBrowser->getFolderChoices(),
                 'placeholder' => '/',
                 'choice_label' => function (FileFolder $folder) {
                     return '/'.$folder->getPath();
