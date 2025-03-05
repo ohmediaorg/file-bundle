@@ -271,7 +271,11 @@
         <h5 class="modal-title">Multiselect Move</h5>
       </div>
       <div class="modal-body">
-        {{ form_row(multiselect_form.folder) }}
+        {{ form_row(multiselect_form.folder, {
+          attr: {
+            form: multiselect_form_id,
+          },
+        }) }}
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -287,7 +291,7 @@
       <div class="modal-header">
         <h5 class="modal-title">Multiselect Delete</h5>
       </div>
-      <div class="modal-body">Are you sure you want to delete the selected files? The file must have the {{ bootstrap_icon('trash-fill') }} icon to be deleted.</div>
+      <div class="modal-body">Are you sure you want to delete the selected files? The selected file must have the <span class="badge text-bg-danger">{{ bootstrap_icon('trash-fill') }}</span> icon to be deleted.</div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         <button type="submit" class="btn btn-primary" id="{{ multiselect_form.delete.vars.id }}" name="{{ multiselect_form.delete.vars.full_name }}" form="{{ multiselect_form_id }}">Delete</button>
@@ -332,11 +336,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const dropdown = document.getElementById('multiselect_dropdown');
 
-  const fileCheckboxes = form.elements['{{ multiselect_form.files.vars.full_name }}[]'];
+  let fileCheckboxes = form.elements['{{ multiselect_form.files.vars.full_name }}[]'];
+
+  if (!fileCheckboxes) {
+    fileCheckboxes = [];
+  } else if (!(fileCheckboxes instanceof RadioNodeList)) {
+    fileCheckboxes = [fileCheckboxes];
+  }
 
   function toggleDropdown() {
     for (let i = 0; i < fileCheckboxes.length; i++) {
-      if (fileCheckboxes.item(i).checked) {
+      if (fileCheckboxes[i].checked) {
         dropdown.disabled = false;
 
         return;
