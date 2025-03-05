@@ -402,5 +402,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     deleteModal.show();
   });
+
+  const folderSelect = form.elements['{{ multiselect_form.folder.vars.full_name }}'];
+
+  const moveModalCancel = moveModalEl.querySelector('button[type=button]');
+  const deleteModalCancel = deleteModalEl.querySelector('button[type=button]');
+
+  const moveSubmit = form.elements['{{ multiselect_form.move.vars.full_name }}'];
+  const deleteSubmit = form.elements['{{ multiselect_form.delete.vars.full_name }}'];
+
+  moveSubmit.addEventListener('click', (e) => {
+    folderSelect.disabled = true;
+    moveModalCancel.disabled = true;
+    moveSubmit.textContent = 'Working...';
+  });
+
+  deleteSubmit.addEventListener('click', (e) => {
+    deleteModalCancel.disabled = true;
+    deleteSubmit.textContent = 'Working...';
+  });
 });
 </script>
