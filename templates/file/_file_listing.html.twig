@@ -24,7 +24,7 @@
 
   <tr>
     <td>
-      <input type="checkbox" name="{{ checkbox.vars.full_name }}" value="{{ file.id }}" class="form-check-input" multiple form="{{ multiselect_form.vars.id }}" />
+      <input type="checkbox" name="{{ checkbox.vars.full_name }}" value="{{ file.id }}" class="form-check-input" multiple form="multiselect_form" />
     </td>
     <td style="font-size:1.5rem;text-align:center">
       {% if file.image %}
@@ -258,7 +258,11 @@
 {# files checkboxes are rendered inside of file_row macro #}
 {% do multiselect_form.files.setRendered %}
 
-{{ form(multiselect_form) }}
+{{ form(multiselect_form, {
+  attr: {
+    id: 'multiselect_form',
+  },
+}) }}
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

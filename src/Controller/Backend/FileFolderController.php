@@ -114,6 +114,9 @@ class FileFolderController extends AbstractController
 
         $multiselectForm = $this->createForm(MultiselectType::class, null, [
             'folder' => $folder,
+            'action' => $this->generateUrl('file_multiselect_with_folder', [
+                'id' => $folder->getId(),
+            ]),
         ]);
 
         return $this->render('@OHMediaFile/file_folder/file_folder_view.html.twig', [
@@ -122,7 +125,7 @@ class FileFolderController extends AbstractController
             'items' => $items,
             'new_file' => $newFile,
             'new_folder' => $newFolder,
-            'multiselect_form' => $multiselectForm,
+            'multiselect_form' => $multiselectForm->createView(),
         ]);
     }
 

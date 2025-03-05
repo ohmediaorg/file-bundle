@@ -48,13 +48,15 @@ class FileController extends AbstractController
 
         $items = $fileBrowser->getListing();
 
-        $multiselectForm = $this->createForm(MultiselectType::class);
+        $multiselectForm = $this->createForm(MultiselectType::class, null, [
+            'action' => $this->generateUrl('file_multiselect'),
+        ]);
 
         return $this->render('@OHMediaFile/file/file_index.html.twig', [
             'items' => $items,
             'new_file' => $newFile,
             'new_folder' => $newFolder,
-            'multiselect_form' => $multiselectForm,
+            'multiselect_form' => $multiselectForm->createView(),
         ]);
     }
 
@@ -81,15 +83,21 @@ class FileController extends AbstractController
                     $this->fileRepository->save($file, true);
                 }
             }
+
+            $this->addFlash('notice', 'The files were moved successfully.');
         } elseif ($form->get('delete')->isClicked()) {
-            foreach ($files as $files) {
+            foreach ($files as $file) {
                 if ($this->isGranted(FileVoter::DELETE, $file)) {
-                    $fileRepository->remove($file, true);
+                    $this->fileRepository->remove($file, true);
                 }
             }
+
+            $this->addFlash('notice', 'The files were deleted successfully.');
         }
 
-        return new JsonResponse();
+        return $fileFolder
+            ? $this->redirectToRoute('file_folder_view', ['id' => $fileFolder->getId()])
+            : $this->redirectToRoute('file_index');
     }
 
     #[Route('/file/create', name: 'file_create_no_folder', methods: ['GET', 'POST'])]
