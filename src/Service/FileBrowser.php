@@ -38,7 +38,7 @@ class FileBrowser
             ->getSingleScalarResult();
     }
 
-    public function getListing(FileFolder $parent = null): array
+    public function getListing(?FileFolder $parent = null): array
     {
         $fileQueryBuilder = $this->fileRepository
             ->createQueryBuilder('f')
@@ -99,5 +99,40 @@ class FileBrowser
         }
 
         return $items;
+    }
+
+    public function getFolderChoices(
+        ?FileFolder $parent = null,
+        bool $includeParent = true,
+        bool $includeSubfolders = true,
+    ): array {
+        $qb = $this->fileFolderRepository->createQueryBuilder('ff');
+        $qb->where('ff.browser = 1');
+
+        if ($parent && !$includeSubfolders) {
+            $subfolders = $parent->getSubfolders();
+
+            $ids = array_map(function ($folder) {
+                return $folder->getId();
+            }, $subfolders);
+
+            if (!$includeParent) {
+                $ids[] = $parent->getId();
+            }
+
+            $qb->andWhere('ff.id NOT IN (:ids)')
+                ->setParameter('ids', $ids);
+        } elseif ($parent && !$includeParent) {
+            $qb->andWhere('ff.id <> :id')
+                ->setParameter('id', $parent->getId());
+        }
+
+        $result = $qb->getQuery()->getResult();
+
+        usort($result, function (FileFolder $a, FileFolder $b) {
+            return $a->getPath() <=> $b->getPath();
+        });
+
+        return $result;
     }
 }

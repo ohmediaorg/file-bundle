@@ -9,6 +9,8 @@ use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Form\Type\FileCreateType;
 use OHMedia\FileBundle\Form\Type\FileEditType;
 use OHMedia\FileBundle\Form\Type\FileMoveType;
+use OHMedia\FileBundle\Form\Type\MultiselectType;
+use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Security\Voter\FileVoter;
 use OHMedia\FileBundle\Service\FileBrowser;
@@ -16,6 +18,7 @@ use OHMedia\FileBundle\Util\FileUtil;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -45,11 +48,56 @@ class FileController extends AbstractController
 
         $items = $fileBrowser->getListing();
 
+        $multiselectForm = $this->createForm(MultiselectType::class, null, [
+            'action' => $this->generateUrl('file_multiselect'),
+        ]);
+
         return $this->render('@OHMediaFile/file/file_index.html.twig', [
             'items' => $items,
             'new_file' => $newFile,
             'new_folder' => $newFolder,
+            'multiselect_form' => $multiselectForm->createView(),
         ]);
+    }
+
+    #[Route('/files/multiselect', name: 'file_multiselect', methods: ['POST'])]
+    #[Route('/files/multiselect/{id}', name: 'file_multiselect_with_folder', methods: ['POST'])]
+    public function multiselect(
+        #[MapEntity(id: 'id')] ?FileFolder $fileFolder,
+        Request $request,
+    ): Response {
+        $form = $this->createForm(MultiselectType::class, null, [
+            'folder' => $fileFolder,
+        ]);
+
+        $form->handleRequest($request);
+
+        $files = $form->get('files')->getData();
+
+        if ($form->get('move')->isClicked()) {
+            $parent = $form->get('folder')->getData();
+
+            foreach ($files as $file) {
+                if ($this->isGranted(FileVoter::MOVE, $file)) {
+                    $file->setFolder($parent);
+                    $this->fileRepository->save($file, true);
+                }
+            }
+
+            $this->addFlash('notice', 'The files were moved successfully.');
+        } elseif ($form->get('delete')->isClicked()) {
+            foreach ($files as $file) {
+                if ($this->isGranted(FileVoter::DELETE, $file)) {
+                    $this->fileRepository->remove($file, true);
+                }
+            }
+
+            $this->addFlash('notice', 'The files were deleted successfully.');
+        }
+
+        return $fileFolder
+            ? $this->redirectToRoute('file_folder_view', ['id' => $fileFolder->getId()])
+            : $this->redirectToRoute('file_index');
     }
 
     #[Route('/file/create', name: 'file_create_no_folder', methods: ['GET', 'POST'])]
@@ -364,5 +412,12 @@ class FileController extends AbstractController
         array_unshift($breadcrumbs, $indexBreadcrumb);
 
         return $breadcrumbs;
+    }
+
+    #[Route('/file/{id}/can-delete', name: 'file_can_delete', methods: ['GET'])]
+    public function canDelete(
+        #[MapEntity(id: 'id')] File $file,
+    ): Response {
+        return new JsonResponse($this->isGranted(FileVoter::DELETE, $file));
     }
 }

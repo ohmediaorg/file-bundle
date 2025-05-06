@@ -9,12 +9,14 @@ use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Form\Type\FileFolderCreateType;
 use OHMedia\FileBundle\Form\Type\FileFolderEditType;
 use OHMedia\FileBundle\Form\Type\FileFolderMoveType;
+use OHMedia\FileBundle\Form\Type\MultiselectType;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Security\Voter\FileFolderVoter;
 use OHMedia\FileBundle\Service\FileBrowser;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -110,12 +112,20 @@ class FileFolderController extends AbstractController
 
         $items = $fileBrowser->getListing($folder);
 
+        $multiselectForm = $this->createForm(MultiselectType::class, null, [
+            'folder' => $folder,
+            'action' => $this->generateUrl('file_multiselect_with_folder', [
+                'id' => $folder->getId(),
+            ]),
+        ]);
+
         return $this->render('@OHMediaFile/file_folder/file_folder_view.html.twig', [
             'breadcrumbs' => $this->getBreadcrumbs($folder),
             'folder' => $folder,
             'items' => $items,
             'new_file' => $newFile,
             'new_folder' => $newFolder,
+            'multiselect_form' => $multiselectForm->createView(),
         ]);
     }
 
@@ -315,5 +325,12 @@ class FileFolderController extends AbstractController
         array_unshift($breadcrumbs, $indexBreadcrumb);
 
         return $breadcrumbs;
+    }
+
+    #[Route('/folder/{id}/can-delete', name: 'file_folder_can_delete', methods: ['GET'])]
+    public function canDelete(
+        #[MapEntity(id: 'id')] FileFolder $folder,
+    ): Response {
+        return new JsonResponse($this->isGranted(FileFolderVoter::DELETE, $folder));
     }
 }

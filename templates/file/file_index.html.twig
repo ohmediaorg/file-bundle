@@ -23,34 +23,38 @@
 } %}
 
 <div class="btn-group btn-group-sm" role="group">
-  <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-    {{ bootstrap_icon('plus') }}
-    New
-  </button>
-  <ul class="dropdown-menu">
-    {% if is_granted(attributes.folder.create, new_folder) %}
+  {% include '@OHMediaFile/file/_file_multiselect.html.twig' %}
+
+  <div class="btn-group btn-group-sm" role="group">
+    <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      {{ bootstrap_icon('plus') }}
+      New
+    </button>
+    <ul class="dropdown-menu">
+      {% if is_granted(attributes.folder.create, new_folder) %}
+        <li>
+          <a href="{{ path('file_folder_create_no_folder') }}" class="dropdown-item">
+            {{ bootstrap_icon('folder-fill') }}
+            Folder
+          </a>
+        </li>
+      {% endif %}
+      {% if is_granted(attributes.file.create, new_file) %}
       <li>
-        <a href="{{ path('file_folder_create_no_folder') }}" class="dropdown-item">
-          {{ bootstrap_icon('folder-fill') }}
-          Folder
+        <a href="{{ path('file_create_no_folder') }}" class="dropdown-item">
+          {{ bootstrap_icon('file-earmark-fill') }}
+          File
         </a>
       </li>
-    {% endif %}
-    {% if is_granted(attributes.file.create, new_file) %}
-    <li>
-      <a href="{{ path('file_create_no_folder') }}" class="dropdown-item">
-        {{ bootstrap_icon('file-earmark-fill') }}
-        File
-      </a>
-    </li>
-      <li>
-        <a href="{{ path('image_create_no_folder') }}" class="dropdown-item">
-          {{ bootstrap_icon('file-earmark-image') }}
-          Image
-        </a>
-      </li>
-    {% endif %}
-  </ul>
+        <li>
+          <a href="{{ path('image_create_no_folder') }}" class="dropdown-item">
+            {{ bootstrap_icon('file-earmark-image') }}
+            Image
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
 </div>
 {% endblock %}
 
@@ -65,6 +69,7 @@
       items: items,
       back: false,
       parent: null,
+      multiselect_form: multiselect_form,
     } only %}
   </div>
 </div>

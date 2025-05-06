@@ -320,7 +320,7 @@ class File
     {
         if (!$this->resizes->contains($resize)) {
             $this->resizes->add($resize);
-            $resize->setImage($this);
+            $resize->setResizeParent($this);
         }
 
         return $this;
@@ -330,8 +330,8 @@ class File
     {
         if ($this->resizes->removeElement($resize)) {
             // set the owning side to null (unless already changed)
-            if ($resize->getImage() === $this) {
-                $resize->setImage(null);
+            if ($resize->setResizeParent() === $this) {
+                $resize->setResizeParent(null);
             }
         }
 

@@ -20,7 +20,7 @@ class FileLifecycle
     public function __construct(
         private Connection $connection,
         private FileRepository $fileRepository,
-        private FileManager $fileManager
+        private FileManager $fileManager,
     ) {
         $this->fileSystem = new Filesystem();
         $this->slugger = new AsciiSlugger();
@@ -181,6 +181,8 @@ class FileLifecycle
         if ($imageSize) {
             $width = $imageSize[0];
             $height = $imageSize[1];
+
+            $file->setImage(true);
         }
 
         $file

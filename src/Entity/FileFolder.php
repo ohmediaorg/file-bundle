@@ -216,4 +216,28 @@ class FileFolder
 
         return $size;
     }
+
+    public function getChildCount(): int
+    {
+        $count = $this->files->count();
+
+        foreach ($this->folders as $folder) {
+            $count += $folder->getChildCount();
+        }
+
+        return $count;
+    }
+
+    public function getSubFolders(): array
+    {
+        $subfolders = [];
+
+        foreach ($this->folders as $folder) {
+            $subfolders[] = $folder;
+
+            $subfolders = array_merge($subfolders, $folder->getSubFolders());
+        }
+
+        return $subfolders;
+    }
 }

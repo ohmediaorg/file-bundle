@@ -107,6 +107,18 @@ services:
         arguments: ["@oh_media_file.file_manager", "@oh_media_file.file_repository"]
         tags: ["form.type"]
 
+    OHMedia\FileBundle\Form\Type\FileMoveType:
+        arguments: ["@oh_media_file.file_browser"]
+        tags: ["form.type"]
+
+    OHMedia\FileBundle\Form\Type\FileFolderMoveType:
+        arguments: ["@oh_media_file.file_browser"]
+        tags: ["form.type"]
+
+    OHMedia\FileBundle\Form\Type\MultiselectType:
+        arguments: ["@oh_media_file.file_browser"]
+        tags: ["form.type"]
+
     OHMedia\FileBundle\Repository\FileRepository:
         autowire: true
         tags: ["doctrine.repository_service"]
