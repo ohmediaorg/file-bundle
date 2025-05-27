@@ -1,6 +1,6 @@
 {%- block file_entity_widget -%}
-    <div id="{{ form.vars.id }}" {{ current_file ? DATA_ATTRIBUTE : '' }}>
-        {% if current_file %}
+    <div id="{{ form.vars.id }}" {{ value ? DATA_ATTRIBUTE : '' }}>
+        {% if value %}
             {{ form_widget(form.action, {
               attr: {'class': 'mb-3'}
             }) }}
