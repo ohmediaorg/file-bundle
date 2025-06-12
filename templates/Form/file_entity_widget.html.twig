@@ -1,12 +1,12 @@
 {%- block file_entity_widget -%}
-    <div id="{{ form.vars.id }}" {{ value ? DATA_ATTRIBUTE : '' }}>
-        {% if value %}
+    <div id="{{ form.vars.id }}" {{ form.action is defined ? DATA_ATTRIBUTE : '' }}>
+        {% if form.action is defined %}
             {{ form_widget(form.action, {
-              attr: {'class': 'mb-3'}
+                attr: {'class': 'mb-3'}
             }) }}
 
             {{ form_row(form.file, {
-              attr: {style: 'display:none'}
+                attr: {style: 'display:none'}
             }) }}
         {% else %}
             {{ form_row(form.file) }}
