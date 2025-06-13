@@ -203,6 +203,10 @@ class FileEntityType extends AbstractType
             'file_label' => false,
             'image' => null,
             'show_alt' => true,
+            'error_bubbling' => false,
+            'error_mapping' => [
+                '.' => 'file',
+            ],
         ]);
     }
 
