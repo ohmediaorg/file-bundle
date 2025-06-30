@@ -10,6 +10,7 @@ use Doctrine\Persistence\Proxy;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\UtilityBundle\Entity\BlameableEntityTrait;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: FileRepository::class)]
 #[ORM\Index(columns: ['token'])]
@@ -56,6 +57,7 @@ class File
     private ?int $height = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $alt = null;
 
     #[ORM\Column(options: ['default' => false])]
