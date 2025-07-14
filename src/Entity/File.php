@@ -56,8 +56,8 @@ class File
     #[ORM\Column(type: Types::SMALLINT, nullable: true, options: ['unsigned' => true])]
     private ?int $height = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Length(max: 255)]
+    #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Length(max: 50)]
     private ?string $alt = null;
 
     #[ORM\Column(options: ['default' => false])]
