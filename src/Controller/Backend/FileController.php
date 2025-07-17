@@ -10,7 +10,6 @@ use OHMedia\FileBundle\Form\Type\FileCreateType;
 use OHMedia\FileBundle\Form\Type\FileEditType;
 use OHMedia\FileBundle\Form\Type\FileMoveType;
 use OHMedia\FileBundle\Form\Type\MultiselectType;
-use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Security\Voter\FileVoter;
 use OHMedia\FileBundle\Service\FileBrowser;
@@ -170,7 +169,7 @@ class FileController extends AbstractController
             'max_size_bytes' => $maxSizeBytes,
         ]);
 
-        $form->add('submit', SubmitType::class);
+        $form->add('save', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -211,7 +210,7 @@ class FileController extends AbstractController
 
         $form = $this->createForm(FileEditType::class, $file);
 
-        $form->add('submit', SubmitType::class);
+        $form->add('save', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -254,7 +253,7 @@ class FileController extends AbstractController
 
         $form = $this->createForm(FileMoveType::class, $file);
 
-        $form->add('submit', SubmitType::class);
+        $form->add('save', SubmitType::class);
 
         $form->handleRequest($request);
 

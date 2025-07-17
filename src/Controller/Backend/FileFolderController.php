@@ -63,7 +63,7 @@ class FileFolderController extends AbstractController
 
         $form = $this->createForm(FileFolderCreateType::class, $folder);
 
-        $form->add('submit', SubmitType::class);
+        $form->add('save', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -142,7 +142,7 @@ class FileFolderController extends AbstractController
 
         $form = $this->createForm(FileFolderEditType::class, $folder);
 
-        $form->add('submit', SubmitType::class);
+        $form->add('save', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -183,7 +183,7 @@ class FileFolderController extends AbstractController
 
         $form = $this->createForm(FileFolderMoveType::class, $folder);
 
-        $form->add('submit', SubmitType::class);
+        $form->add('save', SubmitType::class);
 
         $form->handleRequest($request);
 
