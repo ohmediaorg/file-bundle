@@ -2,6 +2,8 @@
 
 namespace OHMedia\FileBundle\Util;
 
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+
 class FileUtil
 {
     public static function getExtension($filepath): string
@@ -21,6 +23,11 @@ class FileUtil
         return 0 !== $origW
             ? intval(($origH / $origW) * $targetW)
             : 0;
+    }
+
+    public static function getMaxFileSizeFormatted(): string
+    {
+        return self::formatBytesBinary(UploadedFile::getMaxFilesize(), 0);
     }
 
     public static function getBytes(string $byteString)
