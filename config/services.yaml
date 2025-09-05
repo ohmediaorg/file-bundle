@@ -159,5 +159,9 @@ services:
         autowire: true
         tags: ["oh_media_backend.nav_item_provider"]
 
+    OHMedia\FileBundle\Service\DownloadNavLinkProvider:
+        autowire: true
+        tags: ["oh_media_backend.developer_only_nav_link_provider"]
+
     OHMedia\FileBundle\Service\FileEntityChoice:
         tags: ["oh_media_security.entity_choice"]
