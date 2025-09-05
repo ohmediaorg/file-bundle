@@ -16,11 +16,7 @@ class DirectoryCleaner implements CleanerInterface
     {
         $directory = $this->fileManager->getAbsoluteUploadDir();
 
-        foreach (scandir($directory) as $item) {
-            if ('.' === $item || '..' === $item) {
-                continue;
-            }
-
+        foreach ($this->getDirectoryItems($directory) as $item) {
             if (is_dir($directory.'/'.$item)) {
                 $this->cleanDir($directory.'/'.$item);
             }
@@ -29,11 +25,7 @@ class DirectoryCleaner implements CleanerInterface
 
     private function cleanDir(string $directory): void
     {
-        foreach (scandir($directory) as $item) {
-            if ('.' === $item || '..' === $item) {
-                continue;
-            }
-
+        foreach ($this->getDirectoryItems($directory) as $item) {
             if (is_dir($directory.'/'.$item)) {
                 $this->cleanDir($directory.'/'.$item);
             }
@@ -42,16 +34,27 @@ class DirectoryCleaner implements CleanerInterface
         // scan it again to see if it is empty
         $children = 0;
 
-        foreach (scandir($directory) as $item) {
-            if ('.' === $item || '..' === $item) {
-                continue;
-            }
-
+        foreach ($this->getDirectoryItems($directory) as $item) {
             ++$children;
         }
 
         if (0 === $children) {
             rmdir($directory);
         }
+    }
+
+    private function getDirectoryItems(string $directory): array
+    {
+        $items = [];
+
+        foreach (scandir($directory) as $item) {
+            if ('.' === $item || '..' === $item) {
+                continue;
+            }
+
+            $items[] = $item;
+        }
+
+        return $items;
     }
 }
