@@ -165,3 +165,7 @@ services:
 
     OHMedia\FileBundle\Service\FileEntityChoice:
         tags: ["oh_media_security.entity_choice"]
+
+    OHMedia\FileBundle\Cleanup\DirectoryCleaner:
+        autowire: true
+        tags: ["oh_media_cleanup.cleaner"]
