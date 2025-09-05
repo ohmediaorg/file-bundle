@@ -139,6 +139,10 @@ services:
         tags: ["container.service_subscriber", "controller.service_arguments"]
         autowire: true
 
+    OHMedia\FileBundle\Controller\Backend\FileDownloadController:
+        tags: ["container.service_subscriber", "controller.service_arguments"]
+        autowire: true
+
     OHMedia\FileBundle\Controller\FileController:
         tags: ["container.service_subscriber", "controller.service_arguments"]
         autowire: true

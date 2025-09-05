@@ -8,6 +8,7 @@ use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Service\FileBrowser;
 use OHMedia\FileBundle\Service\FileManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -17,17 +18,19 @@ class FileDownloadController extends AbstractController
     public function __construct(
         private FileBrowser $fileBrowser,
         private FileManager $fileManager,
+        #[Autowire('%kernel.project_dir%')]
+        private string $projectDir,
     ) {
     }
 
     #[Route('/files/download', name: 'file_download', methods: ['GET'])]
-    public function __invoke(): Response
+    public function download(): Response
     {
         if (!$this->getUser() || !$this->getUser()->isTypeDeveloper()) {
             throw $this->createAccessDeniedException('You cannot download the files.');
         }
 
-        $zipFile = __DIR__.microtime().'.zip';
+        $zipFile = $this->projectDir.'/'.uniqid().'.zip';
 
         $zipArchive = new \ZipArchive();
 
@@ -40,10 +43,22 @@ class FileDownloadController extends AbstractController
         foreach ($items as $item) {
             $this->addToZipArchive($zipArchive, $item, 'files/');
         }
+
+        $zipArchive->close();
+
+        $zip = file_get_contents($zipFile);
+
+        unlink($zipFile);
+
+        $response = new Response($zip);
+        $response->headers->set('Content-Type', 'application/zip');
+        $response->headers->set('Content-Disposition', 'attachment; filename="files.zip"');
+
+        return $response;
     }
 
     private function addToZipArchive(
-        ZipArchive $zipArchive,
+        \ZipArchive $zipArchive,
         File|FileFolder $item,
         string $path,
     ): void {
