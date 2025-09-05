@@ -64,11 +64,19 @@ class FileDownloadController extends AbstractController
     ): void {
         if ($item instanceof File) {
             $filename = sprintf(
-                '%s-%s.%s',
+                '%s.%s',
                 $item->getName(),
-                $item->getId(),
                 $item->getExt(),
             );
+
+            if (false !== $zipArchive->locateName($path.$filename)) {
+                $filename = sprintf(
+                    '%s-%s.%s',
+                    $item->getName(),
+                    $item->getId(),
+                    $item->getExt(),
+                );
+            }
 
             $zipArchive->addFile(
                 $this->fileManager->getAbsolutePath($item),
