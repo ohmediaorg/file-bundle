@@ -139,6 +139,10 @@ services:
         tags: ["container.service_subscriber", "controller.service_arguments"]
         autowire: true
 
+    OHMedia\FileBundle\Controller\Backend\FileDownloadController:
+        tags: ["container.service_subscriber", "controller.service_arguments"]
+        autowire: true
+
     OHMedia\FileBundle\Controller\FileController:
         tags: ["container.service_subscriber", "controller.service_arguments"]
         autowire: true
@@ -155,5 +159,13 @@ services:
         autowire: true
         tags: ["oh_media_backend.nav_item_provider"]
 
+    OHMedia\FileBundle\Service\DownloadNavLinkProvider:
+        autowire: true
+        tags: ["oh_media_backend.developer_only_nav_link_provider"]
+
     OHMedia\FileBundle\Service\FileEntityChoice:
         tags: ["oh_media_security.entity_choice"]
+
+    OHMedia\FileBundle\Cleanup\DirectoryCleaner:
+        autowire: true
+        tags: ["oh_media_cleanup.cleaner"]
