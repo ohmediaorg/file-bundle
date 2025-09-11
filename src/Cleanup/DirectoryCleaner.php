@@ -32,13 +32,7 @@ class DirectoryCleaner implements CleanerInterface
         }
 
         // scan it again to see if it is empty
-        $children = 0;
-
-        foreach ($this->getDirectoryItems($directory) as $item) {
-            ++$children;
-        }
-
-        if (0 === $children) {
+        if (!$this->getDirectoryItems($directory)) {
             rmdir($directory);
         }
     }
