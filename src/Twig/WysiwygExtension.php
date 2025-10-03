@@ -51,15 +51,26 @@ class WysiwygExtension extends AbstractWysiwygExtension
             return '';
         }
 
+        // not dealing with 0 or negatives
+        if ($width < 1) {
+            $width = null;
+        }
+
+        if ($height < 1) {
+            $height = null;
+        }
+
         $attributes = [];
 
         if ($width && $height) {
             $ratio = $width / $height;
 
             if ($ratio > 1) {
+                // width is larger
                 $attributes['width'] = min($width, $this->maxImageDimension);
                 $attributes['height'] = $attributes['width'] / $ratio;
             } else {
+                // height is larger or equal
                 $attributes['height'] = min($height, $this->maxImageDimension);
                 $attributes['width'] = $attributes['height'] * $ratio;
             }
