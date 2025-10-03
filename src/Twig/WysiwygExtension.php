@@ -6,7 +6,6 @@ use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Service\FileManager;
 use OHMedia\FileBundle\Service\ImageManager;
 use OHMedia\WysiwygBundle\Twig\AbstractWysiwygExtension;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Twig\TwigFunction;
 
 class WysiwygExtension extends AbstractWysiwygExtension
@@ -15,8 +14,6 @@ class WysiwygExtension extends AbstractWysiwygExtension
         private FileManager $fileManager,
         private FileRepository $fileRepository,
         private ImageManager $imageManager,
-        #[Autowire('%oh_media_file.file_browser.max_image_dimension%')]
-        private int $maxImageDimension
     ) {
     }
 
@@ -51,37 +48,11 @@ class WysiwygExtension extends AbstractWysiwygExtension
             return '';
         }
 
-        // not dealing with 0 or negatives
-        if ($width < 1) {
-            $width = null;
-        }
+        list($width, $height) = $this->imageManager->constrainWidthAndHeight($width, $height);
 
-        if ($height < 1) {
-            $height = null;
-        }
-
-        $attributes = [];
-
-        if ($width && $height) {
-            $ratio = $width / $height;
-
-            if ($ratio > 1) {
-                // width is larger
-                $attributes['width'] = min($width, $this->maxImageDimension);
-                $attributes['height'] = $attributes['width'] / $ratio;
-            } else {
-                // height is larger or equal
-                $attributes['height'] = min($height, $this->maxImageDimension);
-                $attributes['width'] = $attributes['height'] * $ratio;
-            }
-        } elseif ($width) {
-            $attributes['width'] = min($width, $this->maxImageDimension);
-        } elseif ($height) {
-            $attributes['height'] = min($height, $this->maxImageDimension);
-        } else {
-            $attributes['width'] = min($image->getWidth(), $this->maxImageDimension);
-        }
-
-        return $this->imageManager->render($image, $attributes);
+        return $this->imageManager->render($image, [
+            'width' => $width,
+            'height' => $height,
+        ]);
     }
 }

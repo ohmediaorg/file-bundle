@@ -6,13 +6,50 @@ use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Util\FileUtil;
 use OHMedia\FileBundle\Util\MimeTypeUtil;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class ImageManager
 {
     public function __construct(
         private FileManager $fileManager,
-        private FileRepository $fileRepository
+        private FileRepository $fileRepository,
+        #[Autowire('%oh_media_file.file_browser.max_image_dimension%')]
+        private int $maxImageDimension
     ) {
+    }
+
+    public function constrainWidthAndHeight(?int $width, ?int $height): array
+    {
+        // not dealing with 0 or negatives
+        if ($width < 1) {
+            $width = null;
+        }
+
+        if ($height < 1) {
+            $height = null;
+        }
+
+        if ($width && $height) {
+            $ratio = $width / $height;
+
+            if ($ratio > 1) {
+                // width is larger
+                $width = min($width, $this->maxImageDimension);
+                $height = $width / $ratio;
+            } else {
+                // height is larger or equal
+                $height = min($height, $this->maxImageDimension);
+                $width = $height * $ratio;
+            }
+        } elseif ($width) {
+            $width = min($width, $this->maxImageDimension);
+        } elseif ($height) {
+            $height = min($height, $this->maxImageDimension);
+        } else {
+            $width = min($image->getWidth(), $this->maxImageDimension);
+        }
+
+        return [$width, $height];
     }
 
     public function getImagePath(File $file, ?int $width = null, ?int $height = null)
