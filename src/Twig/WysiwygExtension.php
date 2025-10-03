@@ -15,8 +15,8 @@ class WysiwygExtension extends AbstractWysiwygExtension
         private FileManager $fileManager,
         private FileRepository $fileRepository,
         private ImageManager $imageManager,
-        #[Autowire('%oh_media_file.file_browser.default_image_width%')]
-        private int $defaultImageWidth
+        #[Autowire('%oh_media_file.file_browser.max_image_dimension%')]
+        private int $maxImageDimension
     ) {
     }
 
@@ -40,7 +40,7 @@ class WysiwygExtension extends AbstractWysiwygExtension
         return $file ? $this->fileManager->getWebPath($file) : '';
     }
 
-    public function image(int $id)
+    public function image(int $id, ?int $width = null, ?int $height = null)
     {
         $image = $id ? $this->fileRepository->findOneBy([
             'id' => $id,
@@ -53,8 +53,22 @@ class WysiwygExtension extends AbstractWysiwygExtension
 
         $attributes = [];
 
-        if ($image->getWidth() > $this->defaultImageWidth) {
-            $attributes['width'] = $this->defaultImageWidth;
+        if ($width && $height) {
+            $ratio = $width / $height;
+
+            if ($ratio > 1) {
+                $attributes['width'] = min($width, $this->maxImageDimension);
+                $attributes['height'] = $attributes['width'] / $ratio;
+            } else {
+                $attributes['height'] = min($height, $this->maxImageDimension);
+                $attributes['width'] = $attributes['height'] * $ratio;
+            }
+        } elseif ($width) {
+            $attributes['width'] = min($width, $this->maxImageDimension);
+        } elseif ($height) {
+            $attributes['height'] = min($height, $this->maxImageDimension);
+        } else {
+            $attributes['width'] = min($image->getWidth(), $this->maxImageDimension);
         }
 
         return $this->imageManager->render($image, $attributes);
