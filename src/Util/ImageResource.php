@@ -74,6 +74,10 @@ class ImageResource
             $im = imagecreatefrompng($filepath);
         } elseif ('gif' === $ext) {
             $im = imagecreatefromgif($filepath);
+        } elseif ('webp' === $ext) {
+            $im = imagecreatefromwebp($filepath);
+        } elseif ('bmp' === $ext) {
+            $im = imagecreatefrombmp($filepath);
         }
 
         if ($im instanceof \GdImage) {
@@ -237,7 +241,7 @@ class ImageResource
         $this->im->resizeImage($resizeW, $resizeH, \Imagick::FILTER_SINC, 1);
     }
 
-    public function save(string $filepath = null): bool
+    public function save(?string $filepath = null): bool
     {
         if (null === $filepath) {
             $filepath = $this->filepath;
@@ -262,6 +266,10 @@ class ImageResource
             return imagepng($this->im, $filepath, 9);
         } elseif ('gif' === $ext) {
             return imagegif($this->im, $filepath);
+        } elseif ('webp' === $ext) {
+            return imagewebp($this->im, $filepath);
+        } elseif ('bmp' === $ext) {
+            return imagebmp($this->im, $filepath);
         }
 
         return false;

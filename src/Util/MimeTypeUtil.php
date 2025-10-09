@@ -29,14 +29,20 @@ class MimeTypeUtil
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'xlsx',
     ];
 
+    public const BMP = 'image/bmp';
+    public const BMP_MS = 'image/x-ms-bmp';
     public const JPEG = 'image/jpeg';
     public const PNG = 'image/png';
+    public const WEBP = 'image/webp';
 
     public const IMAGE = [
+        self::BMP => 'bmp',
+        self::BMP_MS => 'bmp',
         'image/gif' => 'gif',
         self::JPEG => 'jpeg',
         self::PNG => 'png',
         'image/svg+xml' => 'svg',
+        self::WEBP => 'webp',
     ];
 
     public const TEXT = [
@@ -55,7 +61,13 @@ class MimeTypeUtil
 
     public static function isResizeEligible(string $mimeType)
     {
-        return in_array($mimeType, [self::JPEG, self::PNG]);
+        return in_array($mimeType, [
+            self::BMP,
+            self::BMP_MS,
+            self::JPEG,
+            self::PNG,
+            self::WEBP,
+        ]);
     }
 
     public static function getMimeTypes(array ...$consts): array
@@ -95,13 +107,13 @@ class MimeTypeUtil
             $exts = implode(', ', $exts);
 
             $mimeTypesMessage = sprintf(
-                'Only %s, and %s are accepted for upload.',
+                'Only %s, and %s are accepted for upload. {{ type }} was given.',
                 strtoupper($exts),
                 strtoupper($lastExt)
             );
         } else {
             $mimeTypesMessage = sprintf(
-                'Only %s is accepted for upload.',
+                'Only %s is accepted for upload. {{ type }} was given.',
                 strtoupper($lastExt)
             );
         }
