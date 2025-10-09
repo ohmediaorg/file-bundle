@@ -2,7 +2,7 @@
 
 namespace OHMedia\FileBundle\Service;
 
-use OHMedia\FileBundle\Entity\File as FileEntity;
+use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Repository\FileRepository;
@@ -86,11 +86,11 @@ class FileBrowser
             $items = array_merge($files, $folders);
 
             usort($items, function ($a, $b) {
-                $aProp = $a instanceof FileEntity
+                $aProp = $a instanceof File
                     ? $a->getFilename()
                     : $a->getName();
 
-                $bProp = $b instanceof FileEntity
+                $bProp = $b instanceof File
                     ? $b->getFilename()
                     : $b->getName();
 
