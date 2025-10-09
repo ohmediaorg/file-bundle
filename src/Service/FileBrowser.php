@@ -38,8 +38,11 @@ class FileBrowser
             ->getSingleScalarResult();
     }
 
-    public function getListing(?FileFolder $parent = null): array
-    {
+    public function getListing(
+        ?FileFolder $parent = null,
+        bool $includeImages = true,
+        bool $includeFiles = true,
+    ): array {
         $fileQueryBuilder = $this->fileRepository
             ->createQueryBuilder('f')
             ->where('f.browser = 1');
@@ -50,6 +53,14 @@ class FileBrowser
                 ->setParameter('folder', $parent);
         } else {
             $fileQueryBuilder->andWhere('IDENTITY(f.folder) IS NULL');
+        }
+
+        if ($includeImages && $includeFiles) {
+            // don't need to alter the query
+        } elseif ($includeImages) {
+            $fileQueryBuilder->andWhere('f.image = 1');
+        } elseif ($includeFiles) {
+            $fileQueryBuilder->andWhere('(f.image = 0 OR f.image IS NULL)');
         }
 
         $files = $fileQueryBuilder
