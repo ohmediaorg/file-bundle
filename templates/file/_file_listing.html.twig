@@ -56,9 +56,9 @@
     <td>
       {% if file.image %}
         {{ shortcode('image('~file.id~')') }}
-      {% else %}
-        {{ shortcode('file_href('~file.id~')') }}
       {% endif %}
+
+      {{ shortcode('file_href('~file.id~')') }}
     </td>
     <td>{{ file.updatedAt|datetime }}</td>
     <td>
