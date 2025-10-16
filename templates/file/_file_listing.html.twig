@@ -55,7 +55,7 @@
     <td>{{ file_size_binary(file, 2) }}</td>
     <td>
       {% if file.image %}
-        {{ shortcode('image('~file.id~')') }}
+        {{ shortcode('image('~file.id~')', 'image('~file.id~',%)') }}
       {% endif %}
 
       {{ shortcode('file_href('~file.id~')') }}
