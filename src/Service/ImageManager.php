@@ -18,8 +18,11 @@ class ImageManager
     ) {
     }
 
-    public function constrainWidthAndHeight(?int $width, ?int $height): array
-    {
+    public function constrainWidthAndHeight(
+        File $image,
+        ?int $width,
+        ?int $height
+    ): array {
         // not dealing with 0 or negatives
         if ($width < 1) {
             $width = null;

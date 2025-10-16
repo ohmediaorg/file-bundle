@@ -48,7 +48,14 @@ class WysiwygExtension extends AbstractWysiwygExtension
             return '';
         }
 
-        list($width, $height) = $this->imageManager->constrainWidthAndHeight($width, $height);
+        list(
+            $width,
+            $height,
+        ) = $this->imageManager->constrainWidthAndHeight(
+            $image,
+            $width,
+            $height,
+        );
 
         return $this->imageManager->render($image, [
             'width' => $width,
