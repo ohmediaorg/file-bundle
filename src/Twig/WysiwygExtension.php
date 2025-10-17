@@ -6,7 +6,6 @@ use OHMedia\FileBundle\Repository\FileRepository;
 use OHMedia\FileBundle\Service\FileManager;
 use OHMedia\FileBundle\Service\ImageManager;
 use OHMedia\WysiwygBundle\Twig\AbstractWysiwygExtension;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Twig\TwigFunction;
 
 class WysiwygExtension extends AbstractWysiwygExtension
@@ -15,8 +14,6 @@ class WysiwygExtension extends AbstractWysiwygExtension
         private FileManager $fileManager,
         private FileRepository $fileRepository,
         private ImageManager $imageManager,
-        #[Autowire('%oh_media_file.file_browser.default_image_width%')]
-        private int $defaultImageWidth
     ) {
     }
 
@@ -40,7 +37,7 @@ class WysiwygExtension extends AbstractWysiwygExtension
         return $file ? $this->fileManager->getWebPath($file) : '';
     }
 
-    public function image(int $id)
+    public function image(int $id, ?int $width = null, ?int $height = null)
     {
         $image = $id ? $this->fileRepository->findOneBy([
             'id' => $id,
@@ -51,12 +48,18 @@ class WysiwygExtension extends AbstractWysiwygExtension
             return '';
         }
 
-        $attributes = [];
+        list(
+            $width,
+            $height,
+        ) = $this->imageManager->constrainWidthAndHeight(
+            $image,
+            $width,
+            $height,
+        );
 
-        if ($image->getWidth() > $this->defaultImageWidth) {
-            $attributes['width'] = $this->defaultImageWidth;
-        }
-
-        return $this->imageManager->render($image, $attributes);
+        return $this->imageManager->render($image, [
+            'width' => $width,
+            'height' => $height,
+        ]);
     }
 }

@@ -23,7 +23,7 @@ class OHMediaFileBundle extends AbstractBundle
                         ->max(5120)
                         ->defaultValue(1024)
                     ->end()
-                    ->integerNode('default_image_width')
+                    ->integerNode('max_image_dimension')
                         ->min(100)
                         ->defaultValue(1000)
                     ->end()
@@ -42,7 +42,7 @@ class OHMediaFileBundle extends AbstractBundle
         $containerConfigurator->parameters()
             ->set('oh_media_file.file_browser.enabled', $config['file_browser']['enabled'])
             ->set('oh_media_file.file_browser.limit_mb', $config['file_browser']['limit_mb'])
-            ->set('oh_media_file.file_browser.default_image_width', $config['file_browser']['default_image_width'])
+            ->set('oh_media_file.file_browser.max_image_dimension', $config['file_browser']['max_image_dimension'])
         ;
 
         $this->registerWidget($containerBuilder);
