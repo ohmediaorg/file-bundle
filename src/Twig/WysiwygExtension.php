@@ -37,8 +37,12 @@ class WysiwygExtension extends AbstractWysiwygExtension
         return $file ? $this->fileManager->getWebPath($file) : '';
     }
 
-    public function image(int $id, ?int $width = null, ?int $height = null)
-    {
+    public function image(
+        int $id,
+        ?int $width = null,
+        ?int $height = null,
+        ?array $attributes = null,
+    ) {
         $image = $id ? $this->fileRepository->findOneBy([
             'id' => $id,
             'image' => true,
@@ -57,9 +61,13 @@ class WysiwygExtension extends AbstractWysiwygExtension
             $height,
         );
 
-        return $this->imageManager->render($image, [
-            'width' => $width,
-            'height' => $height,
-        ]);
+        if (null === $attributes) {
+            $attributes = [];
+        }
+
+        $attributes['width'] = $width;
+        $attributes['height'] = $height;
+
+        return $this->imageManager->render($image, $attributes);
     }
 }
