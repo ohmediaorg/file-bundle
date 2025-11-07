@@ -25,7 +25,7 @@ class OHMediaFileBundle extends AbstractBundle
                     ->end()
                     ->integerNode('max_image_dimension')
                         ->min(100)
-                        ->defaultValue(1000)
+                        ->defaultValue(1200)
                     ->end()
                 ->end()
             ->end()
