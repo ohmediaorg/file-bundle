@@ -16,7 +16,7 @@ class FileNavItemProvider extends AbstractNavItemProvider
 
         if ($this->isGranted(FileVoter::INDEX, $file)) {
             return (new NavLink('Files', 'file_index'))
-                ->setIcon('folder-fill');
+                ->setIcon('file-earmark-text');
         }
 
         return null;

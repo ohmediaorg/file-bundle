@@ -318,7 +318,7 @@ class FileFolderController extends AbstractController
             $loopFolder = $loopFolder->getFolder();
         }
 
-        $indexText = '<i class="bi bi-folder-fill"></i> Files';
+        $indexText = '<i class="bi bi-file-earmark-text"></i> Files';
 
         $indexBreadcrumb = new Breadcrumb($indexText, 'file_index');
 
