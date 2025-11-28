@@ -27,14 +27,14 @@
 
   <div class="btn-group btn-group-sm" role="group">
     <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-      {{ bootstrap_icon('plus') }}
+      {{ bootstrap_icon('plus-lg') }}
       New
     </button>
     <ul class="dropdown-menu">
       {% if is_granted(attributes.folder.create, new_folder) %}
         <li>
           <a href="{{ path('file_folder_create_no_folder') }}" class="dropdown-item">
-            {{ bootstrap_icon('folder-fill') }}
+            {{ bootstrap_icon('folder') }}
             Folder
           </a>
         </li>
@@ -42,7 +42,7 @@
       {% if is_granted(attributes.file.create, new_file) %}
       <li>
         <a href="{{ path('file_create_no_folder') }}" class="dropdown-item">
-          {{ bootstrap_icon('file-earmark-fill') }}
+          {{ bootstrap_icon('file-earmark') }}
           File
         </a>
       </li>

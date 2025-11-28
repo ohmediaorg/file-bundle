@@ -36,9 +36,9 @@
           'class': 'd-block',
         }) }}
       {% elseif file.locked %}
-        {{ bootstrap_icon('file-earmark-lock2-fill text-secondary') }}
+        {{ bootstrap_icon('file-earmark-lock text-secondary') }}
       {% else %}
-        {{ bootstrap_icon('file-earmark-fill') }}
+        {{ bootstrap_icon('file-earmark') }}
       {% endif %}
     </td>
     <td>
@@ -46,7 +46,7 @@
         {{ file.filename }}
       </a>
       {% if file.image and file.locked %}
-        {{ bootstrap_icon('lock-fill text-secondary') }}
+        {{ bootstrap_icon('lock text-secondary') }}
       {% endif %}
       {% if file.image and file.alt %}
         <small class="text-muted d-block">{{ file.alt }}</small>
@@ -64,14 +64,14 @@
     <td>
       {% if is_granted(attributes.file.edit, file) %}
         <a href="{{ path('file_edit', {id: file.id}) }}" class="btn btn-sm btn-primary btn-action" title="Edit">
-          {{ bootstrap_icon('pen-fill') }}
+          {{ bootstrap_icon('pencil') }}
           <span class="visually-hidden">Edit</span>
         </a>
       {% endif %}
 
       {% if is_granted(attributes.file.move, file) %}
         <a href="{{ path('file_move', {id: file.id}) }}" class="btn btn-sm btn-primary btn-action" title="Move">
-          {{ bootstrap_icon('folder-fill') }}
+          {{ bootstrap_icon('folder-symlink') }}
           <span class="visually-hidden">Move</span>
         </a>
       {% endif %}
@@ -85,7 +85,7 @@
           {% block button_class %}btn btn-sm btn-secondary{% endblock %}
           {% block button_title %}Lock{% endblock %}
           {% block button_html %}
-            {{ bootstrap_icon('lock-fill') }}
+            {{ bootstrap_icon('lock') }}
             <span class="visually-hidden">Lock</span>
           {% endblock %}
         {% endembed %}
@@ -100,7 +100,7 @@
           {% block button_class %}btn btn-sm btn-success{% endblock %}
           {% block button_title %}Unlock{% endblock %}
           {% block button_html %}
-            {{ bootstrap_icon('unlock-fill') }}
+            {{ bootstrap_icon('unlock') }}
             <span class="visually-hidden">Unlock</span>
           {% endblock %}
         {% endembed %}
@@ -117,7 +117,7 @@
       >
         <input type="hidden" class="btn-check" name="{{ delete_file_csrf_name }}" value="{{ csrf_token(delete_file_csrf_name) }}">
         <button class="btn btn-sm btn-danger" type="submit" title="Delete">
-          <i class="bi bi-trash-fill"></i>
+          {{ bootstrap_icon('trash') }}
           <span class="visually-hidden">Delete</span>
         </button>
       </form>
@@ -146,14 +146,14 @@
     <td>
       {% if is_granted(attributes.folder.edit, folder) %}
         <a href="{{ path('file_folder_edit', {id: folder.id}) }}" class="btn btn-sm btn-primary btn-action" title="Edit">
-          {{ bootstrap_icon('pen-fill') }}
+          {{ bootstrap_icon('pencil') }}
           <span class="visually-hidden">Edit</span>
         </a>
       {% endif %}
 
       {% if is_granted(attributes.folder.move, folder) %}
         <a href="{{ path('file_folder_move', {id: folder.id}) }}" class="btn btn-sm btn-primary btn-action" title="Move">
-          {{ bootstrap_icon('folder-fill') }}
+          {{ bootstrap_icon('folder-symlink') }}
           <span class="visually-hidden">Move</span>
         </a>
       {% endif %}
@@ -167,7 +167,7 @@
           {% block button_class %}btn btn-sm btn-secondary{% endblock %}
           {% block button_title %}Lock{% endblock %}
           {% block button_html %}
-            {{ bootstrap_icon('lock-fill') }}
+            {{ bootstrap_icon('lock') }}
             <span class="visually-hidden">Lock</span>
           {% endblock %}
         {% endembed %}
@@ -182,7 +182,7 @@
           {% block button_class %}btn btn-sm btn-success{% endblock %}
           {% block button_title %}Unlock{% endblock %}
           {% block button_html %}
-            {{ bootstrap_icon('unlock-fill') }}
+            {{ bootstrap_icon('unlock') }}
             <span class="visually-hidden">Unlock</span>
           {% endblock %}
         {% endembed %}
@@ -200,7 +200,7 @@
         >
           <input type="hidden" class="btn-check" name="{{ delete_folder_csrf_name }}" value="{{ csrf_token(delete_folder_csrf_name) }}">
           <button class="btn btn-sm btn-danger" type="submit" title="Delete">
-            <i class="bi bi-trash-fill"></i>
+            {{ bootstrap_icon('trash') }}
             <span class="visually-hidden">Delete</span>
           </button>
         </form>
@@ -230,7 +230,7 @@
     <tr>
       <td>&nbsp;</td>
       <td style="font-size:1.5rem;text-align:center">
-        {{ bootstrap_icon('arrow-up-left-square') }}
+        {{ bootstrap_icon('arrow-left') }}
       </td>
       <td colspan="5">
         <a href="{{ back_path }}">Back</a>
@@ -291,7 +291,7 @@
       <div class="modal-header">
         <h5 class="modal-title">Bulk Delete</h5>
       </div>
-      <div class="modal-body">Are you sure you want to delete the selected files? If a file doesn't have the <span class="badge text-bg-danger">{{ bootstrap_icon('trash-fill') }}</span> icon it won't be bulk deleted.</div>
+      <div class="modal-body">Are you sure you want to delete the selected files? If a file doesn't have the <span class="badge text-bg-danger">{{ bootstrap_icon('trash') }}</span> icon it won't be bulk deleted.</div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         <button type="submit" class="btn btn-primary" id="{{ multiselect_form.delete.vars.id }}" name="{{ multiselect_form.delete.vars.full_name }}" form="{{ multiselect_form_id }}">Delete</button>
