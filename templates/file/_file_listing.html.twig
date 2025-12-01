@@ -24,6 +24,55 @@
 {% macro file_row(file, attributes, multiselect_form, multiselect_form_id) %}
   {% set checkbox = multiselect_form.files.children[file.id] %}
 
+  {% set noun = file.image ? 'Image' : 'File' %}
+  {% set noun_lower = file.image ? 'image' : 'file' %}
+
+  {% set row_actions = [] %}
+
+  {% if is_granted(attributes.file.edit, file) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'file_edit',
+      route_params: {id: file.id},
+      color: 'secondary',
+      text: 'Edit ' ~ noun,
+      icon: 'pencil',
+    }]) %}
+  {% endif %}
+
+  {% if is_granted(attributes.file.move, file) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'file_move',
+      route_params: {id: file.id},
+      color: 'secondary',
+      text: 'Move ' ~ noun,
+      icon: 'folder-symlink',
+    }]) %}
+  {% endif %}
+
+  {% if is_granted(attributes.file.lock, file) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'file_lock',
+      route_params: {id: file.id},
+      color: 'warning',
+      text: 'Lock ' ~ noun,
+      icon: 'lock',
+      csrf_name: 'lock_file_' ~ file.id,
+      confirm: 'Are you sure you want to lock this ' ~ noun_lower ~ '?',
+    }]) %}
+  {% endif %}
+
+  {% if is_granted(attributes.file.unlock, file) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'file_unlock',
+      route_params: {id: file.id},
+      color: 'success',
+      text: 'Unlock ' ~ noun,
+      icon: 'unlock',
+      csrf_name: 'unlock_file_' ~ file.id,
+      confirm: 'Are you sure you want to unlock this ' ~ noun_lower ~ '?',
+    }]) %}
+  {% endif %}
+
   <tr>
     <td>
       <input type="checkbox" name="{{ checkbox.vars.full_name }}" value="{{ file.id }}" class="form-check-input" multiple form="{{ multiselect_form_id }}" title="Select {{ file.filename }} for Bulk Actions" />
@@ -62,70 +111,80 @@
     </td>
     <td>{{ file.updatedAt|datetime }}</td>
     <td>
-      {% if is_granted(attributes.file.edit, file) %}
-        <a href="{{ path('file_edit', {id: file.id}) }}" class="btn btn-sm btn-primary btn-action" title="Edit">
-          {{ bootstrap_icon('pencil') }}
-          <span class="visually-hidden">Edit</span>
-        </a>
-      {% endif %}
+      <div class="row-actions">
+        {% for row_action in row_actions %}
+          {% include '@OHMediaBackend/widget/row_action.html.twig' with {
+            row_action: row_action,
+          } only %}
+        {% endfor %}
 
-      {% if is_granted(attributes.file.move, file) %}
-        <a href="{{ path('file_move', {id: file.id}) }}" class="btn btn-sm btn-primary btn-action" title="Move">
-          {{ bootstrap_icon('folder-symlink') }}
-          <span class="visually-hidden">Move</span>
-        </a>
-      {% endif %}
+        {% set delete_file_csrf_name = 'delete_file_' ~ file.id %}
 
-      {% if is_granted(attributes.file.lock, file) %}
-        {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
-          {% block form_class %}btn-action{% endblock %}
-          {% block form_action %}{{ path('file_lock', {id: file.id}) }}{% endblock %}
-          {% block confirm_message %}Are you sure you want to lock this {{ file.image ? 'image' : 'file' }}?{% endblock %}
-          {% block csrf_name %}lock_file_{{ file.id }}{% endblock %}
-          {% block button_class %}btn btn-sm btn-secondary{% endblock %}
-          {% block button_title %}Lock{% endblock %}
-          {% block button_html %}
-            {{ bootstrap_icon('lock') }}
-            <span class="visually-hidden">Lock</span>
-          {% endblock %}
-        {% endembed %}
-      {% endif %}
-
-      {% if is_granted(attributes.file.unlock, file) %}
-        {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
-          {% block form_class %}btn-action{% endblock %}
-          {% block form_action %}{{ path('file_unlock', {id: file.id}) }}{% endblock %}
-          {% block confirm_message %}Are you sure you want to unlock this {{ file.image ? 'image' : 'file' }}?{% endblock %}
-          {% block csrf_name %}unlock_file_{{ file.id }}{% endblock %}
-          {% block button_class %}btn btn-sm btn-success{% endblock %}
-          {% block button_title %}Unlock{% endblock %}
-          {% block button_html %}
-            {{ bootstrap_icon('unlock') }}
-            <span class="visually-hidden">Unlock</span>
-          {% endblock %}
-        {% endembed %}
-      {% endif %}
-
-      {% set delete_file_csrf_name = 'delete_file_' ~ file.id %}
-
-      <form
-        class="btn-action invisible"
-        method="post"
-        action="{{ path('file_delete', {id: file.id}) }}"
-        data-confirm="Are you sure you want to delete this {{ file.image ? 'image' : 'file' }}?"
-        data-can-delete="{{ path('file_can_delete', {id: file.id}) }}"
-      >
-        <input type="hidden" class="btn-check" name="{{ delete_file_csrf_name }}" value="{{ csrf_token(delete_file_csrf_name) }}">
-        <button class="btn btn-sm btn-danger" type="submit" title="Delete">
-          {{ bootstrap_icon('trash') }}
-          <span class="visually-hidden">Delete</span>
-        </button>
-      </form>
+        <form
+          class="invisible"
+          method="post"
+          action="{{ path('file_delete', {id: file.id}) }}"
+          data-confirm="Are you sure you want to delete this {{ noun_lower }}?"
+          data-can-delete="{{ path('file_can_delete', {id: file.id}) }}"
+        >
+          <input type="hidden" name="{{ delete_file_csrf_name }}" value="{{ csrf_token(delete_file_csrf_name) }}">
+          <button class="btn btn-danger" type="submit" title="Delete {{ noun }}">
+            {{ bootstrap_icon('trash') }}
+            <span class="visually-hidden">Delete {{ noun }}</span>
+          </button>
+        </form>
+      </div>
     </td>
   </tr>
 {% endmacro %}
 
 {% macro file_folder_row(folder, attributes) %}
+  {% set row_actions = [] %}
+
+  {% if is_granted(attributes.folder.edit, folder) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'file_folder_edit',
+      route_params: {id: folder.id},
+      color: 'secondary',
+      text: 'Edit Folder',
+      icon: 'pencil',
+    }]) %}
+  {% endif %}
+
+  {% if is_granted(attributes.folder.move, folder) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'file_folder_move',
+      route_params: {id: folder.id},
+      color: 'secondary',
+      text: 'Move Folder',
+      icon: 'folder-symlink',
+    }]) %}
+  {% endif %}
+
+  {% if is_granted(attributes.folder.lock, folder) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'file_folder_lock',
+      route_params: {id: folder.id},
+      color: 'warning',
+      text: 'Lock Folder',
+      icon: 'lock',
+      csrf_name: 'lock_file_folder_' ~ folder.id,
+      confirm: 'Are you sure you want to lock this folder?',
+    }]) %}
+  {% endif %}
+
+  {% if is_granted(attributes.folder.unlock, folder) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'file_folder_unlock',
+      route_params: {id: folder.id},
+      color: 'success',
+      text: 'Unlock Folder',
+      icon: 'unlock',
+      csrf_name: 'unlock_file_folder_' ~ folder.id,
+      confirm: 'Are you sure you want to unlock this folder?',
+    }]) %}
+  {% endif %}
+
   <tr>
     <td>&nbsp;</td>
     <td style="font-size:1.5rem;text-align:center">
@@ -144,67 +203,31 @@
     <td>&nbsp;</td>
     <td>{{ folder.updatedAt|datetime }}</td>
     <td>
-      {% if is_granted(attributes.folder.edit, folder) %}
-        <a href="{{ path('file_folder_edit', {id: folder.id}) }}" class="btn btn-sm btn-primary btn-action" title="Edit">
-          {{ bootstrap_icon('pencil') }}
-          <span class="visually-hidden">Edit</span>
-        </a>
-      {% endif %}
+      <div class="row-actions">
+        {% for row_action in row_actions %}
+          {% include '@OHMediaBackend/widget/row_action.html.twig' with {
+            row_action: row_action,
+          } only %}
+        {% endfor %}
 
-      {% if is_granted(attributes.folder.move, folder) %}
-        <a href="{{ path('file_folder_move', {id: folder.id}) }}" class="btn btn-sm btn-primary btn-action" title="Move">
-          {{ bootstrap_icon('folder-symlink') }}
-          <span class="visually-hidden">Move</span>
-        </a>
-      {% endif %}
+        {% if folder.getChildCount < 100 %}
+          {% set delete_folder_csrf_name = 'delete_file_folder_' ~ folder.id %}
 
-      {% if is_granted(attributes.folder.lock, folder) %}
-        {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
-          {% block form_class %}btn-action{% endblock %}
-          {% block form_action %}{{ path('file_folder_lock', {id: folder.id}) }}{% endblock %}
-          {% block confirm_message %}Are you sure you want to lock this folder?{% endblock %}
-          {% block csrf_name %}lock_file_folder_{{ folder.id }}{% endblock %}
-          {% block button_class %}btn btn-sm btn-secondary{% endblock %}
-          {% block button_title %}Lock{% endblock %}
-          {% block button_html %}
-            {{ bootstrap_icon('lock') }}
-            <span class="visually-hidden">Lock</span>
-          {% endblock %}
-        {% endembed %}
-      {% endif %}
-
-      {% if is_granted(attributes.folder.unlock, folder) %}
-        {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
-          {% block form_class %}btn-action{% endblock %}
-          {% block form_action %}{{ path('file_folder_unlock', {id: folder.id}) }}{% endblock %}
-          {% block confirm_message %}Are you sure you want to unlock this folder?{% endblock %}
-          {% block csrf_name %}unlock_file_folder_{{ folder.id }}{% endblock %}
-          {% block button_class %}btn btn-sm btn-success{% endblock %}
-          {% block button_title %}Unlock{% endblock %}
-          {% block button_html %}
-            {{ bootstrap_icon('unlock') }}
-            <span class="visually-hidden">Unlock</span>
-          {% endblock %}
-        {% endembed %}
-      {% endif %}
-
-      {% if folder.getChildCount < 100 %}
-        {% set delete_folder_csrf_name = 'delete_file_folder_' ~ folder.id %}
-
-        <form
-          class="btn-action invisible"
-          method="post"
-          action="{{ path('file_folder_delete', {id: folder.id}) }}"
-          data-confirm="Are you sure you want to delete this folder?"
-          data-can-delete="{{ path('file_folder_can_delete', {id: folder.id}) }}"
-        >
-          <input type="hidden" class="btn-check" name="{{ delete_folder_csrf_name }}" value="{{ csrf_token(delete_folder_csrf_name) }}">
-          <button class="btn btn-sm btn-danger" type="submit" title="Delete">
-            {{ bootstrap_icon('trash') }}
-            <span class="visually-hidden">Delete</span>
-          </button>
-        </form>
-      {% endif %}
+          <form
+            class="invisible"
+            method="post"
+            action="{{ path('file_folder_delete', {id: folder.id}) }}"
+            data-confirm="Are you sure you want to delete this folder?"
+            data-can-delete="{{ path('file_folder_can_delete', {id: folder.id}) }}"
+          >
+            <input type="hidden" name="{{ delete_folder_csrf_name }}" value="{{ csrf_token(delete_folder_csrf_name) }}">
+            <button class="btn btn-danger" type="submit" title="Delete Folder">
+              {{ bootstrap_icon('trash') }}
+              <span class="visually-hidden">Delete Folder</span>
+            </button>
+          </form>
+        {% endif %}
+      </div>
     </td>
   </tr>
 {% endmacro %}
