@@ -71,13 +71,20 @@
           </a>
         </li>
       {% endif %}
+      {% if is_granted(attributes.folder.edit, folder) %}
+        <li>
+          <a href="{{ path('file_folder_move', {id: folder.id}) }}" class="dropdown-item">
+            {{ bootstrap_icon('folder-symlink') }} Move
+          </a>
+        </li>
+      {% endif %}
       {% if is_granted(attributes.folder.lock, folder) %}
         <li>
         {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
           {% block form_action %}{{ path('file_folder_lock', {id: folder.id}) }}{% endblock %}
           {% block confirm_message %}Are you sure you want to lock this folder?{% endblock %}
           {% block csrf_name %}lock_file_folder_{{ folder.id }}{% endblock %}
-          {% block button_class %}dropdown-item text-bg-secondary{% endblock %}
+          {% block button_class %}dropdown-item text-bg-warning{% endblock %}
           {% block button_html %}
             {{ bootstrap_icon('lock') }}
             Lock
