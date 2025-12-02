@@ -2,6 +2,7 @@
 
 namespace OHMedia\FileBundle\Controller\Backend;
 
+use OHMedia\BackendBundle\Form\MultiSaveType;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\BootstrapBundle\Component\Breadcrumb;
 use OHMedia\FileBundle\Entity\File;
@@ -16,6 +17,7 @@ use OHMedia\FileBundle\Service\FileBrowser;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -63,7 +65,7 @@ class FileFolderController extends AbstractController
 
         $form = $this->createForm(FileFolderCreateType::class, $folder);
 
-        $form->add('save', SubmitType::class);
+        $form->add('save', MultiSaveType::class);
 
         $form->handleRequest($request);
 
@@ -73,7 +75,7 @@ class FileFolderController extends AbstractController
 
                 $this->addFlash('notice', 'The folder was created successfully.');
 
-                return $this->formRedirect($folder);
+                return $this->formRedirect($folder, $form);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -142,7 +144,7 @@ class FileFolderController extends AbstractController
 
         $form = $this->createForm(FileFolderEditType::class, $folder);
 
-        $form->add('save', SubmitType::class);
+        $form->add('save', MultiSaveType::class);
 
         $form->handleRequest($request);
 
@@ -152,7 +154,7 @@ class FileFolderController extends AbstractController
 
                 $this->addFlash('notice', 'Changes to the folder were saved successfully.');
 
-                return $this->formRedirect($folder);
+                return $this->formRedirect($folder, $form);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -193,7 +195,7 @@ class FileFolderController extends AbstractController
 
                 $this->addFlash('notice', 'The folder was moved successfully.');
 
-                return $this->formRedirect($folder);
+                return $this->viewRedirect($folder, $form);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -233,7 +235,7 @@ class FileFolderController extends AbstractController
             $this->addFlash('notice', 'The folder was locked successfully.');
         }
 
-        return $this->formRedirect($folder);
+        return $this->viewRedirect($folder, $form);
     }
 
     #[Route('/folder/{id}/unlock', name: 'file_folder_unlock', methods: ['POST'])]
@@ -258,14 +260,42 @@ class FileFolderController extends AbstractController
             $this->addFlash('notice', 'The folder was unlocked successfully.');
         }
 
-        return $this->formRedirect($folder);
+        return $this->viewRedirect($folder, $form);
     }
 
-    protected function formRedirect(FileFolder $folder): Response
+    protected function viewRedirect(FileFolder $folder, FormInterface $form): Response
     {
         return $this->redirectToRoute('file_folder_view', [
             'id' => $folder->getId(),
         ]);
+    }
+
+    protected function formRedirect(FileFolder $folder, FormInterface $form): Response
+    {
+        $clickedButtonName = $form->getClickedButton()->getName() ?? null;
+
+        if ('keep_editing' === $clickedButtonName) {
+            return $this->redirectToRoute('file_folder_edit', [
+                'id' => $folder->getId(),
+            ]);
+        } elseif ('add_another' === $clickedButtonName) {
+            $parent = $folder->getFolder();
+
+            if ($parent) {
+                $route = 'file_folder_create_with_folder';
+
+                $params = [
+                    'id' => $parent->getId(),
+                ];
+            } else {
+                $route = 'file_folder_create_no_folder';
+                $params = [];
+            }
+
+            return $this->redirectToRoute($route, $params);
+        } else {
+            return $this->viewRedirect($folder, $form);
+        }
     }
 
     #[Route('/folder/{id}/delete', name: 'file_folder_delete', methods: ['POST'])]
@@ -294,7 +324,7 @@ class FileFolderController extends AbstractController
     protected function deleteRedirect(FileFolder $folder): Response
     {
         if ($parent = $folder->getFolder()) {
-            return $this->formRedirect($parent);
+            return $this->viewRedirect($parent);
         }
 
         return $this->redirectToRoute('file_index');

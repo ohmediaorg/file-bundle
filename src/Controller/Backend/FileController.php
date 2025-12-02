@@ -2,6 +2,7 @@
 
 namespace OHMedia\FileBundle\Controller\Backend;
 
+use OHMedia\BackendBundle\Form\MultiSaveType;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\BootstrapBundle\Component\Breadcrumb;
 use OHMedia\FileBundle\Entity\File;
@@ -17,6 +18,7 @@ use OHMedia\FileBundle\Util\FileUtil;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -169,7 +171,7 @@ class FileController extends AbstractController
             'max_size_bytes' => $maxSizeBytes,
         ]);
 
-        $form->add('save', SubmitType::class);
+        $form->add('save', MultiSaveType::class);
 
         $form->handleRequest($request);
 
@@ -179,7 +181,7 @@ class FileController extends AbstractController
 
                 $this->addFlash('notice', "The $noun was created successfully.");
 
-                return $this->formRedirect($file);
+                return $this->formRedirect($file, $form);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -210,7 +212,7 @@ class FileController extends AbstractController
 
         $form = $this->createForm(FileEditType::class, $file);
 
-        $form->add('save', SubmitType::class);
+        $form->add('save', MultiSaveType::class);
 
         $form->handleRequest($request);
 
@@ -220,7 +222,7 @@ class FileController extends AbstractController
 
                 $this->addFlash('notice', 'The image was edited successfully.');
 
-                return $this->formRedirect($file);
+                return $this->formRedirect($file, $form);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -263,7 +265,7 @@ class FileController extends AbstractController
 
                 $this->addFlash('notice', "The $noun was moved successfully.");
 
-                return $this->formRedirect($file);
+                return $this->parentRedirect($file, $form);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -305,7 +307,7 @@ class FileController extends AbstractController
             $this->addFlash('notice', "The $noun was locked successfully.");
         }
 
-        return $this->formRedirect($file);
+        return $this->parentRedirect($file, $form);
     }
 
     #[Route('/file/{id}/unlock', name: 'file_unlock', methods: ['POST'])]
@@ -332,10 +334,10 @@ class FileController extends AbstractController
             $this->addFlash('notice', "The $noun was unlocked successfully.");
         }
 
-        return $this->formRedirect($file);
+        return $this->parentRedirect($file, $form);
     }
 
-    protected function formRedirect(File $file): Response
+    protected function parentRedirect(File $file, FormInterface $form): Response
     {
         if ($folder = $file->getFolder()) {
             return $this->redirectToRoute('file_folder_view', [
@@ -344,6 +346,38 @@ class FileController extends AbstractController
         }
 
         return $this->redirectToRoute('file_index');
+    }
+
+    protected function formRedirect(File $file, FormInterface $form): Response
+    {
+        $clickedButtonName = $form->getClickedButton()->getName() ?? null;
+
+        if ('keep_editing' === $clickedButtonName) {
+            return $this->redirectToRoute('file_edit', [
+                'id' => $file->getId(),
+            ]);
+        } elseif ('add_another' === $clickedButtonName) {
+            $folder = $file->getFolder();
+
+            if ($folder) {
+                $route = $file->isImage()
+                    ? 'image_create_with_folder'
+                    : 'file_create_with_folder';
+
+                $params = [
+                    'id' => $folder->getId(),
+                ];
+            } else {
+                $route = $file->isImage()
+                    ? 'image_create_no_folder'
+                    : 'file_create_no_folder';
+                $params = [];
+            }
+
+            return $this->redirectToRoute($route, $params);
+        } else {
+            return $this->parentRedirect($file, $form);
+        }
     }
 
     #[Route('/file/{id}/delete', name: 'file_delete', methods: ['POST'])]
