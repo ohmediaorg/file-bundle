@@ -195,7 +195,7 @@ class FileFolderController extends AbstractController
 
                 $this->addFlash('notice', 'The folder was moved successfully.');
 
-                return $this->viewRedirect($folder, $form);
+                return $this->viewRedirect($folder);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -235,7 +235,7 @@ class FileFolderController extends AbstractController
             $this->addFlash('notice', 'The folder was locked successfully.');
         }
 
-        return $this->viewRedirect($folder, $form);
+        return $this->viewRedirect($folder);
     }
 
     #[Route('/folder/{id}/unlock', name: 'file_folder_unlock', methods: ['POST'])]
@@ -260,10 +260,10 @@ class FileFolderController extends AbstractController
             $this->addFlash('notice', 'The folder was unlocked successfully.');
         }
 
-        return $this->viewRedirect($folder, $form);
+        return $this->viewRedirect($folder);
     }
 
-    protected function viewRedirect(FileFolder $folder, FormInterface $form): Response
+    protected function viewRedirect(FileFolder $folder): Response
     {
         return $this->redirectToRoute('file_folder_view', [
             'id' => $folder->getId(),
@@ -294,7 +294,7 @@ class FileFolderController extends AbstractController
 
             return $this->redirectToRoute($route, $params);
         } else {
-            return $this->viewRedirect($folder, $form);
+            return $this->viewRedirect($folder);
         }
     }
 
