@@ -171,7 +171,10 @@ class FileController extends AbstractController
             'max_size_bytes' => $maxSizeBytes,
         ]);
 
-        $form->add('save', MultiSaveType::class);
+        $form->add('save', MultiSaveType::class, [
+            // NOTE: images can be edited but not files
+            'keep_editing' => $file->isImage(),
+        ]);
 
         $form->handleRequest($request);
 
