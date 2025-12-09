@@ -73,7 +73,9 @@ class FileEntityType extends AbstractType
             ];
 
             if (!$options['file_label']) {
-                $fileAttr['aria-label'] = 'Upload file';
+                $fileAttr['aria-label'] = $options['image']
+                    ? 'Upload image'
+                    : 'Upload file';
             }
 
             $form
