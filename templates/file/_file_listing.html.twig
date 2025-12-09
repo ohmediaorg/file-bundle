@@ -75,10 +75,7 @@
 
   <tr>
     <td>
-      <label for="{{ checkbox.vars.id }}">
-        <input type="checkbox" id="{{ checkbox.vars.id }}" name="{{ checkbox.vars.full_name }}" value="{{ file.id }}" class="form-check-input" multiple form="{{ multiselect_form_id }}" title="Select {{ file.filename }} for Bulk Actions" />
-        <span class="visually-hidden">Select {{ file.filename }} for Bulk Actions</span>
-      </label>
+      <input type="checkbox" id="{{ checkbox.vars.id }}" name="{{ checkbox.vars.full_name }}" value="{{ file.id }}" class="form-check-input" multiple form="{{ multiselect_form_id }}" title="Select {{ file.filename }} for Bulk Actions" aria-label="Select {{ file.filename }} for Bulk Actions" />
     </td>
     <td style="font-size:1.5rem;text-align:center">
       {% if file.image %}
@@ -238,11 +235,8 @@
 <table class="table table-sm table-striped">
   <thead>
     <tr>
-      <th>
-        <label for="multiselect_checkall">
-          <input type="checkbox" class="form-check-input" id="multiselect_checkall" title="Select all files for Bulk Actions" />
-          <span class="visually-hidden">Select all files for Bulk Actions</span>
-        </label>
+      <th aria-label="Row Selection">
+        <input type="checkbox" class="form-check-input" id="multiselect_checkall" title="Select all files for Bulk Actions" aria-label="Select all files for Bulk Actions" />
       </th>
       <th style="width:55px" aria-label="Thumbnail">&nbsp;</th>
       <th>Name</th>
