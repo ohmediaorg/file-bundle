@@ -128,9 +128,8 @@
           data-can-delete="{{ path('file_can_delete', {id: file.id}) }}"
         >
           <input type="hidden" name="{{ delete_file_csrf_name }}" value="{{ csrf_token(delete_file_csrf_name) }}">
-          <button class="btn btn-danger" type="submit" title="Delete {{ noun }}">
+          <button class="btn btn-danger" type="submit" title="Delete {{ noun }}" aria-label="Delete {{ noun }}">
             {{ bootstrap_icon('trash') }}
-            <span class="visually-hidden">Delete {{ noun }}</span>
           </button>
         </form>
       </div>
@@ -221,9 +220,8 @@
             data-can-delete="{{ path('file_folder_can_delete', {id: folder.id}) }}"
           >
             <input type="hidden" name="{{ delete_folder_csrf_name }}" value="{{ csrf_token(delete_folder_csrf_name) }}">
-            <button class="btn btn-danger" type="submit" title="Delete Folder">
+            <button class="btn btn-danger" type="submit" title="Delete Folder" aria-label="Delete Folder">
               {{ bootstrap_icon('trash') }}
-              <span class="visually-hidden">Delete Folder</span>
             </button>
           </form>
         {% endif %}
