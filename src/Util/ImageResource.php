@@ -44,11 +44,11 @@ class ImageResource
 
     public static function create(string $filepath): ?self
     {
-        if (class_exists('\Imagick')) {
-            return static::createImagick($filepath);
-        } else {
+        // if (class_exists('\Imagick')) {
+        //     return static::createImagick($filepath);
+        // } else {
             return static::createGd($filepath);
-        }
+        // }
     }
 
     private static function createImagick(string $filepath): ?self
