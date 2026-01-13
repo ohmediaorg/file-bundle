@@ -3,6 +3,7 @@
 namespace OHMedia\FileBundle\Service;
 
 use OHMedia\FileBundle\Entity\File as FileEntity;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\File\File as HttpFile;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -15,6 +16,7 @@ class FileManager
 
     public function __construct(
         private UrlGeneratorInterface $router,
+        #[Autowire('%kernel.project_dir%')]
         string $projectDir
     ) {
         $this->absoluteUploadDir = $projectDir.'/'.static::FILE_DIR;

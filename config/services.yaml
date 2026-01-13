@@ -1,54 +1,16 @@
 services:
-    OHMedia\FileBundle\Service\FileManager:
-        arguments:
-            - "@router.default"
-            - "%kernel.project_dir%"
-
-    oh_media_file.file_manager: '@OHMedia\FileBundle\Service\FileManager'
-
-    OHMedia\FileBundle\Service\FileLifecycle:
+    _defaults:
         autowire: true
+        autoconfigure: true
 
-    oh_media_file.file_lifecycle: '@OHMedia\FileBundle\Service\FileLifecycle'
-
-    OHMedia\FileBundle\Service\FileFolderSlugger:
-        autowire: true
-
-    oh_media_file.file_folder_slugger: '@OHMedia\FileBundle\Service\FileFolderSlugger'
-
-    OHMedia\FileBundle\Service\ImageManager:
-        autowire: true
-
-    OHMedia\FileBundle\Service\FileBrowser:
-        arguments:
-            - "@oh_media_file.file_repository"
-            - "@oh_media_file.file_folder_repository"
-            - "%oh_media_file.file_browser.enabled%"
-            - "%oh_media_file.file_browser.limit_mb%"
-
-    oh_media_file.file_browser: '@OHMedia\FileBundle\Service\FileBrowser'
-
-    OHMedia\FileBundle\Service\FileResponse:
-        autowire: true
-
-    OHMedia\FileBundle\Twig\FileExtension:
-        autowire: true
-        tags: ["twig.extension"]
-
-    OHMedia\FileBundle\Twig\FileScriptExtension:
-        autowire: true
-        tags: ["twig.extension"]
-
-    OHMedia\FileBundle\Twig\ImageExtension:
-        autowire: true
-        tags: ["twig.extension"]
-
-    OHMedia\FileBundle\Twig\WysiwygExtension:
-        autowire: true
-        tags: ["twig.extension", "oh_media_wysiwyg.extension"]
+    OHMedia\FileBundle\:
+        resource: '../src/'
+        exclude:
+            - '../src/Entity/'
+            - '../src/OHMediaFileBundle.php'
 
     OHMedia\FileBundle\EventListener\FileFolderPrePersist:
-        arguments: ["@oh_media_file.file_folder_slugger"]
+        autowire: true
         tags:
             -
                 name: 'doctrine.orm.entity_listener'
@@ -56,7 +18,7 @@ services:
                 entity: 'OHMedia\FileBundle\Entity\FileFolder'
 
     OHMedia\FileBundle\EventListener\FileFolderPreUpdate:
-        arguments: ["@oh_media_file.file_folder_slugger"]
+        autowire: true
         tags:
             -
                 name: 'doctrine.orm.entity_listener'
@@ -64,7 +26,7 @@ services:
                 entity: 'OHMedia\FileBundle\Entity\FileFolder'
 
     OHMedia\FileBundle\EventListener\FilePostPersist:
-        arguments: ["@oh_media_file.file_lifecycle"]
+        autowire: true
         tags:
             -
                 name: 'doctrine.orm.entity_listener'
@@ -72,7 +34,7 @@ services:
                 entity: 'OHMedia\FileBundle\Entity\File'
 
     OHMedia\FileBundle\EventListener\FilePostRemove:
-        arguments: ["@oh_media_file.file_lifecycle"]
+        autowire: true
         tags:
             -
                 name: 'doctrine.orm.entity_listener'
@@ -80,7 +42,7 @@ services:
                 entity: 'OHMedia\FileBundle\Entity\File'
 
     OHMedia\FileBundle\EventListener\FilePostUpdate:
-        arguments: ["@oh_media_file.file_lifecycle"]
+        autowire: true
         tags:
             -
                 name: 'doctrine.orm.entity_listener'
@@ -88,7 +50,7 @@ services:
                 entity: 'OHMedia\FileBundle\Entity\File'
 
     OHMedia\FileBundle\EventListener\FilePrePersist:
-        arguments: ["@oh_media_file.file_lifecycle"]
+        autowire: true
         tags:
             -
                 name: 'doctrine.orm.entity_listener'
@@ -96,76 +58,9 @@ services:
                 entity: 'OHMedia\FileBundle\Entity\File'
 
     OHMedia\FileBundle\EventListener\FilePreUpdate:
-        arguments: ["@oh_media_file.file_lifecycle"]
+        autowire: true
         tags:
             -
                 name: 'doctrine.orm.entity_listener'
                 event: 'preUpdate'
                 entity: 'OHMedia\FileBundle\Entity\File'
-
-    OHMedia\FileBundle\Form\Type\FileEntityType:
-        arguments: ["@oh_media_file.file_manager", "@oh_media_file.file_repository"]
-        tags: ["form.type"]
-
-    OHMedia\FileBundle\Form\Type\FileMoveType:
-        arguments: ["@oh_media_file.file_browser"]
-        tags: ["form.type"]
-
-    OHMedia\FileBundle\Form\Type\FileFolderMoveType:
-        arguments: ["@oh_media_file.file_browser"]
-        tags: ["form.type"]
-
-    OHMedia\FileBundle\Form\Type\MultiselectType:
-        arguments: ["@oh_media_file.file_browser"]
-        tags: ["form.type"]
-
-    OHMedia\FileBundle\Repository\FileRepository:
-        autowire: true
-        tags: ["doctrine.repository_service"]
-
-    oh_media_file.file_repository: '@OHMedia\FileBundle\Repository\FileRepository'
-
-    OHMedia\FileBundle\Repository\FileFolderRepository:
-        autowire: true
-        tags: ["doctrine.repository_service"]
-
-    oh_media_file.file_folder_repository: '@OHMedia\FileBundle\Repository\FileFolderRepository'
-
-    OHMedia\FileBundle\Controller\Backend\FileController:
-        tags: ["container.service_subscriber", "controller.service_arguments"]
-        autowire: true
-
-    OHMedia\FileBundle\Controller\Backend\FileFolderController:
-        tags: ["container.service_subscriber", "controller.service_arguments"]
-        autowire: true
-
-    OHMedia\FileBundle\Controller\Backend\FileDownloadController:
-        tags: ["container.service_subscriber", "controller.service_arguments"]
-        autowire: true
-
-    OHMedia\FileBundle\Controller\FileController:
-        tags: ["container.service_subscriber", "controller.service_arguments"]
-        autowire: true
-
-    OHMedia\FileBundle\Security\Voter\FileVoter:
-        autowire: true
-        tags: ["security.voter"]
-
-    OHMedia\FileBundle\Security\Voter\FileFolderVoter:
-        autowire: true
-        tags: ["security.voter"]
-
-    OHMedia\FileBundle\Service\FileNavItemProvider:
-        autowire: true
-        tags: ["oh_media_backend.nav_item_provider"]
-
-    OHMedia\FileBundle\Service\DownloadNavLinkProvider:
-        autowire: true
-        tags: ["oh_media_backend.developer_only_nav_link_provider"]
-
-    OHMedia\FileBundle\Service\FileEntityChoice:
-        tags: ["oh_media_security.entity_choice"]
-
-    OHMedia\FileBundle\Cleanup\DirectoryCleaner:
-        autowire: true
-        tags: ["oh_media_cleanup.cleaner"]
