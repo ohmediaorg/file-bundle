@@ -68,14 +68,22 @@ class FileEntityType extends AbstractType
                 $accept = array_merge($accept, $mimeTypes);
             }
 
+            $fileAttr = [
+                'accept' => implode(',', $accept),
+            ];
+
+            if (!$options['file_label']) {
+                $fileAttr['aria-label'] = $options['image']
+                    ? 'Upload image'
+                    : 'Upload file';
+            }
+
             $form
                 ->add('file', FileType::class, [
                     'label' => $options['file_label'],
                     'required' => $file ? false : $options['required'],
                     'constraints' => $options['file_constraints'],
-                    'attr' => [
-                        'accept' => implode(',', $accept),
-                    ],
+                    'attr' => $fileAttr,
                 ])
             ;
 

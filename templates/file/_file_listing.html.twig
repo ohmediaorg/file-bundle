@@ -75,7 +75,7 @@
 
   <tr>
     <td>
-      <input type="checkbox" name="{{ checkbox.vars.full_name }}" value="{{ file.id }}" class="form-check-input" multiple form="{{ multiselect_form_id }}" title="Select {{ file.filename }} for Bulk Actions" />
+      <input type="checkbox" id="{{ checkbox.vars.id }}" name="{{ checkbox.vars.full_name }}" value="{{ file.id }}" class="form-check-input" multiple form="{{ multiselect_form_id }}" title="Select {{ file.filename }} for Bulk Actions" aria-label="Select {{ file.filename }} for Bulk Actions" />
     </td>
     <td style="font-size:1.5rem;text-align:center">
       {% if file.image %}
@@ -128,9 +128,8 @@
           data-can-delete="{{ path('file_can_delete', {id: file.id}) }}"
         >
           <input type="hidden" name="{{ delete_file_csrf_name }}" value="{{ csrf_token(delete_file_csrf_name) }}">
-          <button class="btn btn-danger" type="submit" title="Delete {{ noun }}">
+          <button class="btn btn-danger" type="submit" title="Delete {{ noun }}" aria-label="Delete {{ noun }}">
             {{ bootstrap_icon('trash') }}
-            <span class="visually-hidden">Delete {{ noun }}</span>
           </button>
         </form>
       </div>
@@ -221,9 +220,8 @@
             data-can-delete="{{ path('file_folder_can_delete', {id: folder.id}) }}"
           >
             <input type="hidden" name="{{ delete_folder_csrf_name }}" value="{{ csrf_token(delete_folder_csrf_name) }}">
-            <button class="btn btn-danger" type="submit" title="Delete Folder">
+            <button class="btn btn-danger" type="submit" title="Delete Folder" aria-label="Delete Folder">
               {{ bootstrap_icon('trash') }}
-              <span class="visually-hidden">Delete Folder</span>
             </button>
           </form>
         {% endif %}
@@ -235,13 +233,15 @@
 <table class="table table-sm table-striped">
   <thead>
     <tr>
-      <th><input type="checkbox" class="form-check-input" id="multiselect_checkall" title="Select all files for Bulk Actions" /></th>
-      <th style="width:55px">&nbsp;</th>
+      <th aria-label="Bulk Action Selection">
+        <input type="checkbox" class="form-check-input" id="multiselect_checkall" title="Select all files for Bulk Actions" aria-label="Select all files for Bulk Actions" />
+      </th>
+      <th style="width:55px" aria-label="Thumbnail">&nbsp;</th>
       <th>Name</th>
       <th>Size</th>
       <th>Shortcode</th>
       <th>Last Updated</th>
-      <th>&nbsp;</th>
+      <th aria-label="Row Actions"></th>
     </tr>
   </thead>
   <tbody>
