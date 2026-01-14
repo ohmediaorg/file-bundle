@@ -24,11 +24,11 @@
     const radios = form.elements[radioName];
 
     function toggleFile() {
-        const isReplace = radios.value === ACTION_REPLACE;
+      const isReplace = radios.value === ACTION_REPLACE;
 
-        file.style.display = isReplace ? '' : 'none';
+      file.style.display = isReplace ? '' : 'none';
 
-        file.required = isReplace;
+      file.required = isReplace;
     }
 
     radios.forEach((radio) => {

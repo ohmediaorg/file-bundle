@@ -1,5 +1,5 @@
 {# elements here are referenced by id in _file_listing.html.twig #}
-<div class="btn-group btn-group-sm" role="group">
+<div class="dropdown" role="group">
   <button id="multiselect_dropdown" class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled>
     {{ bootstrap_icon('ui-checks') }}
     Bulk Actions
@@ -7,13 +7,13 @@
   <ul class="dropdown-menu">
     <li>
       <a href="javascript:;" class="dropdown-item" id="multiselect_dropdown_move">
-        {{ bootstrap_icon('folder-fill') }}
+        {{ bootstrap_icon('folder-symlink') }}
         Move
       </a>
     </li>
     <li>
       <a href="javascript:;" class="dropdown-item text-bg-danger" id="multiselect_dropdown_delete" form="multiselect_form">
-        {{ bootstrap_icon('trash-fill') }}
+        {{ bootstrap_icon('trash') }}
         Delete
       </a>
     </li>

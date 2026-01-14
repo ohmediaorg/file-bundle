@@ -3,38 +3,37 @@
 {% block meta_title %}Files{% endblock %}
 
 {% block breadcrumbs %}
-{{ bootstrap_breadcrumbs(
-  bootstrap_breadcrumb(bootstrap_icon('folder-fill') ~ ' Files', 'file_index'),
-) }}
+  {{ bootstrap_breadcrumbs(
+    bootstrap_breadcrumb(bootstrap_icon('file-earmark-text') ~ ' Files', 'file_index'),
+  ) }}
 {% endblock %}
 
 {% block actions %}
-{% set file_voter = 'OHMedia\\FileBundle\\Security\\Voter\\FileVoter' %}
+  {% set file_voter = 'OHMedia\\FileBundle\\Security\\Voter\\FileVoter' %}
 
-{% set file_folder_voter = 'OHMedia\\FileBundle\\Security\\Voter\\FileFolderVoter' %}
+  {% set file_folder_voter = 'OHMedia\\FileBundle\\Security\\Voter\\FileFolderVoter' %}
 
-{% set attributes = {
-  file: {
-    create: constant(file_voter ~ '::CREATE'),
-  },
-  folder: {
-    create: constant(file_folder_voter ~ '::CREATE'),
-  },
-} %}
+  {% set attributes = {
+    file: {
+      create: constant(file_voter ~ '::CREATE'),
+    },
+    folder: {
+      create: constant(file_folder_voter ~ '::CREATE'),
+    },
+  } %}
 
-<div class="btn-group btn-group-sm" role="group">
   {% include '@OHMediaFile/file/_file_multiselect.html.twig' %}
 
-  <div class="btn-group btn-group-sm" role="group">
-    <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-      {{ bootstrap_icon('plus') }}
+  <div class="dropdown" role="group">
+    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      {{ bootstrap_icon('plus-lg') }}
       New
     </button>
     <ul class="dropdown-menu">
       {% if is_granted(attributes.folder.create, new_folder) %}
         <li>
           <a href="{{ path('file_folder_create_no_folder') }}" class="dropdown-item">
-            {{ bootstrap_icon('folder-fill') }}
+            {{ bootstrap_icon('folder') }}
             Folder
           </a>
         </li>
@@ -42,7 +41,7 @@
       {% if is_granted(attributes.file.create, new_file) %}
       <li>
         <a href="{{ path('file_create_no_folder') }}" class="dropdown-item">
-          {{ bootstrap_icon('file-earmark-fill') }}
+          {{ bootstrap_icon('file-earmark') }}
           File
         </a>
       </li>
@@ -55,22 +54,21 @@
       {% endif %}
     </ul>
   </div>
-</div>
 {% endblock %}
 
 {% block main %}
-{{ file_limit() }}
+  {{ file_limit() }}
 
-<div class="card">
-  <div class="card-body">
-    <h1 class="card-title">{{ bootstrap_icon('folder-check') }} /</h1>
+  <div class="card">
+    <div class="card-body">
+      <h1 class="card-title">{{ bootstrap_icon('folder-check') }} /</h1>
 
-    {% include '@OHMediaFile/file/_file_listing.html.twig' with {
-      items: items,
-      back: false,
-      parent: null,
-      multiselect_form: multiselect_form,
-    } only %}
+      {% include '@OHMediaFile/file/_file_listing.html.twig' with {
+        items: items,
+        back: false,
+        parent: null,
+        multiselect_form: multiselect_form,
+      } only %}
+    </div>
   </div>
-</div>
 {% endblock %}

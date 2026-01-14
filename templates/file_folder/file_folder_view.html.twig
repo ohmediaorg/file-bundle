@@ -3,41 +3,41 @@
 {% block meta_title %}{{ folder.name }} | Files{% endblock %}
 
 {% block breadcrumbs %}
-{% include '@OHMediaBootstrap/breadcrumbs.html.twig' with {
-  breadcrumbs: breadcrumbs,
-} only %}
+  {% include '@OHMediaBootstrap/breadcrumbs.html.twig' with {
+    breadcrumbs: breadcrumbs,
+  } only %}
 {% endblock %}
 
 {% block actions %}
-{% set file_voter = 'OHMedia\\FileBundle\\Security\\Voter\\FileVoter' %}
+  {% set file_voter = 'OHMedia\\FileBundle\\Security\\Voter\\FileVoter' %}
 
-{% set file_folder_voter = 'OHMedia\\FileBundle\\Security\\Voter\\FileFolderVoter' %}
+  {% set file_folder_voter = 'OHMedia\\FileBundle\\Security\\Voter\\FileFolderVoter' %}
 
-{% set attributes = {
-  file: {
-    create: constant(file_voter ~ '::CREATE'),
-  },
-  folder: {
-    create: constant(file_folder_voter ~ '::CREATE'),
-    edit: constant(file_folder_voter ~ '::EDIT'),
-    lock: constant(file_folder_voter ~ '::LOCK'),
-    unlock: constant(file_folder_voter ~ '::UNLOCK'),
-    delete: constant(file_folder_voter ~ '::DELETE'),
-  },
-} %}
+  {% set attributes = {
+    file: {
+      create: constant(file_voter ~ '::CREATE'),
+    },
+    folder: {
+      create: constant(file_folder_voter ~ '::CREATE'),
+      edit: constant(file_folder_voter ~ '::EDIT'),
+      lock: constant(file_folder_voter ~ '::LOCK'),
+      unlock: constant(file_folder_voter ~ '::UNLOCK'),
+      delete: constant(file_folder_voter ~ '::DELETE'),
+    },
+  } %}
 
-<div class="btn-group btn-group-sm" role="group">
   {% include '@OHMediaFile/file/_file_multiselect.html.twig' %}
-  <div class="btn-group btn-group-sm" role="group">
-    <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-      {{ bootstrap_icon('plus') }}
+
+  <div class="dropdown" role="group">
+    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      {{ bootstrap_icon('plus-lg') }}
       New
     </button>
     <ul class="dropdown-menu">
       {% if is_granted(attributes.folder.create, new_folder) %}
         <li>
           <a href="{{ path('file_folder_create_with_folder', {id: folder.id}) }}" class="dropdown-item">
-            {{ bootstrap_icon('folder-fill') }}
+            {{ bootstrap_icon('folder') }}
             Folder
           </a>
         </li>
@@ -45,7 +45,7 @@
       {% if is_granted(attributes.file.create, new_file) %}
       <li>
         <a href="{{ path('file_create_with_folder', {id: folder.id}) }}" class="dropdown-item">
-          {{ bootstrap_icon('file-earmark-fill') }}
+          {{ bootstrap_icon('file-earmark') }}
           File
         </a>
       </li>
@@ -58,7 +58,8 @@
       {% endif %}
     </ul>
   </div>
-  <div class="btn-group btn-group-sm" role="group">
+
+  <div class="dropdown" role="group">
     <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
       Folder Actions
     </button>
@@ -66,7 +67,14 @@
       {% if is_granted(attributes.folder.edit, folder) %}
         <li>
           <a href="{{ path('file_folder_edit', {id: folder.id}) }}" class="dropdown-item">
-            {{ bootstrap_icon('pen-fill') }} Edit
+            {{ bootstrap_icon('pencil') }} Edit
+          </a>
+        </li>
+      {% endif %}
+      {% if is_granted(attributes.folder.edit, folder) %}
+        <li>
+          <a href="{{ path('file_folder_move', {id: folder.id}) }}" class="dropdown-item">
+            {{ bootstrap_icon('folder-symlink') }} Move
           </a>
         </li>
       {% endif %}
@@ -76,9 +84,9 @@
           {% block form_action %}{{ path('file_folder_lock', {id: folder.id}) }}{% endblock %}
           {% block confirm_message %}Are you sure you want to lock this folder?{% endblock %}
           {% block csrf_name %}lock_file_folder_{{ folder.id }}{% endblock %}
-          {% block button_class %}dropdown-item text-bg-secondary{% endblock %}
+          {% block button_class %}dropdown-item text-bg-warning{% endblock %}
           {% block button_html %}
-            {{ bootstrap_icon('lock-fill') }}
+            {{ bootstrap_icon('lock') }}
             Lock
           {% endblock %}
         {% endembed %}
@@ -92,7 +100,7 @@
           {% block csrf_name %}unlock_file_folder_{{ folder.id }}{% endblock %}
           {% block button_class %}dropdown-item text-bg-success{% endblock %}
           {% block button_html %}
-            {{ bootstrap_icon('unlock-fill') }}
+            {{ bootstrap_icon('unlock') }}
             Unlock
           {% endblock %}
         {% endembed %}
@@ -106,7 +114,7 @@
             {% block csrf_name %}delete_file_folder_{{ folder.id }}{% endblock %}
             {% block button_class %}dropdown-item text-bg-danger{% endblock %}
             {% block button_html %}
-              {{ bootstrap_icon('trash-fill') }}
+              {{ bootstrap_icon('trash') }}
               Delete
             {% endblock %}
           {% endembed %}
@@ -114,29 +122,28 @@
       {% endif %}
     </ul>
   </div>
-</div>
 {% endblock %}
 
 {% block main %}
-{{ file_limit() }}
+  {{ file_limit() }}
 
-<div class="card">
-  <div class="card-body">
-    <h1 class="card-title">
-      {% if folder.locked %}
-      {{ bootstrap_icon('folder-x text-secondary') }}
-      {% else %}
-      {{ bootstrap_icon('folder-check') }}
-      {% endif %}
-      / {{ folder.name }}
-    </h1>
+  <div class="card">
+    <div class="card-body">
+      <h1 class="card-title">
+        {% if folder.locked %}
+          {{ bootstrap_icon('folder-x text-secondary') }}
+        {% else %}
+          {{ bootstrap_icon('folder-check') }}
+        {% endif %}
+        / {{ folder.name }}
+      </h1>
 
-    {% include '@OHMediaFile/file/_file_listing.html.twig' with {
-      items: items,
-      back: true,
-      parent: folder.folder,
-      multiselect_form: multiselect_form,
-    } only %}
+      {% include '@OHMediaFile/file/_file_listing.html.twig' with {
+        items: items,
+        back: true,
+        parent: folder.folder,
+        multiselect_form: multiselect_form,
+      } only %}
+    </div>
   </div>
-</div>
 {% endblock %}
