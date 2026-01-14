@@ -6,6 +6,7 @@ use OHMedia\FileBundle\Entity\File;
 use OHMedia\FileBundle\Entity\FileFolder;
 use OHMedia\FileBundle\Repository\FileFolderRepository;
 use OHMedia\FileBundle\Repository\FileRepository;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class FileBrowser
 {
@@ -14,8 +15,10 @@ class FileBrowser
     public function __construct(
         private FileRepository $fileRepository,
         private FileFolderRepository $fileFolderRepository,
+        #[Autowire('%oh_media_file.file_browser.enabled%')]
         private bool $enabled,
-        int $limitMb
+        #[Autowire('%oh_media_file.file_browser.limit_mb%')]
+        int $limitMb,
     ) {
         $this->limitBytes = $limitMb * 1024 * 1024;
     }
