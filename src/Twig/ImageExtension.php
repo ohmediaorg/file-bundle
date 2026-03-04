@@ -23,7 +23,7 @@ class ImageExtension extends AbstractExtension
         ];
     }
 
-    public function getImagePath(File $image, int $width = null, int $height = null)
+    public function getImagePath(File $image, ?int $width = null, ?int $height = null)
     {
         return $this->imageManager->getImagePath($image, $width, $height);
     }

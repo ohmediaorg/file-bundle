@@ -118,10 +118,10 @@ class MimeTypeUtil
             );
         }
 
-        return new FileConstraint([
-            'mimeTypes' => $mimeTypes,
-            'mimeTypesMessage' => $mimeTypesMessage,
-        ]);
+        return new FileConstraint(
+            mimeTypes: $mimeTypes,
+            mimeTypesMessage: $mimeTypesMessage,
+        );
     }
 
     public static function getAllFileConstraint(): FileConstraint
