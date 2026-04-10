@@ -68,6 +68,8 @@ class WysiwygExtension extends AbstractWysiwygExtension
         $attributes['width'] = $width;
         $attributes['height'] = $height;
 
+        $attributes['data-wysiwyg-img'] = '';
+
         return $this->imageManager->render($image, $attributes);
     }
 }
