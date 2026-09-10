@@ -26,7 +26,7 @@ class FileFolderEditType extends AbstractType
                         ->where('ff.browser = 1')
                         ->andWhere('ff.id <> :id')
                         ->setParameter('id', $folder->getId())
-                        ->orderBy('LOWER(ff.name)', 'ASC');
+                        ->orderBy('LOWER(ff.name)', \SortDirection::Ascending);
                 },
                 'placeholder' => '/',
                 'choice_label' => function (FileFolder $folder) {

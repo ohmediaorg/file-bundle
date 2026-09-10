@@ -12,10 +12,13 @@
     ],
     "require": {
         "php": ">=8.2",
+        "doctrine/orm": "^3.7",
         "symfony/framework-bundle": "6.4.*|7.4.*"
     },
     "autoload": {
-        "psr-4": { "OHMedia\\FileBundle\\": "src/" }
+        "psr-4": {
+            "OHMedia\\FileBundle\\": "src/"
+        }
     },
     "autoload-dev": {
         "psr-4": {

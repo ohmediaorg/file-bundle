@@ -29,7 +29,7 @@ class MultiselectType extends AbstractType
             'query_builder' => function (EntityRepository $er) use ($folder) {
                 $qb = $er->createQueryBuilder('f')
                     ->where('f.browser = 1')
-                    ->orderBy('LOWER(f.name)', 'ASC');
+                    ->orderBy('LOWER(f.name)', \SortDirection::Ascending);
 
                 if ($folder) {
                     $qb->andWhere('f.folder = :folder')

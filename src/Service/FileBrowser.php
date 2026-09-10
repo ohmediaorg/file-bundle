@@ -67,7 +67,7 @@ class FileBrowser
         }
 
         $files = $fileQueryBuilder
-            ->orderBy('LOWER(f.name)', 'ASC')
+            ->orderBy('LOWER(f.name)', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
 
@@ -84,7 +84,7 @@ class FileBrowser
         }
 
         $folders = $fileFolderQueryBuilder
-            ->orderBy('LOWER(ff.name)', 'ASC')
+            ->orderBy('LOWER(ff.name)', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
 

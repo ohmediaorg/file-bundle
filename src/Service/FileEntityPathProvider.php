@@ -32,7 +32,7 @@ class FileEntityPathProvider extends AbstractEntityPathProvider
             ->where('(f.browser = 1 AND f.locked = 0)')
             ->orWhere('f.id = :id')
             ->setParameter('id', $selectedEntityId)
-            ->orderBy('f.name', 'ASC');
+            ->orderBy('f.name', \SortDirection::Ascending);
 
         if ($selectedEntityId) {
             $qb->orWhere('f.id = :id')
