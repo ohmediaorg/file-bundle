@@ -41,6 +41,7 @@ class FileResponse
 
         $response = new BinaryFileResponse($physicalFile);
         $response->headers->set('Content-Type', $mimeType);
+        $response->headers->set('Cache-Control', 'max-age=2592000');
 
         BinaryFileResponse::trustXSendfileTypeHeader();
 
